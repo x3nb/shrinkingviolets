@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chez Spiders Lore</title>
+
+<!-- Google Fonts for Edwardian Style -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
+<!-- Additional Styles -->
+<style>
+  /* Reset & Base Styles */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Great Vibes', cursive;
+    position: relative;
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #4a6fa5, #1b2b3a, #000);
+    overflow-x: hidden;
+    color: #eee;
+  }
+
+  /* Bubbles Canvas */
+  #bubbles-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  /* Title Styles */
+  h1 {
+    position: relative;
+    text-align: center;
+    font-size: 3em;
+    margin-top: 40px;
+    background: linear-gradient(45deg, #7fa9e0, #a9b0b9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    z-index: 1;
+  }
+
+  /* Web Illustration */
+  #web-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+
+  /* Web SVG */
+  #web {
+    width: 300px;
+    height: 300px;
+  }
+
+  /* Gallery Styles */
+  #gallery {
+    margin: 40px auto;
+    width: 90%;
+    max-width: 1000px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .slide-track {
+    display: flex;
+    transition: transform 0.5s ease;
+  }
+
+  .slide {
+    min-width: 200px;
+    margin: 0 10px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.3s;
+  }
+
+  .slide:hover {
+    transform: scale(1.05);
+  }
+
+  .slide img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Comment Section */
+  #comments-section {
+    margin: 50px auto;
+    width: 90%;
+    max-width: 800px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+
+  #comments-section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #eee;
+  }
+
+  #comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #comment-form textarea {
+    resize: vertical;
+    min-height: 60px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Great Vibes', cursive;
+    font-size: 1em;
+  }
+
+  #comment-form button {
+    align-self: flex-end;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #7fa9e0, #a9b0b9);
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Great Vibes', cursive;
+    font-size: 1em;
+    transition: background 0.3s;
+  }
+
+  #comment-form button:hover {
+    background: linear-gradient(135deg, #5a8edb, #8ba0c2);
+  }
+
+  #comments {
+    margin-top: 20px;
+  }
+
+  .comment {
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  /* Responsive */
+  @media(max-width: 768px){
+    h1 {
+      font-size: 2em;
+    }
+    #web {
+      width: 200px;
+      height: 200px;
+    }
+    .slide {
+      min-width: 150px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Bubbles Canvas -->
+<canvas id="bubbles-canvas"></canvas>
+
+<!-- Site Title -->
+<h1>Chez Spiders Lore</h1>
+
+<!-- Web Illustration -->
+<div id="web-container">
+  <!-- SVG Web Illustration -->
+  <svg id="web" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+    <!-- Central Web Web and Strands -->
+    <circle cx="150" cy="150" r="10" fill="#ccc" />
+    <!-- Radial Lines -->
+    <line x1="150" y1="150" x2="150" y2="50" stroke="#888" stroke-width="1" />
+    <line x1="150" y1="150" x2="250" y2="150" stroke="#888" stroke-width="1" />
+    <line x1="150" y1="150" x2="150" y2="250" stroke="#888" stroke-width="1" />
+    <line x1="150" y1="150" x2="50" y2="150" stroke="#888" stroke-width="1" />
+    <line x1="150" y1="150" x2="200" y2="100" stroke="#888" stroke-width="1" />
+    <line x1="150" y1="150" x2="100" y2="200" stroke="#888" stroke-width="1" />
+    <line x1="150" y1="150" x2="200" y2="200" stroke="#888" stroke-width="1" />
+    <line x1="150" y1="150" x2="100" y2="100" stroke="#888" stroke-width="1" />
+
+    <!-- Web Circles for Web Layers -->
+    <circle cx="150" cy="150" r="50" stroke="#666" stroke-width="0.5" fill="none" />
+    <circle cx="150" cy="150" r="100" stroke="#666" stroke-width="0.5" fill="none" />
+    <circle cx="150" cy="150" r="150" stroke="#666" stroke-width="0.5" fill="none" />
+  </svg>
+</div>
+
+<!-- Gallery Slider -->
+<div id="gallery">
+  <div class="slide-track" id="slide-track">
+    <div class="slide"><img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 1"></div>
+    <div class="slide"><img src="https://images.unsplash.com/photo-1612832026528-4a3b411d2f6f?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 2"></div>
+    <div class="slide"><img src="https://images.unsplash.com/photo-1612832026528-4a3b411d2f6f?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 3"></div>
+    <div class="slide"><img src="https://images.unsplash.com/photo-1612832026528-4a3b411d2f6f?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 4"></div>
+    <div class="slide"><img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 5"></div>
+    <!-- Add more images as needed -->
+  </div>
+</div>
+
+<!-- Comment Section -->
+<div id="comments-section">
+  <h2>Chez Spiders Lore - Comments</h2>
+  <form id="comment-form">
+    <textarea id="comment-input" placeholder="Share your thoughts..."></textarea>
+    <button type="submit">Post Comment</button>
+  </form>
+  <div id="comments"></div>
+</div>
+
+<!-- Scripts -->
+<script>
+  // Bubbles Animation
+  const canvas = document.getElementById('bubbles-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let bubblesArray = [];
+
+  // Resize Canvas
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Bubble Class
+  class Bubble {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.radius = Math.random() * 2 + 1;
+      this.speedY = Math.random() * 0.2 + 0.05;
+      this.color = `rgba(255,255,255,${Math.random()*0.2 + 0.1})`;
+    }
+    update() {
+      this.y -= this.speedY;
+      if (this.y + this.radius < 0) {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + this.radius;
+        this.radius = Math.random() * 2 + 1;
+      }
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+
+  // Initialize Bubbles
+  for (let i=0; i<100; i++) {
+    bubblesArray.push(new Bubble());
+  }
+
+  // Animate Bubbles
+  function animateBubbles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let bubble of bubblesArray) {
+      bubble.update();
+      bubble.draw();
+    }
+    requestAnimationFrame(animateBubbles);
+  }
+
+  animateBubbles();
+
+  // Interactive Web Web (Optional: Add hover animations)
+  const web = document.getElementById('web');
+  web.addEventListener('mouseenter', () => {
+    web.style.transform = 'scale(1.05)';
+    web.style.transition = 'transform 0.3s';
+  });
+  web.addEventListener('mouseleave', () => {
+    web.style.transform = 'scale(1)';
+  });
+
+  // Gallery Sliding
+  const slideTrack = document.getElementById('slide-track');
+  let currentIndex = 0;
+
+  // Auto-slide every 3 seconds
+  setInterval(() => {
+    currentIndex++;
+    if (currentIndex > slideTrack.children.length - 1) {
+      currentIndex = 0;
+    }
+    slideTrack.style.transform = `translateX(-${(200 + 20) * currentIndex}px)`;
+  }, 3000);
+
+  // Click to enlarge images
+  document.querySelectorAll('.slide img').forEach(img => {
+    img.addEventListener('click', () => {
+      const modal = document.createElement('div');
+      modal.style.position='fixed';
+      modal.style.top='0';
+      modal.style.left='0';
+      modal.style.width='100%';
+      modal.style.height='100%';
+      modal.style.background='rgba(0,0,0,0.8)';
+      modal.style.display='flex';
+      modal.style.alignItems='center';
+      modal.style.justifyContent='center';
+      modal.style.cursor='pointer';
+      modal.innerHTML = `<img src="${img.src}" style="max-width:90%; max-height:90%; border-radius:10px;">`;
+      document.body.appendChild(modal);
+      modal.addEventListener('click', () => {
+        document.body.removeChild(modal);
+      });
+    });
+  });
+
+  // Comments Functionality
+  const commentForm = document.getElementById('comment-form');
+  const commentsDiv = document.getElementById('comments');
+
+  commentForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = document.getElementById('comment-input').value.trim();
+    if (text) {
+      const commentEl = document.createElement('div');
+      commentEl.className = 'comment';
+      commentEl.innerText = text;
+      commentsDiv.appendChild(commentEl);
+      document.getElementById('comment-input').value = '';
+    }
+  });
+</script>
+
+</body>
+</html>
