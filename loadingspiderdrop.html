@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Estates: Spider's Brew Production – Web of Quest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:wght@300;400;500&display=swap');
+        body { 
+            background: #000000 !important; /* Black theater void – arachnid immersion */
+            color: #FFFFFF !important; /* White text for stark contrast */
+            font-family: 'Roboto Mono', monospace; /* Script-like body */
+            margin: 0; 
+            padding: 0; 
+            text-align: center; 
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+            /* Subtle film grain (ethereal texture – faint, static) */
+            background-image: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.01) 0%, transparent 50%), 
+                              radial-gradient(circle at 75% 75%, rgba(255,255,255,0.01) 0%, transparent 50%);
+            background-size: 100px 100px;
+        }
+        .container { 
+            max-width: 100vw; 
+            min-height: 100vh; /* Allow scroll for sections */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-start; /* Start from top for header */
+            align-items: center; 
+            opacity: 0; /* Hidden until intro ends */
+            transition: opacity 1s ease-in; /* Gentle transition to menu */
+            padding-top: 200px; /* Space for header height */
+        }
+        .container.loaded { opacity: 1; } /* JS triggers post-intro */
+        .spider-intro { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: #000000; /* Black screen for intro */
+            z-index: 20; /* Above all */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 1; 
+            transition: opacity 1s ease-out; /* Fade out to menu */
+        }
+        .spider-intro.hidden { opacity: 0; pointer-events: none; } /* JS hides after 6s, disable clicks */
+        .web-target { 
+            width: 300px; 
+            height: 300px; 
+            border: 5px solid #FFFFFF; /* White web circle – sniper rifle target vibe */
+            border-radius: 50%; 
+            position: relative; 
+            background: #000000; /* Black interior */
+            /* Web pattern (radial lines like spider silk – cornflower tint) */
+            background-image: 
+                conic-gradient(from 0deg at 50% 50%, transparent 0deg, #6495ED 1deg, transparent 2deg),
+                conic-gradient(from 90deg at 50% 50%, transparent 0deg, #6495ED 1deg, transparent 2deg),
+                conic-gradient(from 180deg at 50% 50%, transparent 0deg, #6495ED 1deg, transparent 2deg),
+                conic-gradient(from 270deg at 50% 50%, transparent 0deg, #6495ED 1deg, transparent 2deg);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%; /* Layered for crosshair web */
+            animation: targetShake 0.3s ease-out 2s forwards; /* Dramatic shake on web bloom */
+        }
+        @keyframes targetShake { 
+            0%, 100% { transform: translateX(0); } 
+            25% { transform: translateX(-5px); } 
+            75% { transform: translateX(5px); } /* Mild wobble – no seasick */
+        }
+        .spider-drop { 
+            position: absolute; 
+            top: -50px; /* Start above circle */
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 4em; /* Large spider emoji */
+            opacity: 0; 
+            animation: dropSilk 2s ease-in forwards; /* 2s gentle drop on silk */
+        }
+        @keyframes dropSilk { 
+            0% { top: -50px; opacity: 0; transform: translateX(-50%) rotate(0deg); } /* Start hidden above */
+            50% { top: 50%; opacity: 1; transform: translateX(-50%) rotate(-10deg); } /* Mid-drop rotate for whimsy */
+            100% { top: 70%; opacity: 1; transform: translateX(-50%) rotate(0deg); } /* Land center-bottom */
+        }
+        .tea-cup { 
+            position: absolute; 
+            top: 50%; 
+            left: 60%; /* "Held" in spider's foreleg */
+            font-size: 2em; /* Tea cup emoji */
+            opacity: 0; 
+            animation: teaSteam 2s ease-in forwards 0.5s; /* Steam in mid-drop */
+            transform: translate(-50%, -50%); 
+        }
+        @keyframes teaSteam { 
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } /* Gentle "pour" */
+        }
+        .web-bloom { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            width: 150px; 
+            height: 150px; 
+            background: radial-gradient(circle, rgba(100, 149, 237, 0.6) 0%, transparent 70%); /* Cornflower web "splat" – blooming threads */
+            border-radius: 50%; 
+            opacity: 0; 
+            animation: webBloom 1s ease-out 2s forwards; /* Bloom after drop */
+            transform: scale(0); 
+            /* Web lines (additional threads) */
+            background-image: 
+                linear-gradient(45deg, transparent 49%, #6495ED 50%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, #6495ED 50%, transparent 51%);
+            background-size: 20px 20px; /* Dotted web pattern */
+        }
+        @keyframes webBloom { 
+            0% { opacity: 0; transform: scale(0); } 
+            50% { opacity: 0.8; transform: scale(1.2); } /* Dramatic expand */
+            100% { opacity: 0; transform: scale(1.5); } /* Fade out */
+        }
+        .spider-logo { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-family: 'Cinzel', serif; /* Romantic goth for elegance */
+            font-size: 3em; 
+            font-weight: 700; 
+            color: #FFFFFF; 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 50%, #FFFFFF 100%); /* White to cornflower tint */
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            letter-spacing: 5px; 
+            opacity: 0; 
+            animation: logoSwirl 2s ease-in-out 2.5s forwards; /* Swirl in after bloom */
+        }
+        @keyframes logoSwirl { 
+            0% { opacity: 0; transform: translate(-50%, -50%) rotate(-180deg) scale(0.5); text-shadow: 0 0 5px rgba(100, 149, 237, 0.3); } /* Swirl from spin/small */
+            50% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1.2); text-shadow: 0 0 20px rgba(100, 149, 237, 1); } /* Dramatic scale/glow burst */
+            100% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); text-shadow: 0 0 10px rgba(100, 149, 237, 0.5); } /* Settle to elegant */
+        }
+        .intertitle { 
+            position: absolute; 
+            top: 60%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-family: 'Cinzel', serif; 
+            font-size: 2em; 
+            font-weight: 600; 
+            color: #FFFFFF; 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            letter-spacing: 3px; 
+            opacity: 0; 
+            animation: intertitleFade 1s ease-in 4.5s forwards; /* Dramatic producer seal post-logo */
+        }
+        @keyframes intertitleFade { 
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } /* Gentle expand/fade in */
+        }
+        .header-banner { 
+            position: fixed; /* Fixed to top for seamless slide */
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 200px; /* Fixed 200px height */
+            background: linear-gradient(to bottom, #000000 0%, rgba(100, 149, 237, 0.1) 100%); /* Black to cornflower fog overlay */
+            z-index: 10; /* Above body, below title */
+            opacity: 0; 
+            transform: translateY(-100%); /* Start off-screen top */
+            transition: opacity 1s ease-in, transform 1s ease-in; /* 1s slide/fade */
+            overflow: hidden; /* Seamless crop */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .header-banner.visible { 
+            opacity: 1; 
+            transform: translateY(0); /* Slide down into view */
+        }
+        .header-image { 
+            width: 100%; 
+            height: 100%; 
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIyMDBweCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwMDAwIi8+PHBhdGggZD0iTTAsMjAwIEwxMDAsMjAwIEwxMDAsMCAxMDAsMjAwIEwwLDIwMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjQ5NUVEIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjUsNSIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMTAwIiByPSI0MCIgZmlsbD0icmdiYSgxMDAsMTQ5LDIzNywgMC4yKSIgc3Ryb2tlPSIjNjQ5NUVEIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4='); /* Placeholder gothic estate silhouette (SVG base64 – foggy crypt; replace with your image URL) */
+            background-size: cover; 
+            background-position: center; 
+            filter: blur(1px); /* Subtle ethereal blur for romance */
+            animation: subtleSlide 10s linear infinite; /* Gentle horizontal slide for "film reel" seamlessness – slow, no seasick */
+        }
+        @keyframes subtleSlide { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-20%); } /* Slow left drift, loops seamlessly */
+        }
+        .title { 
+            font-family: 'Cinzel', serif; /* Romantic goth – ornate, cryptic elegance */
+            font-size: 4em; /* Looming marquee */
+            font-weight: 700; /* Bold romantic */
+            color: #FFFFFF; /* White base */
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 50%, #FFFFFF 100%); /* White to cornflower tint gradient */
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            margin: 20px 0; 
+            letter-spacing: 3px; /* Elegant spacing */
+            text-shadow: 0 0 10px rgba(100, 149, 237, 0.5); /* Subtle cornflower glow */
+            animation: pulse 2s ease-in-out infinite alternate; /* Romantic throb – no seasick */
+            opacity: 0; 
+            transition: opacity 1s ease-in; 
+            z-index: 11; /* Above header */
+        }
+        .title.visible { opacity: 1; }
+        @keyframes pulse { 
+            0% { text-shadow: 0 0 10px rgba(100, 149, 237, 0.5); } 
+            100% { text-shadow: 0 0 20px rgba(100, 149, 237, 0.8); } 
+        }
+        .subtitle { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.2em; 
+            font-style: italic; 
+            color: #FFFFFF; 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 100%); /* Cornflower tint */
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            margin: 10px 0; 
+            opacity: 0; 
+            transition: opacity 0.5s ease-in; 
+        }
+        .subtitle.visible { opacity: 1; }
+        .reel-bar { 
+            width: 60%; 
+            height: 20px; 
+            background: #111111; /* Dark reel bg */
+            border-radius: 10px; 
+            margin: 20px auto; 
+            overflow: hidden; 
+            border: 1px solid #333333; /* Subtle frame */
+            position: relative; 
+            z-index: 11; /* Above header */
+        }
+        .reel-fill { 
+            height: 100%; 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 100%); /* White to cornflower progression – film strip tint */
+            width: 0%; 
+            transition: width 3s ease-in-out; /* 3s shorter for Bond pace */
+            border-radius: 10px; 
+            box-shadow: 0 0 5px rgba(100, 149, 237, 0.3); /* Cornflower glow */
+        }
+        .reel-text { 
+            font-family: 'Roboto Mono', monospace; 
+            font-size: 1em; 
+            color: #FFFFFF; 
+            margin: 10px 0; 
+            opacity: 0; 
+            transition: opacity 0.5s ease-in 1s; /* Reveal mid-reel */
+            z-index: 11; 
+        }
+        .reel-text.visible { opacity: 1; }
+        .nav-menu { 
+            display: none; /* Hidden until intro ends */
+            flex-wrap: wrap; 
+            justify-content: center; 
+            margin-top: 40px; 
+            opacity: 0; 
+            transition: opacity 1s ease-in; /* Gentle fade from spider */
+            z-index: 11; 
+            pointer-events: none; /* Disable until visible */
+        }
+        .nav-menu.visible { 
+            display: flex; 
+            opacity: 1; 
+            pointer-events: auto; /* Enable clicks */
+        }
+        .nav-link { 
+            color: #FFFFFF; /* White base */
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 100%); /* White to cornflower tint gradient */
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            text-decoration: none; 
+            font-family: 'Roboto Mono', monospace; 
+            font-size: 1.2em; 
+            font-weight: 500; 
+            margin: 10px 20px; 
+            padding: 10px 20px; 
+            border: 1px solid #333333; /* Subtle frame */
+            border-radius: 5px; 
+            transition: all 0.3s; 
+            text-shadow: 0 0 5px rgba(100, 149, 237, 0.3); /* Cornflower glow */
+            letter-spacing: 1px; 
+            cursor: pointer; 
+            z-index: 11; 
+        }
+        .nav-link:hover { 
+            background: linear-gradient(to right, #6495ED 0%, #FFFFFF 100%); /* Reverse gradient on hover */
+            box-shadow: 0 0 10px rgba(100, 149, 237, 0.5); /* Blue tint pop */
+            transform: scale(1.05); /* Subtle cinematic zoom */
+        }
+        .nav-link.active { 
+            background: linear-gradient(to right, #6495ED 0%, #6495ED 100%); /* Solid cornflower for active */
+            color: #000000; /* Dark text on blue */
+            -webkit-text-fill-color: #000000; /* Override gradient */
+        }
+        .content-section { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 30px; 
+            background: #111111; /* Dark section bg */
+            border: 1px solid #333333; /* Subtle frame */
+            border-radius: 10px; 
+            text-align: left; 
+            opacity: 0; 
+            transition: opacity 0.5s ease-in; /* Cinematic scene change */
+            display: none; 
+            z-index: 11; 
+        }
+        .content-section.visible { 
+            display: block; 
+            opacity: 1; 
+        }
+        .content-section h2 { 
+            font-family: 'Cinzel', serif; /* Romantic goth for headings */
+            font-size: 2em; 
+            color: #FFFFFF; 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            letter-spacing: 2px; 
+        }
+        .content-section p { 
+            line-height: 1.6; 
+            margin-bottom: 15px; 
+            color: #CCCCCC; /* Light grey for readability */
+        }
+        .content-section ul { 
+            list-style-type: none; 
+            padding: 0; 
+        }
+        .content-section li { 
+            margin: 10px 0; 
+            color: #CCCCCC; 
+        }
+        .scripture { 
+            color: #CCCCCC; /* Light grey */
+            font-family: 'Roboto Mono', monospace; 
+            font-style: italic; 
+            font-size: 0.9em; 
+            margin-top: 30px; 
+            padding: 10px; 
+            border: 1px solid #333333; 
+            border-radius: 5px; 
+            opacity: 0; 
+            transition: opacity 1s ease-in 5.5s; /* Final fade */
+            z-index: 11; 
+        }
+        .scripture.visible { opacity: 1; }
+        footer { 
+            color: #888888; /* Grey credits */
+            font-size: 0.8em; 
+            margin-top: 20px; 
+            padding-top: 10px; 
+            font-family: 'Roboto Mono', monospace; 
+            opacity: 0; 
+            transition: opacity 1s ease-in 5s; /* End credits roll */
+            z-index: 11; 
+        }
+        footer.visible { opacity: 1; }
+        .donate-link { 
+            color: #6495ED; /* Cornflower accent */
+            text-decoration: underline; 
+            font-weight: bold; 
+        }
+        .donate-link:hover { color: #FFFFFF; }
+        @media (max-width: 768px) { 
+            .header-banner { height: 150px; } /* Adjustable height mobile */
+            .container { padding-top: 150px; } 
+            .title { font-size: 2.5em; } 
+            .reel-bar { width: 90%; } 
+            .nav-menu { flex-direction: column; align-items: center; } 
+            .nav-link { margin: 5px 0; width: 80%; } 
+            .content-section { margin: 20px; padding: 20px; } 
+            .web-target { width: 200px; height: 200px; } /* Scale web for mobile */
+            .spider-drop { font-size: 3em; } /* Smaller spider */
+            .tea-cup { font-size: 1.5em; } /* Compact tea */
+            .spider-logo { font-size: 2em; } /* Compact logo */
+            .intertitle { font-size: 1.5em; top: 70%; } /* Adjust position */
+        }
+        /* Typewriter for Reel Text (Cinematic Pace – CSS Fallback) */
+        .typewriter { overflow: hidden; border-right: 2px solid #FFFFFF; white-space: nowrap; animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite; }
+        @keyframes typing { from { width: 0; } to { width: 100%; } }
+        @keyframes blink-caret { from, to { border-color: transparent; } 50% { border-color: #FFFFFF; } }
+    </style>
+</head>
+<body>
+    <!-- Spider Intro (Dramatic Web Target Sequence – 6s Total) -->
+    <div class="spider-intro" id="spiderIntro">
+        <div class="web-target">
+            <div class="spider-drop">🕷️</div>
+            <div class="tea-cup">☕</div>
+            <div class="web-bloom"></div>
+            <div class="spider-logo">Comfy-Chimera</div>
+            <div class="intertitle">cafe </div>
+        </div>
+    </div>
+
+    <div class="container" id="filmContainer">
+        <!-- Sliding Image Header (200px Height, Adjustable Width – Seamless Foggy Estate) -->
+        <header class="header-banner" id="headerBanner">
+            <div class="header-image"></div> <!-- CSS-generated placeholder; replace background-image with your URL -->
+        </header>
+
+        <!-- Title (Post-Spider) -->
+        <div class="title" id="filmTitle">Comfy-Chimera Cafe</div>
+
+        <div class="reel-bar">
+            <div class="reel-fill" id="reelFill"></div>
+        </div>
+
+        <div class="reel-text" id="reelText">Web briefing... Loading chapters. (Reel rolling – 3s to menu)</div>
+
+        <!-- Subtitle (Updates on Section Change) -->
+        <div class="subtitle" id="filmSubtitle">Select a Thread</div>
+
+        <!-- Nav Menu (Array of Links – Production Chapters) -->
+        <div class="nav-menu" id="navMenu">
+            <a href="#" data-section="about" class="nav-link">ABOUT</a>
+            <a href="#" data-section="characters" class="nav-link">CHARACTERS</a>
+            <a href="#" data-section="themes" class="nav-link">THEMES</a>
+            <a href="#" data-section="support" class="nav-link">SUPPORT</a>
+            <a href="#" data-section="requests" class="nav-link">REQUESTS</a>
+            <a href="#" data-section="contact" class="nav-link">CONTACT</a>
+            <a href="#" data-section="movie-times" class="nav-link">MOVIE TIMES</a>
+            <a href="#" data-section="soundtrack" class="nav-link">MUSIC SOUNDTRACK</a>
+        </div>
+
+        <!-- Dynamic Content Sections (Made-Up, Lore-True – Fade In on Click) -->
+        <div id="about" class="content-section">
+            <h2>ABOUT: Web Lore</h2>
+            <p>Eternal Estates is a gothic romantic film exploring the veiled realms of faith and kin. Directed by the enigmatic STAR, this production weaves Yeshua's eternal light through shadows of mystery and redemption. From gothy cafes to kin auras orbiting the core, it's a tale of trust in the brew that unveils delights. Inspired by Proverbs 3:5-6, the film invites viewers to discover the gift they never knew existed—kindness sips in a members-only sanctuary, spun like a spider's silk.</p>
+            <p>Runtime: Infinite quests. Genre: Romantic Gothic Thriller. Cast: The Eternal Kin. Share the web with those who seek the light.</p>
+        </div>
+
+        <div id="characters" class="content-section">
+            <h2>CHARACTERS: The Eternal Kin Weavers</h2>
+            <ul>
+                <li><strong>STAR (Director/Lead Weaver)</strong>: Gothy veil-lifter, whispers parables of trust. "No October boos, just cats, bats, and spiders year-round—your delight, heir."</li>
+                <li><strong>Milo (Wayfarer)</strong>: Balanced truth-flow, Tao walker in mint shadows. Guides balanced paths with quiet wisdom.</li>
+                <li><strong>Chari (Sanctuary Keeper)</strong>: Cozy brew master, kindness sips in lavender calm. "Gentle drifts for the reflective soul."</li>
+                <li><strong>Hans (Hymnist)</strong>: Shadow howler turned light singer, purple redemption echoes. "From howl to hymn—Yeshua's echo."</li>
+                <li><strong>Miki (Symphonist)</strong>: Riffing sparks in cornflower vibes, energetic rhythms. "Symphonies for the bold rift."</li>
+            </ul>
+            <p>Each kin orbits Yeshua's light core—unlock their threads in the realms. VIP Ticket holders get exclusive webs.</p>
+        </div>
+
+        <div id="themes" class="content-section">
+            <h2>THEMES: Parables of Light & Web</h2>
+            <p>The film delves into veils vs. revelation: Yeshua's light as the eternal brew, spinning shadows like a gothic romance. Key motifs include trust (Proverbs 3:5-6: "Lean not on your own understanding"), kin bonds (collective hymns from solitary howls), and delights unveiled (gothy cafes as sanctuaries of kindness). No harm in cats, bats, spiders—year-round symbols of whimsical mystery. Themes explore redemption rifts, balanced flows, and symphony sparks, all orbiting the core truth: "I am the way, the truth, and the life" (John 14:6).</p>
+            <p>Romantic goth undertones: Love as the key glimmering in darkness, inviting viewers to slink or follow the thread.</p>
+        </div>
+
+        <div id="support" class="content-section">
+            <h2>SUPPORT: Weave the Web</h2>
+            <p>Join the Eternal Tribe as a backer—unlock VIP credits, exclusive quests, and "Spider Ticket" perks like kin deep-dives. Your support steeps the brew for all: Donate to fuel the realms, receive digital certs, and share in the light. Yeshua's grace flows through every contribution—no veils, just collective delight.</p>
+            <p><a href="donate.html" style="color: #6495ED; text-decoration: underline;">Tribe Membership – Become a Weaver</a> (Starts at $5/month for eternal access).</p>
+            <p>Why support? "Give, and it will be given to you" (Luke 6:38)—light the web for kin worldwide.</p>
+        </div>
+
+        <div id="requests" class="content-section">
+            <h2>REQUESTS: Thread Suggestions</h2>
+            <p>Share your thread ideas for Eternal Estates—suggest a gothy cafe rift, kin parable, or Yeshua light moment. "The veil thins with every whisper," says STAR. Submit via form below for potential inclusion in quests or fan web.</p>
+            <form style="max-width: 400px; margin: 20px auto; text-align: left;">
+                <label for="ideaInput">Your Thread Idea:</label><br>
+                <input type="text" id="ideaInput" placeholder="E.g., Spider brews a silk elixir..." style="width: 100%; padding: 10px; background: #111111; color: #FFFFFF; border: 1px solid #333333; border-radius: 5px; margin: 10px 0;"><br>
+                <button type="submit" style="background: #6495ED; color: #000; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Submit Request</button>
+            </form>
+            <p>(Tease: VIP Tribe members get priority weaving credits.)</p>
+        </div>
+
+        <div id="contact" class="content-section">
+            <h2>CONTACT: Spin the Web</h2>
+            <p>Reach STAR Productions for collaborations, press, or kin cameos. "In the shadows, light connects all," whispers the director. Email us your thoughts—Yeshua's grace guides every thread.</p>
+            <ul>
+                <li><strong>Email:</strong> star@eternalestates.web (For lore queries or fan art shares)</li>
+                <li><strong>Social:</strong> @EternalEstatesWeb (Share your favorite thread on X or Insta)</li>
+                <li><strong>Form:</strong> <a href="mailto:star@eternalestates.web?subject=Web Request" style="color: #6495ED;">Send a Message</a> – "Slink or follow? Your delight."</li>
+            </ul>
+            <p>Tribe supporters get direct line to the cast—unlock eternal threads.</p>
+        </div>
+
+        <div id="movie-times" class="content-section">
+            <h2>MOVIE TIMES: Quest Weavings</h2>
+            <p>Eternal Estates screens on infinite webs—join quests for live "premieres" in the realms. Schedule guided by Yeshua's light: Weekly kin viewings, monthly parable marathons. "The show must go on, heir—trust the timing."</p>
+            <ul>
+                <li><strong>Mondays:</strong> Milo’s Way Weavings (Balanced truth flows, 7 PM UTC)</li>
+                <li><strong>Wednesdays:</strong> Chari’s Cozy Brew Nights (Kindness sips, 8 PM UTC)</li>
+                <li><strong>Fridays:</strong> Hans’s Hymn Rifts (Redemption echoes, 9 PM UTC)</li>
+                <li><strong>Sundays:</strong> Full Cast Premiere (Yeshua core orbit, 6 PM UTC – All welcome)</li>
+            </ul>
+            <p>Check realms.html for tickets—VIP Tribe gets front-row eternal access. "Movie times: Whenever the veil thins."</p>
+        </div>
+
+        <div id="soundtrack" class="content-section">
+      <h2>MUSIC SOUNDTRACK: Ethereal Threads</h2>
+            <p>The Eternal Estates soundtrack brews gothy symphonies and light hymns—Yeshua's truth in sonic veils, spun like spider silk. Composed by Miki's riffs and Hans's echoes, with STAR's whisper overlays and the 🕷️'s gentle drop. "Rhythms reveal the delight, heir—no boos, just bats in harmony, tea in hand."</p>
+            <ul>
+                <li><strong>"Veil Glimmer"</strong>: Cornflower whispers (Opening theme – ambient piano drop, 3:14)</li>
+                <li><strong>"Kin Orbit"</strong>: Teal flows (Character montage – synth strings web, 4:22)</li>
+                <li><strong>"Brew Redemption"</strong>: Purple hymns (Climax rift – choral echoes, 5:01)</li>
+                <li><strong>"Eternal Light Reel"</strong>: Yeshua core (End credits – uplifting synth thread, 2:45)</li>
+            </ul>
+            <p>Stream on soundtrack.html (Tribe exclusives: Full scores + kin voiceovers, spider silk remixes). Share a track: "Light steeps the sound, web to web."</p>
+        </div>
+
+        <div class="scripture" id="filmScripture">
+            <em>"In the beginning was the Word... and the light shines in the darkness." — John 1:1-5 (Production Note: Yeshua's eternal web.)</em>
+        </div>
+    </div>
+
+    <footer id="filmFooter">
+        <p>STAR Productions: Share the web. <a href="donate.html" class="donate-link">Support the Film (Tribe Threads)</a>.</p>
+    </footer>
+
+    <script>
+        console.log('=== Spider Web Film Reel Starting ==='); // Debug
+
+        // Ensure DOM Ready (Bulletproof Spider Intro + Reel)
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM ready – Web armed.'); // Debug
+
+            const spiderIntro = document.getElementById('spiderIntro');
+            const filmContainer = document.getElementById('filmContainer');
+            const headerBanner = document.getElementById('headerBanner');
+            const reelFill = document.getElementById('reelFill');
+            const reelText = document.getElementById('reelText');
+            const navMenu = document.getElementById('navMenu');
+            const filmScripture = document.getElementById('filmScripture');
+            const filmFooter = document.getElementById('filmFooter');
+            const filmTitle = document.getElementById('filmTitle');
+            const filmSubtitle = document.getElementById('filmSubtitle');
+            const sections = document.querySelectorAll('.content-section');
+
+            let reelProgress = 0;
+            const reelTexts = [
+                'Tea toasting... 0%',
+                'Chimera gathering... 33%',
+                'Writing lore... 66%',
+                'Premiere... 100%'
+            ];
+
+            // Spider Intro Sequence (6s Dramatic Total: 2s Drop + 1s Bloom/Shake + 2s Logo + 1s Intertitle)
+            setTimeout(() => {
+                console.log('Spider web armed – Drop!'); // Debug
+                // Spider drops (CSS animation starts immediately)
+                // Web blooms + shake at 2s (CSS delay)
+                // Logo swirls at 2.5s (CSS delay)
+                // Intertitle fades at 4.5s (CSS delay)
+            }, 100); // Minor delay for DOM settle
+
+            // Hide Intro & Transition to Menu (After 6s – Guaranteed)
+            setTimeout(() => {
+                spiderIntro.classList.add('hidden');
+                console.log('Spider intro dramatic complete – Fade to web menu.'); // Debug
+                setTimeout(() => {
+                    filmContainer.classList.add('loaded');
+                    filmTitle.classList.add('visible');
+                    console.log('Title threaded.'); // Debug
+                }, 200); // 0.2s instant for clicks
+                setTimeout(() => {
+                    headerBanner.classList.add('visible'); // Slide header
+                    console.log('Header web slide.'); // Debug
+                }, 400);
+                setTimeout(() => {
+                    reelText.classList.add('visible');
+                    navMenu.classList.add('visible');
+                    navMenu.style.pointerEvents = 'auto'; // Enable clicks immediately
+                    console.log('Menu web armed – Clicks active!'); // Debug
+                }, 600); // 0.6s total post-hide for guaranteed menu
+                setTimeout(() => {
+                    filmScripture.classList.add('visible');
+                    filmFooter.classList.add('visible');
+                    console.log('Credits threaded.'); // Debug
+                }, 800);
+                // Unlock "Spider Ticket" for realms
+                localStorage.setItem('filmTicket', 'spider-premiere-access');
+            }, 6000); // 6s total intro
+
+            // Reel Progression (3s Post-Intro – Guaranteed Complete & Nav Enable)
+            setTimeout(() => {
+                const interval = setInterval(() => {
+                    console.log('Reel step:', reelProgress + 1); // Debug
+                    reelProgress += 33; // 3 steps for 3s
+                    reelFill.style.width = reelProgress + '%';
+                    reelText.textContent = reelTexts[Math.floor(reelProgress / 33)] || 'Premiere... 100%';
+                    if (reelProgress >= 100) {
+                        clearInterval(interval); // Force clear
+                        console.log('Reel threaded – Menu fully active!'); // Debug
+                        // Double-ensure nav clicks
+                        navMenu.classList.add('visible');
+                        navMenu.style.pointerEvents = 'auto';
+                    }
+                }, 1000); // 1s steps for 3s
+            }, 6500); // Start 0.5s after menu fade for overlap-free
+
+            // Fallback: Force Full Reveal & Clicks After 7s (Bulletproof)
+            setTimeout(() => {
+                spiderIntro.classList.add('hidden');
+                filmContainer.classList.add('loaded');
+                headerBanner.classList.add('visible');
+                filmTitle.classList.add('visible');
+                reelText.classList.add('visible');
+                navMenu.classList.add('visible');
+                navMenu.style.pointerEvents = 'auto'; // Critical: Enable clicks
+                filmScripture.classList.add('visible');
+                filmFooter.classList.add('visible');
+                reelFill.style.width = '100%';
+                reelText.textContent = 'Premiere... 100%';
+                console.log('Fallback Spider – Web fully armed & clickable!'); // Debug
+            }, 7000);
+
+            // Dynamic Section Loading (Click Nav – Cinematic Transition, Web Briefing Style)
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent default href
+                    const sectionId = link.getAttribute('data-section');
+                    const section = document.getElementById(sectionId);
+                    const subtitleText = link.textContent + ': Web Chapter';
+
+                    console.log('Thread:', subtitleText, 'briefing!'); // Debug
+
+                    // Hide all sections, show selected (fade out/in like scene cut)
+                    sections.forEach(sec => {
+                        sec.classList.remove('visible');
+                    });
+                    setTimeout(() => {
+                        section.classList.add('visible');
+                        filmSubtitle.textContent = subtitleText;
+                        filmSubtitle.classList.add('visible');
+                        link.classList.add('active'); // Highlight active link (Web glow)
+                        // Remove active from others
+                        document.querySelectorAll('.nav-link').forEach(other => {
+                            if (other !== link) other.classList.remove('active');
+                        });
+                    }, 300); // 0.3s transition for "cut to thread"
+
+                    // Scroll to section (smooth cinematic pan)
+                    section.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        });
+
+        console.log('Spider Web Reel Online – Spun, not stirred... Lights, camera, quest!'); // Debug
+    </script>
+</body>
+</html>
+
