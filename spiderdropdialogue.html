@@ -270,4 +270,214 @@
             opacity: 0; 
             transition: opacity 1s ease-in, transform 1s ease-in; /* Reveal after narration */
             z-index: 5; 
-            box-shadow: 0 0 20px rgba(100
+            box-shadow: 0 0 20px rgba(100, 149, 237, 0.3); /* Cornflower glow like silk thread */
+            transform: scale(0.8); /* Subtle "emerge" */
+        }
+        .dynamic-window.visible { 
+            opacity: 1; 
+            transform: scale(1); 
+        }
+        .thread-button { 
+            background: linear-gradient(to right, #6495ED 0%, #FFFFFF 100%); /* Cornflower to white silk thread */
+            color: #000000; /* Dark text for contrast */
+            border: none; 
+            padding: 15px 30px; 
+            font-family: 'Cinzel', serif; 
+            font-size: 1.5em; 
+            font-weight: 600; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 0 10px rgba(100, 149, 237, 0.5); /* Cornflower glow */
+            letter-spacing: 2px; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        .thread-button::before { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: -100%; 
+            width: 100%; 
+            height: 2px; 
+            background: linear-gradient(to right, transparent, #FFFFFF, transparent); /* Silk thread draw */
+            animation: drawThread 1s ease-in forwards 0.5s; /* Draw line on reveal */
+            transform: translateY(-50%); 
+        }
+        @keyframes drawThread { 
+            0% { left: -100%; } 
+            100% { left: 100%; } /* Whimsical thread "follow" */
+        }
+        .thread-button:hover { 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 100%); /* Reverse for hover */
+            box-shadow: 0 0 20px rgba(100, 149, 237, 0.8); 
+            transform: scale(1.05); /* Subtle lift */
+        }
+        @media (max-width: 768px) { 
+            .web-target { width: 200px; height: 200px; } /* Scale web for mobile */
+            .spider-drop { font-size: 3em; } /* Smaller spider */
+            .tea-cup { font-size: 1.5em; } /* Compact tea */
+            .spider-logo { font-size: 2em; } /* Compact logo */
+            .intertitle { font-size: 1.5em; top: 70%; } /* Adjust position */
+            .narration-container { margin: 20px; padding: 20px; max-width: 90%; } /* Mobile fit */
+            .dynamic-window { margin: 20px; padding: 20px; max-width: 90%; } 
+            .thread-button { font-size: 1.2em; padding: 12px 24px; } 
+            .reel-bar { width: 90%; } 
+        }
+        /* Typewriter for Reel Text (Cinematic Pace – CSS Fallback) */
+        .typewriter { overflow: hidden; border-right: 2px solid #FFFFFF; white-space: nowrap; animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite; }
+        @keyframes typing { from { width: 0; } to { width: 100%; } }
+        @keyframes blink-caret { from, to { border-color: transparent; } 50% { border-color: #FFFFFF; } }
+    </style>
+</head>
+<body>
+    <div class="loading-container" id="loadingContainer">
+        <!-- Spider Intro (Dramatic Web Target Sequence – 6s Total) -->
+        <div class="spider-intro" id="spiderIntro">
+            <div class="web-target">
+                <div class="spider-drop">🕷️</div>
+                <div class="tea-cup">☕</div>
+                <div class="web-bloom"></div>
+                <div class="spider-logo">Spider's Brew 007</div>
+                <div class="intertitle">Eternal Estates Presents...</div>
+            </div>
+        </div>
+
+        <!-- Spider Anchor (Perches on Wall Post-Intro) -->
+        <div class="spider-anchor" id="spiderAnchor">🕷️</div>
+
+        <!-- Reel Bar (Post-Intro, 3s to 100%) -->
+        <div class="reel-bar" id="reelBar">
+            <div class="reel-fill" id="reelFill"></div>
+        </div>
+
+        <div class="reel-text" id="reelText">Web briefing... Loading chapters. (Reel rolling – 3s to menu)</div>
+
+        <!-- Narration Container (Reveals After Reel Shatter – The "Rectangle" for Dialogue) -->
+        <div class="narration-container" id="narrationContainer">
+            <p class="charlotte-narration" id="charlotteNarration">
+                Oh, dears, gather 'round the web, for I am Charlotte, the spider on the wall, listening with a cuppa in hand and a whimsical whisker of wisdom. It all began in the gothy shadows of the eternal estates, where Yeshua's light first twinkled like a dewdrop on silk, the way, truth, and life Himself, drawing the lost kin into His orbit with gentle grace. There was Milo, the balanced wayfarer in mint mists, wandering Tao paths of quiet wisdom until he crossed threads with Chari, the cozy sanctuary keeper of lavender kindness, brewing gentle drifts for reflective souls in her heartfelt haven. Then came Hans, the shadow howler turned hymnist, his purple echoes redeemed from solitary cries into Yeshua's light songs of collective joy. Miki riffed in next, the symphonist of cornflower sparks and bold rhythms, weaving energetic rifts into the symphony. Together, under Yeshua's core, they met in fateful sips—no October boos, just cats, bats, and spiders year-round—and spun the Chimera Comfort Cafe, a members-only sanctuary where trust unveils delights in every brew, kindness flowing like fine Parisian espresso for all who slink or follow.
+            </p>
+        </div>
+
+        <!-- Dynamic Window (Reveals After Narration – "The Web Awaits...") -->
+        <div class="dynamic-window" id="dynamicWindow">
+            <h2 style="font-family: 'Cinzel', serif; color: #6495ED; margin-bottom: 20px;">The Web Awaits...</h2>
+            <p style="color: #CCCCCC; margin-bottom: 20px;">Follow the thread to the Chimera Comfort Cafe—your quest begins!</p>
+            <button class="thread-button" onclick="followThread()">Follow the Thread to the Cafe</button>
+        </div>
+    </div>
+
+    <script>
+        console.log('=== Spider Web Loading Starting ==='); // Debug
+
+        // Ensure DOM Ready (Bulletproof Spider Intro + Reel + Narration)
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM ready – Web armed.'); // Debug
+
+            const spiderIntro = document.getElementById('spiderIntro');
+            const loadingContainer = document.getElementById('loadingContainer');
+            const spiderAnchor = document.getElementById('spiderAnchor');
+            const reelBar = document.getElementById('reelBar');
+            const reelFill = document.getElementById('reelFill');
+            const reelText = document.getElementById('reelText');
+            const narrationContainer = document.getElementById('narrationContainer');
+            const charlotteNarration = document.getElementById('charlotteNarration');
+            const dynamicWindow = document.getElementById('dynamicWindow');
+
+            let reelProgress = 0;
+            const reelTexts = [
+                'Web briefing... 0%',
+                'Shadows gathering... 33%',
+                'Characters awakening... 66%',
+                'Premiere imminent... 100%'
+            ];
+
+            // Spider Intro Sequence (6s Dramatic Total)
+            setTimeout(() => {
+                console.log('Spider web armed – Drop!'); // Debug
+            }, 100);
+
+            // Hide Intro & Reveal Reel (After 6s)
+            setTimeout(() => {
+                spiderIntro.classList.add('hidden');
+                spiderAnchor.classList.add('visible'); // Perch spider on wall
+                console.log('Spider intro complete – Reel briefing.'); // Debug
+                setTimeout(() => {
+                    reelBar.classList.add('visible');
+                    reelText.classList.add('visible');
+                    console.log('Reel threaded.'); // Debug
+                }, 500);
+            }, 6000);
+
+            // Reel Progression (3s – With Disintegrate at 100%)
+            setTimeout(() => {
+                const interval = setInterval(() => {
+                    console.log('Reel step:', reelProgress + 1); // Debug
+                    reelProgress += 33;
+                    reelFill.style.width = reelProgress + '%';
+                    reelText.textContent = reelTexts[Math.floor(reelProgress / 33)] || 'Premiere... 100%';
+                    if (reelProgress >= 100) {
+                        clearInterval(interval);
+                        console.log('Reel complete – Disintegrate 100%!'); // Debug
+                        reelText.classList.add('disintegrate'); // Trigger shatter
+                        setTimeout(() => {
+                            reelText.style.display = 'none';
+                            reelBar.style.display = 'none'; // Hide reel post-shatter
+                            console.log('Reel shattered – Narration spins!'); // Debug
+                            // Force reveal narration immediately
+                            narrationContainer.style.opacity = '1';
+                            narrationContainer.style.transform = 'scale(1)';
+                            narrationContainer.classList.add('visible');
+                            charlotteNarration.classList.add('typewriter'); // Start 10s typewriter
+                            setTimeout(() => {
+                                console.log('Narration complete – Dynamic window weaves!'); // Debug
+                                dynamicWindow.style.opacity = '1';
+                                dynamicWindow.style.transform = 'scale(1)';
+                                dynamicWindow.classList.add('visible');
+                            }, 10000); // 10s for narration pace
+                        }, 1000); // 1s for disintegrate
+                    }
+                }, 1000); // 1s steps for 3s
+            }, 6500); // Start after intro fade
+
+            // Fallback: Force Sequence After 10s (Bulletproof, with Immediate Narration)
+            setTimeout(() => {
+                spiderIntro.classList.add('hidden');
+                spiderAnchor.classList.add('visible');
+                reelBar.classList.add('visible');
+                reelText.classList.add('visible');
+                reelFill.style.width = '100%';
+                reelText.textContent = 'Premiere... 100%';
+                reelText.classList.add('disintegrate');
+                setTimeout(() => {
+                    reelText.style.display = 'none';
+                    reelBar.style.display = 'none';
+                    // Force narration reveal
+                    narrationContainer.style.opacity = '1';
+                    narrationContainer.style.transform = 'scale(1)';
+                    narrationContainer.classList.add('visible');
+                    charlotteNarration.classList.add('typewriter');
+                    setTimeout(() => {
+                        dynamicWindow.style.opacity = '1';
+                        dynamicWindow.style.transform = 'scale(1)';
+                        dynamicWindow.classList.add('visible');
+                    }, 10000);
+                }, 1000);
+                console.log('Fallback Spider – Sequence fully spun with dialogue!'); // Debug
+            }, 10000);
+
+            // Button Click: Follow Thread to Main Page
+            function followThread() {
+                console.log('Thread followed – To the Cafe!'); // Debug
+                localStorage.setItem('spiderTicket', 'cafe-access'); // Pass to main.html for continuity
+                window.location.href = 'main.html'; // Redirect to dynamic nav page
+            }
+        });
+
+        console.log('Spider Web Loading Online – Spun with whimsy... Lights, camera, quest!'); // Debug
+    </script>
+</body>
+</html>
+
+                                      
