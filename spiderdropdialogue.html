@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Estates: Spider's Brew Loading – Web of Quest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Prior full <style> unchanged – black void, web target, animations, narration-container (dark rectangle for dialogue), dynamic-window, thread-button with silk draw, media queries, etc. (paste from previous response if needed) */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:wght@300;400;500&display=swap');
+        body { 
+            background: #000000 !important; /* Black theater void – arachnid immersion */
+            color: #FFFFFF !important; /* White text for stark contrast */
+            font-family: 'Roboto Mono', monospace; /* Script-like body */
+            margin: 0; 
+            padding: 0; 
+            text-align: center; 
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+            /* Subtle film grain (ethereal texture – faint, static) */
+            background-image: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.01) 0%, transparent 50%), 
+                              radial-gradient(circle at 75% 75%, rgba(255,255,255,0.01) 0%, transparent 50%);
+            background-size: 100px 100px;
+        }
+        .loading-container { 
+            max-width: 100vw; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 1; 
+            transition: opacity 1s ease-out; 
+        }
+        .loading-container.hidden { opacity: 0; } /* Fade out after narration */
+        .spider-intro { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: #000000; /* Black screen for intro */
+            z-index: 20; /* Above all */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 1; 
+            transition: opacity 1s ease-out; /* Fade out to narration */
+        }
+        .spider-intro.hidden { opacity: 0; pointer-events: none; } /* JS hides after 6s */
+        .web-target { 
+            width: 300px; 
+            height: 300px; 
+            border: 5px solid #FFFFFF; /* White web circle – sniper rifle target vibe */
+            border-radius: 50%; 
+            position: relative; 
+            background: #000000; /* Black interior */
+            /* Web pattern (radial lines like spider silk – cornflower tint) */
+            background-image: 
+                conic-gradient(from 0deg at 50% 50%, transparent 0deg, #6495ED 1deg, transparent 2deg),
+                conic-gradient(from 90deg at 50% 50%, transparent 0deg, #6495ED 1deg, transparent 2deg),
+                conic-gradient(from 180deg at 50% 50%, transparent 0deg, #6495ED 1deg, transparent 2deg),
+                conic-gradient(from 270deg at 50% 50%, transparent 0deg, #6495ED 1deg, transparent 2deg);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%; /* Layered for crosshair web */
+            animation: targetShake 0.3s ease-out 2s forwards; /* Dramatic shake on web bloom */
+        }
+        @keyframes targetShake { 
+            0%, 100% { transform: translateX(0) translateY(0); } 
+            25% { transform: translateX(-5px) translateY(-2px); } 
+            50% { transform: translateX(5px) translateY(2px); } /* Mild thump vibration – whimsical "land" */
+            75% { transform: translateX(-3px) translateY(-1px); } 
+            100% { transform: translateX(0) translateY(0); } /* Settle */
+        }
+        .spider-drop { 
+            position: absolute; 
+            top: -50px; /* Start above circle */
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 4em; /* Large spider emoji */
+            opacity: 0; 
+            animation: dropSilk 2s ease-in forwards; /* 2s gentle drop on silk */
+        }
+        @keyframes dropSilk { 
+            0% { top: -50px; opacity: 0; transform: translateX(-50%) rotate(0deg); } /* Start hidden above */
+            50% { top: 50%; opacity: 1; transform: translateX(-50%) rotate(-10deg); } /* Mid-drop rotate for whimsy */
+            100% { top: 70%; opacity: 1; transform: translateX(-50%) rotate(0deg); } /* Land center-bottom with thump */
+        }
+        .tea-cup { 
+            position: absolute; 
+            top: 50%; 
+            left: 60%; /* "Held" in spider's foreleg */
+            font-size: 2em; /* Tea cup emoji */
+            opacity: 0; 
+            animation: teaSteam 2s ease-in forwards 0.5s; /* Steam in mid-drop */
+            transform: translate(-50%, -50%); 
+        }
+        @keyframes teaSteam { 
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } /* Gentle "pour" */
+        }
+        .web-bloom { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            width: 150px; 
+            height: 150px; 
+            background: radial-gradient(circle, rgba(100, 149, 237, 0.6) 0%, transparent 70%); /* Cornflower web "splat" – blooming threads */
+            border-radius: 50%; 
+            opacity: 0; 
+            animation: webBloom 1s ease-out 2s forwards; /* Bloom after drop */
+            transform: scale(0); 
+            /* Web lines (additional threads) */
+            background-image: 
+                linear-gradient(45deg, transparent 49%, #6495ED 50%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, #6495ED 50%, transparent 51%);
+            background-size: 20px 20px; /* Dotted web pattern */
+        }
+        @keyframes webBloom { 
+            0% { opacity: 0; transform: scale(0); } 
+            50% { opacity: 0.8; transform: scale(1.2); } /* Dramatic expand */
+            100% { opacity: 0; transform: scale(1.5); } /* Fade out */
+        }
+        .spider-logo { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-family: 'Cinzel', serif; /* Romantic goth for elegance */
+            font-size: 3em; 
+            font-weight: 700; 
+            color: #FFFFFF; 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 50%, #FFFFFF 100%); /* White to cornflower tint */
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            letter-spacing: 5px; 
+            opacity: 0; 
+            animation: logoSwirl 2s ease-in-out 2.5s forwards; /* Swirl in after bloom */
+        }
+        @keyframes logoSwirl { 
+            0% { opacity: 0; transform: translate(-50%, -50%) rotate(-180deg) scale(0.5); text-shadow: 0 0 5px rgba(100, 149, 237, 0.3); } /* Swirl from spin/small */
+            50% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1.2); text-shadow: 0 0 20px rgba(100, 149, 237, 1); } /* Dramatic scale/glow burst */
+            100% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); text-shadow: 0 0 10px rgba(100, 149, 237, 0.5); } /* Settle to elegant */
+        }
+        .intertitle { 
+            position: absolute; 
+            top: 60%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-family: 'Cinzel', serif; 
+            font-size: 2em; 
+            font-weight: 600; 
+            color: #FFFFFF; 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            letter-spacing: 3px; 
+            opacity: 0; 
+            animation: intertitleFade 1s ease-in 4.5s forwards; /* Dramatic producer seal post-logo */
+        }
+        @keyframes intertitleFade { 
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } /* Gentle expand/fade in */
+        }
+        .reel-bar { 
+            width: 60%; 
+            height: 20px; 
+            background: #111111; /* Dark reel bg */
+            border-radius: 10px; 
+            margin: 20px auto; 
+            overflow: hidden; 
+            border: 1px solid #333333; /* Subtle frame */
+            position: relative; 
+            z-index: 10; /* Below narration */
+            opacity: 0; 
+            transition: opacity 0.5s ease-in 6s; /* Reveal after intro */
+        }
+        .reel-bar.visible { opacity: 1; }
+        .reel-fill { 
+            height: 100%; 
+            background: linear-gradient(to right, #FFFFFF 0%, #6495ED 100%); /* White to cornflower progression – film strip tint */
+            width: 0%; 
+            transition: width 3s ease-in-out; /* 3s reel roll */
+            border-radius: 10px; 
+            box-shadow: 0 0 5px rgba(100, 149, 237, 0.3); /* Cornflower glow */
+        }
+        .reel-text { 
+            font-family: 'Roboto Mono', monospace; 
+            font-size: 1em; 
+            color: #FFFFFF; 
+            margin: 10px 0; 
+            opacity: 0; 
+            transition: opacity 0.5s ease-in; /* Reveal mid-reel */
+            z-index: 10; 
+        }
+        .reel-text.visible { opacity: 1; }
+        .reel-text.disintegrate { 
+            animation: disintegrate 1s ease-out forwards; /* 1s silk shatter on 100% */
+        }
+        @keyframes disintegrate { 
+            0% { opacity: 1; filter: blur(0px); transform: scale(1); text-shadow: 0 0 10px rgba(100, 149, 237, 0.5); letter-spacing: 0; } /* Solid start */
+            50% { opacity: 0.7; filter: blur(2px); transform: scale(1.1); text-shadow: 0 0 20px rgba(100, 149, 237, 0.8); letter-spacing: 2px; } /* Glow burst + blur/spread */
+            100% { opacity: 0; filter: blur(5px); transform: scale(0.8); text-shadow: 0 0 0 rgba(100, 149, 237, 0); letter-spacing: 5px; } /* Crumble fade */
+        }
+        .narration-container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 30px; 
+            background: #111111; /* Dark narration bg – the "rectangle" for dialogue */
+            border: 1px solid #333333; /* Subtle frame */
+            border-radius: 10px; 
+            text-align: left; 
+            opacity: 0; 
+            transition: opacity 1s ease-in, transform 1s ease-in; /* Reveal after reel shatter */
+            z-index: 5; 
+            transform: scale(0.95); /* Subtle "unfold" */
+        }
+        .narration-container.visible { 
+            opacity: 1; 
+            transform: scale(1); 
+        }
+        .charlotte-narration { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.1em; 
+            line-height: 1.6; 
+            color: #CCCCCC; /* Light grey for heartfelt read */
+            margin: 0; 
+            opacity: 0; 
+            overflow: hidden; 
+            border-right: 2px solid #6495ED; /* Cornflower cursor */
+            white-space: nowrap; 
+            animation: none; /* JS triggers typewriter */
+            letter-spacing: 1px; 
+        }
+        .charlotte-narration.typewriter { 
+            animation: charlotteType 10s steps(150, end) forwards, blink-caret 0.75s step-end infinite; /* 10s faster pace for test */
+        }
+        @keyframes charlotteType { 
+            from { width: 0; } 
+            to { width: 100%; } 
+        }
+        @keyframes blink-caret { 
+            from, to { border-color: transparent; } 
+            50% { border-color: #6495ED; } 
+        }
+        .spider-anchor { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            font-size: 3em; 
+            opacity: 0; 
+            transition: opacity 1s ease-in 7s, transform 1s ease-in 7s; /* Anchor after intro */
+            z-index: 15; 
+            transform: translateX(100%); /* Slide from right */
+        }
+        .spider-anchor.visible { 
+            opacity: 1; 
+            transform: translateX(0); /* Perch on wall */
+        }
+        .dynamic-window { 
+            max-width: 600px; 
+            margin: 40px auto; 
+            padding: 30px; 
+            background: linear-gradient(to bottom, #111111, #222222); /* Dark window bg */
+            border: 2px solid #6495ED; /* Cornflower frame */
+            border-radius: 15px; 
+            text-align: center; 
+            opacity: 0; 
+            transition: opacity 1s ease-in, transform 1s ease-in; /* Reveal after narration */
+            z-index: 5; 
+            box-shadow: 0 0 20px rgba(100
