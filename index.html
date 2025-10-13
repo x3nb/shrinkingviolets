@@ -232,127 +232,152 @@
 </div>
 
 <!-- Scripts -->
-<script>
-  // Bubbles Animation
-  const canvas = document.getElementById('bubbles-canvas');
-  const ctx = canvas.getContext('2d');
+  <script>
+      console.log('=== Spider Web Loading Starting ==='); // Debug
 
-  let bubblesArray = [];
+      // Ensure DOM Ready (Bulletproof Spider Intro + Reel + Narration)
+      document.addEventListener('DOMContentLoaded', () => {
+          console.log('DOM ready – Web armed.'); // Debug
 
-  // Resize Canvas
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
+          const spiderIntro = document.getElementById('spiderIntro');
+          const loadingContainer = document.getElementById('loadingContainer');
+          const spiderAnchor = document.getElementById('spiderAnchor');
+          const reelBar = document.getElementById('reelBar');
+          const reelFill = document.getElementById('reelFill');
+          const reelText = document.getElementById('reelText');
+          const narrationContainer = document.getElementById('narrationContainer');
+          const charlotteNarration = document.getElementById('charlotteNarration');
+          const dynamicWindow = document.getElementById('dynamicWindow');
 
-  // Bubble Class
-  class Bubble {
-    constructor() {
-      this.reset();
-    }
-    reset() {
-      this.x = Math.random() * canvas.width;
-      this.y = Math.random() * canvas.height;
-      this.radius = Math.random() * 2 + 1;
-      this.speedY = Math.random() * 0.2 + 0.05;
-      this.color = `rgba(255,255,255,${Math.random()*0.2 + 0.1})`;
-    }
-    update() {
-      this.y -= this.speedY;
-      if (this.y + this.radius < 0) {
-        this.x = Math.random() * canvas.width;
-        this.y = canvas.height + this.radius;
-        this.radius = Math.random() * 2 + 1;
-      }
-    }
-    draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = this.color;
-      ctx.fill();
-    }
-  }
+          let reelProgress = 0;
+          const reelTexts = [
+              'Web briefing... 0%',
+              'Shadows gathering... 33%',
+              'Characters awakening... 66%',
+              'Premiere imminent... 100%'
+          ];
 
-  // Initialize Bubbles
-  for (let i=0; i<100; i++) {
-    bubblesArray.push(new Bubble());
-  }
+          // JS Typewriter Function (Full Char-by-Char for No Cutoff)
+          function typeNarration() {
+              const fullText = charlotteNarration.innerHTML; // Get full content (greeting + tale)
+              charlotteNarration.innerHTML = ''; // Clear for typing
+              let i = 0;
+              const cursor = document.createElement('span');
+              cursor.innerHTML = '|';
+              cursor.style.borderRight = '2px solid #6495ED';
+              cursor.style.animation = 'blink-caret 0.75s step-end infinite'; // Reuse CSS blink
+              charlotteNarration.appendChild(cursor);
 
-  // Animate Bubbles
-  function animateBubbles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let bubble of bubblesArray) {
-      bubble.update();
-      bubble.draw();
-    }
-    requestAnimationFrame(animateBubbles);
-  }
+              function typeChar() {
+                  if (i < fullText.length) {
+                      charlotteNarration.innerHTML = fullText.substring(0, i + 1) + cursor.outerHTML;
+                      i++;
+                      // Progress log every 100 chars (e.g., "Typing 'cuppa' – Charlotte continues!")
+                      if (i % 100 === 0) {
+                          console.log(`Typing progress: ${i} chars – Charlotte continues!`); // Debug
+                      }
+                      setTimeout(typeChar, 100); // 100ms per char (~7.5s total for 750 chars)
+                  } else {
+                      charlotteNarration.innerHTML = fullText; // Final full text
+                      cursor.remove(); // End cursor
+                      console.log('Narration complete – Full tale spun!'); // Debug
+                      // Reveal window after typing
+                      setTimeout(() => {
+                          dynamicWindow.style.opacity = '1';
+                          dynamicWindow.style.transform = 'scale(1)';
+                          dynamicWindow.classList.add('visible');
+                      }, 500); // 0.5s pause for read
+                  }
+              }
+              typeChar();
+          }
 
-  animateBubbles();
+          // Spider Intro Sequence (6s Dramatic Total)
+          setTimeout(() => {
+              console.log('Spider web armed – Drop!'); // Debug
+          }, 100);
 
-  // Interactive Web Web (Optional: Add hover animations)
-  const web = document.getElementById('web');
-  web.addEventListener('mouseenter', () => {
-    web.style.transform = 'scale(1.05)';
-    web.style.transition = 'transform 0.3s';
-  });
-  web.addEventListener('mouseleave', () => {
-    web.style.transform = 'scale(1)';
-  });
+          // Hide Intro & Reveal Reel (After 6s)
+          setTimeout(() => {
+              spiderIntro.classList.add('hidden');
+              spiderAnchor.classList.add('visible'); // Perch spider on wall
+              console.log('Spider intro complete – Reel briefing.'); // Debug
+              setTimeout(() => {
+                  reelBar.classList.add('visible');
+                  reelText.classList.add('visible');
+                  console.log('Reel threaded.'); // Debug
+              }, 500);
+          }, 6000);
 
-  // Gallery Sliding
-  const slideTrack = document.getElementById('slide-track');
-  let currentIndex = 0;
+          // Reel Progression (3s – With Disintegrate at 100%)
+          setTimeout(() => {
+              const interval = setInterval(() => {
+                  console.log('Reel step:', reelProgress + 1); // Debug
+                  reelProgress += 33;
+                  reelFill.style.width = reelProgress + '%';
+                  reelText.textContent = reelTexts[Math.floor(reelProgress / 33)] || 'Premiere... 100%';
+                  if (reelProgress >= 100) {
+                      clearInterval(interval);
+                      console.log('Reel complete – Disintegrate 100%!'); // Debug
+                      reelText.classList.add('disintegrate'); // Trigger shatter
+                      setTimeout(() => {
+                          reelText.style.display = 'none';
+                          reelBar.style.display = 'none'; // Hide reel post-shatter
+                          console.log('Reel shattered – Narration spins immediately!'); // Debug
+                          // Bulletproof reveal: Force styles + class
+                          narrationContainer.style.display = 'block';
+                          narrationContainer.style.opacity = '1';
+                          narrationContainer.style.transform = 'scale(1)';
+                          narrationContainer.classList.add('visible');
+                          charlotteNarration.style.opacity = '1';
+                          // Start JS typewriter (no CSS class needed)
+                          typeNarration(); // Calls the full char-by-char function
+                          console.log('Greeting typing – Charlotte speaks!'); // Debug start
+                      }, 1000); // 1s for disintegrate
+                  }
+              }, 1000); // 1s steps for 3s
+          }, 6500); // Start after intro fade
 
-  // Auto-slide every 3 seconds
-  setInterval(() => {
-    currentIndex++;
-    if (currentIndex > slideTrack.children.length - 1) {
-      currentIndex = 0;
-    }
-    slideTrack.style.transform = `translateX(-${(200 + 20) * currentIndex}px)`;
-  }, 3000);
+          // Fallback: Force Sequence After 10s (Bulletproof, with Immediate Narration)
+          setTimeout(() => {
+              if (spiderIntro && !spiderIntro.classList.contains('hidden')) {
+                  spiderIntro.classList.add('hidden');
+                  spiderAnchor.classList.add('visible');
+                  reelBar.classList.add('visible');
+                  reelText.classList.add('visible');
+                  reelFill.style.width = '100%';
+                  reelText.textContent = 'Premiere... 100%';
+                  reelText.classList.add('disintegrate');
+              }
+              setTimeout(() => {
+                  reelText.style.display = 'none';
+                  reelBar.style.display = 'none';
+                  // Force narration reveal
+                  narrationContainer.style.display = 'block';
+                  narrationContainer.style.opacity = '1';
+                  narrationContainer.style.transform = 'scale(1)';
+                  narrationContainer.classList.add('visible');
+                  charlotteNarration.style.opacity = '1';
+                  typeNarration(); // JS typewriter in fallback
+                  console.log('Fallback: Greeting typing – Charlotte speaks!'); // Debug
+              }, 1000);
+              console.log('Fallback Spider – Sequence fully spun with dialogue!'); // Debug
+          }, 10000);
 
-  // Click to enlarge images
-  document.querySelectorAll('.slide img').forEach(img => {
-    img.addEventListener('click', () => {
-      const modal = document.createElement('div');
-      modal.style.position='fixed';
-      modal.style.top='0';
-      modal.style.left='0';
-      modal.style.width='100%';
-      modal.style.height='100%';
-      modal.style.background='rgba(0,0,0,0.8)';
-      modal.style.display='flex';
-      modal.style.alignItems='center';
-      modal.style.justifyContent='center';
-      modal.style.cursor='pointer';
-      modal.innerHTML = `<img src="${img.src}" style="max-width:90%; max-height:90%; border-radius:10px;">`;
-      document.body.appendChild(modal);
-      modal.addEventListener('click', () => {
-        document.body.removeChild(modal);
+          // Button Click: Follow Thread to Main Page
+          function followThread() {
+              console.log('Thread followed – To the Cafe!'); // Debug
+              localStorage.setItem('spiderTicket', 'cafe-access'); // Pass to main.html for continuity
+              window.location.href = 'main.html'; // Redirect to dynamic nav page
+          }
+
+          // Expose followThread globally (for onclick)
+          window.followThread = followThread;
       });
-    });
-  });
 
-  // Comments Functionality
-  const commentForm = document.getElementById('comment-form');
-  const commentsDiv = document.getElementById('comments');
-
-  commentForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = document.getElementById('comment-input').value.trim();
-    if (text) {
-      const commentEl = document.createElement('div');
-      commentEl.className = 'comment';
-      commentEl.innerText = text;
-      commentsDiv.appendChild(commentEl);
-      document.getElementById('comment-input').value = '';
-    }
-  });
-</script>
+      console.log('Spider Web Loading Online – Spun with whimsy... Lights, camera, quest!'); // Final Debug
+  </script>
+  
 
 </body>
 </html>
