@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Web Glowing Video</title>
+<style>
+  body {
+    margin: 0;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  #initial-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #title-text {
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-family: 'Pacifico', cursive;
+    background: linear-gradient(45deg, #6495ED, #800080);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-align: center;
+  }
+
+  #video-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+
+  #cafe-video {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: not-allowed;
+  }
+
+  /* Canvas overlay for web effect */
+  #web-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    pointer-events: none; /* allow clicks to go through */
+  }
+</style>
+</head>
+<body>
+
+<div id="initial-screen">
+  <div id="title-text">CHIMERA CATS CAFE</div>
+  <div id="video-wrapper">
+    <video id="cafe-video" src="introvids/StarSipsCoffeezooms.mp4" autoplay muted playsinline></video>
+    <canvas id="web-canvas" width="200" height="200"></canvas>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('web-canvas');
+  const ctx = canvas.getContext('2d');
+  const video = document.getElementById('cafe-video');
+  const wrapper = document.getElementById('video-wrapper');
+
+  let cursorX = 100;
+  let cursorY = 100;
+
+  // Enable interaction after video starts
+  let interactionEnabled = false;
+  video.onplay = () => {
+    setTimeout(() => {
+      interactionEnabled = true;
+      video.style.cursor = 'pointer';
+    }, 100);
+  };
+
+  // Transition when video ends
+  video.onended = () => {
+    transitionToWebsite();
+  };
+
+  // On hover, enable cursor following
+  wrapper.addEventListener('mousemove', (e) => {
+    if (interactionEnabled) {
+      const rect = wrapper.getBoundingClientRect();
+      cursorX = e.clientX - rect.left;
+      cursorY = e.clientY - rect.top;
+    }
+  });
+
+  // Trigger glitch and transition on click
+  let glitching = false;
+  document.getElementById('cafe-video').addEventListener('click', () => {
+    if (!interactionEnabled || glitching) return;
+    glitching = true;
+    // Glitch effect
+    video.classList.remove('glitch');
+    void video.offsetWidth; // reflow
+    video.classList.add('glitch');
+
+    setTimeout(() => {
+      transitionToWebsite();
+    }, 3000);
+  });
+
+  function transitionToWebsite() {
+    document.getElementById('initial-screen').style.transition = 'opacity 1s';
+    document.getElementById('initial-screen').style.opacity = '0';
+    setTimeout(() => {
+      window.location.href = 'your-website.html'; // Change URL
+    }, 1000);
+  }
+
+  // Animate the web lines
+  function drawWeb() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)'; // semi-transparent white
+
+    // Draw radial lines from center to cursor
+    const centerX = 100;
+    const centerY = 100;
+
+    ctx.shadowColor = 'white';
+    ctx.shadowBlur = 4;
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(cursorX, cursorY);
+    ctx.stroke();
+
+    // Draw some concentric or web-like lines for texture
+    for (let i = 0; i <= 3; i++) {
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, (i + 1) * 30, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    requestAnimationFrame(drawWeb);
+  }
+
+  // Start the animation
+  drawWeb();
+
+</script>
+</body>
+</html>
