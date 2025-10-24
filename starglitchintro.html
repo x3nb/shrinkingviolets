@@ -389,6 +389,66 @@
                 audio.pause();
             }, parseFloat(speedSlider.value) * 1000);
         }
+        const video = document.getElementById('cafe-video');
+
+    // Add epic glow for dramatic effect
+    video.classList.add('epic-glow');
+
+    // Disable user interaction until video finishes
+    let interactionEnabled = false;
+
+    // Play the video automatically
+    // (already autoplay, muted, playsinline)
+
+    // When video ends, trigger transition
+    video.onended = () => {
+      // Initiate transition to website
+      transitionToWebsite();
+    };
+
+    // Optional: add glitch effect on click
+    // But disable clicking before video ends
+    video.addEventListener('click', () => {
+      if (interactionEnabled) {
+        // Trigger glitch effect
+        triggerGlitchAndTransition();
+      }
+    });
+
+    // Enable interaction after video ends
+    video.onplay = () => {
+      // After a short delay, enable interaction
+      setTimeout(() => {
+        interactionEnabled = true;
+        // Change cursor to pointer
+        document.getElementById('cafe-video').style.cursor = 'pointer';
+      }, 100); // slight delay
+    };
+
+    function triggerGlitchAndTransition() {
+      // Add glitch effect
+      video.classList.remove('glitch');
+      void video.offsetWidth; // reflow
+      video.classList.add('glitch');
+
+      // After 3 seconds, transition
+      setTimeout(() => {
+        transitionToWebsite();
+      }, 3000);
+    }
+
+    function transitionToWebsite() {
+      // Remove or hide initial screen
+      document.getElementById('initial-screen').style.opacity = '0';
+      document.getElementById('initial-screen').style.transition = 'opacity 1s';
+
+      // Redirect or reveal website after fade
+      setTimeout(() => {
+        // Example redirect:
+        window.location.href = 'your-website.html';
+        // Or, if you want to show content instead of redirect, hide the initial screen
+      }, 1000);
+    }
     </script>
 </body>
 </html>
