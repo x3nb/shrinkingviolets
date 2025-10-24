@@ -185,47 +185,47 @@
         
     /* Optional: Add a smooth glow animation or static glow */
   <style>
-    #cafe-video {
+    #video-container {
+      position: relative;
       width: 200px;
+      height: 200px;
+      display: inline-block;
+    }
+
+    #cafe-video {
+      width: 100%;
       height: auto;
       border-radius: 50%;
       object-fit: cover;
-      box-shadow: 0 0 15px 4px rgba(100, 149, 237, 0.7);
       cursor: pointer;
-      transition: box-shadow 0.3s ease;
+      display: block;
     }
 
-    #cafe-video:hover {
-      box-shadow: 0 0 20px 6px rgba(100, 149, 237, 1);
-      /* Trigger glitch on hover for subtle effect */
-      animation: glitchHover 1s ease-in-out infinite;
+    /* Create a fractal glimmer overlay using a pseudo-element */
+    #video-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      pointer-events: none; /* Allow clicks to pass through */
+      background-image: url('https://i.imgur.com/8xXx7np.png'); /* Noise/fractal texture */
+      background-size: cover;
+      opacity: 0.4; /* Adjust transparency for subtlety */
+      animation: shimmer 4s infinite alternate;
     }
 
-    /* Define a separate keyframes for hover glitch */
-    @keyframes glitchHover {
+    /* Optional: animate the overlay for a shimmering fractal glimmer */
+    @keyframes shimmer {
       0% {
-        transform: skew(0deg);
-        filter: contrast(1);
-      }
-      20% {
-        transform: skew(-1deg);
-        filter: contrast(1.2) hue-rotate(-2deg);
-      }
-      40% {
-        transform: skew(1deg);
-        filter: contrast(0.8) hue-rotate(2deg);
-      }
-      60% {
-        transform: skew(-1deg);
-        filter: contrast(1.1);
-      }
-      80% {
-        transform: skew(0deg);
-        filter: contrast(1);
+        opacity: 0.3;
+        transform: translateX(0);
       }
       100% {
-        transform: skew(0deg);
-        filter: contrast(1);
+        opacity: 0.6;
+        transform: translateX(10px);
       }
     }
 
