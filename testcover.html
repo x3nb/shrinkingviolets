@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Epic Video Entrance</title>
+<!-- Optional: Google Font for a fancy font if needed elsewhere -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    font-family: 'Pacifico', cursive;
+  }
+
+  #initial-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #title-text {
+    color: white;
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  #video-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+
+  #cafe-video {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: not-allowed; /* disabled initially */
+    box-shadow: 0 0 20px 10px rgba(255, 215, 0, 0.7); /* golden glow */
+    transition: box-shadow 0.3s ease, filter 0.3s ease;
+  }
+
+  /* Add pulsing glow for epic effect using animation */
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow: 0 0 20px 10px rgba(255, 215, 0, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 40px 20px rgba(255, 215, 0, 1);
+    }
+  }
+
+  #cafe-video.epic-glow {
+    animation: glowPulse 2s infinite alternate;
+  }
+
+  /* Optional glitch effect animation for click */
+  @keyframes glitch {
+    0% {
+      transform: none;
+      filter: none;
+    }
+    10% {
+      transform: skew(-2deg, 2deg);
+      filter: contrast(1.2) hue-rotate(-10deg);
+    }
+    20% {
+      transform: skew(2deg, -2deg);
+      filter: contrast(0.8) hue-rotate(10deg);
+    }
+    30% {
+      transform: skew(-1deg, 1deg);
+      filter: blur(1px);
+    }
+    100% {
+      transform: none;
+      filter: none;
+    }
+  }
+
+  .glitch {
+    animation: glitch 3s ease-in-out forwards;
+  }
+</style>
+</head>
+<body>
+<div id="initial-screen">
+  <div id="title-text">CHIMERA CATS CAFE</div>
+  <div id="video-container">
+    <video id="cafe-video" src="introvids/StarSipsCoffeezooms.mp4" autoplay muted playsinline></video>
+  </div>
+</div>
+
+<script>
+  const video = document.getElementById('cafe-video');
+  const initialScreen = document.getElementById('initial-screen');
+
+  // Add epic glow for dramatic effect
+  video.classList.add('epic-glow');
+
+  let interactionEnabled = false;
+
+  // Enable interaction after a short delay (e.g., when video starts playing)
+  video.onplay = () => {
+    setTimeout(() => {
+      interactionEnabled = true;
+      // Change cursor to pointer to indicate clickability
+      video.style.cursor = 'pointer';
+    }, 100);
+  };
+
+  // When video ends, automatically transition
+  video.onended = () => {
+    transitionToWebsite();
+  };
+
+  // Optional: add glitch effect on click, only if interaction enabled
+  video.addEventListener('click', () => {
+    if (!interactionEnabled) return;
+
+    // Trigger glitch animation
+    video.classList.remove('glitch');
+    void video.offsetWidth; // reflow
+    video.classList.add('glitch');
+
+    // After 3 seconds, transition
+    setTimeout(() => {
+      transitionToWebsite();
+    }, 3000);
+  });
+
+  function transitionToWebsite() {
+    // Fade out the initial screen
+    initialScreen.style.transition = 'opacity 1s';
+    initialScreen.style.opacity = '0';
+
+    // After fade, redirect or show content
+    setTimeout(() => {
+      // Replace this with your actual URL or transition logic
+      window.location.href = 'your-website.html'; // <-- change to your actual URL
+    }, 1000);
+  }
+</script>
+</body>
+</html>
