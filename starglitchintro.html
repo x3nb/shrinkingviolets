@@ -1,0 +1,437 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chimera Cats Cafe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            overflow: hidden;
+            font-family: 'Cinzel', serif;
+        }
+
+        #initial-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        #title-text {
+            font-size: 72px;
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(to right, cornflowerblue, indigo, deeppurple);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        #title-text::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, cornflowerblue 0%, indigo 50%, deeppurple 100%);
+            opacity: 0.3;
+            filter: blur(10px);
+            animation: wisps 5s infinite alternate;
+        }
+
+        @keyframes wisps {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.2; }
+            100% { transform: scale(1.1) rotate(5deg); opacity: 0.5; }
+        }
+
+        #cafe-image {
+            width: 250px;
+            height: 250px;
+            margin-top: 20px;
+            cursor: pointer;
+            object-fit: cover;
+            animation: float 3s ease-in-out infinite;  /* Added floating animation */
+        }
+
+        @keyframes float {  /* New keyframe for floating effect */
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }  /* Subtle up movement */
+            100% { transform: translateY(0); }
+        }
+
+        #spiderweb-emoji {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            font-size: 48px;
+            cursor: pointer;
+            animation: glow 2s infinite alternate;
+            z-index: 1000;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px cornflowerblue, 0 0 10px indigo; }
+            100% { text-shadow: 0 0 10px deeppurple, 0 0 20px cornflowerblue; }
+        }
+
+        #music-drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            height: 100vh;
+            background: linear-gradient(to bottom, deeppurple, black);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px indigo;
+            transition: right 0.5s ease;
+            overflow-y: auto;
+            z-index: 2000;
+        }
+
+        #music-drawer.open {
+            right: 0;
+        }
+
+        .playlist-item {
+            margin: 10px 0;
+            cursor: pointer;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        .playlist-item.active {
+            color: cornflowerblue;
+            text-shadow: 0 0 10px cornflowerblue;
+        }
+
+        #close-drawer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        #chatbot-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px deeppurple;
+            z-index: 3000;
+            display: none;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        #chatbot-modal span {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #chatbot-modal input, #chatbot-modal button, #speed-slider {
+            margin: 10px 0;
+            padding: 10px;
+            width: 80%;
+        }
+
+        #credits-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: black;
+            display: none;
+            overflow: hidden;
+        }
+
+        #credits-content {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            font-family: 'Lora', serif;
+            font-size: 24px;
+            line-height: 1.5;
+            text-align: center;
+            color: transparent;
+            background: linear-gradient(to right, lavender, cornflowerblue);
+            -webkit-background-clip: text;
+            background-clip: text;
+            white-space: pre-wrap;
+            transform: translateY(100%);
+            animation: none;
+        }
+
+        @keyframes scrollCredits {
+            0% { transform: translateY(100%); }
+            100% { transform: translateY(-100%); }
+        }
+        
+    /* Optional: Add a smooth glow animation or static glow */
+  <style>
+    #cafe-video {
+      width: 200px;
+      height: auto;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 15px 4px rgba(100, 149, 237, 0.7);
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+    }
+
+    #cafe-video:hover {
+      box-shadow: 0 0 20px 6px rgba(100, 149, 237, 1);
+      /* Trigger glitch on hover for subtle effect */
+      animation: glitchHover 1s ease-in-out infinite;
+    }
+
+    /* Define a separate keyframes for hover glitch */
+    @keyframes glitchHover {
+      0% {
+        transform: skew(0deg);
+        filter: contrast(1);
+      }
+      20% {
+        transform: skew(-1deg);
+        filter: contrast(1.2) hue-rotate(-2deg);
+      }
+      40% {
+        transform: skew(1deg);
+        filter: contrast(0.8) hue-rotate(2deg);
+      }
+      60% {
+        transform: skew(-1deg);
+        filter: contrast(1.1);
+      }
+      80% {
+        transform: skew(0deg);
+        filter: contrast(1);
+      }
+      100% {
+        transform: skew(0deg);
+        filter: contrast(1);
+      }
+    }
+
+    /* Glitch effect for click, same as before but triggered via class */
+    @keyframes glitch {
+      0% {
+        transform: none;
+        filter: none;
+      }
+      10% {
+        transform: skew(-2deg, 2deg);
+        filter: contrast(1.2) hue-rotate(-10deg);
+      }
+      20% {
+        transform: skew(2deg, -2deg);
+        filter: contrast(0.8) hue-rotate(10deg);
+      }
+      30% {
+        transform: skew(-1deg, 1deg);
+        filter: blur(1px);
+      }
+      100% {
+        transform: none;
+        filter: none;
+      }
+    }
+
+    .glitch {
+      animation: glitch 3s ease-in-out forwards;
+    }
+</style>
+</head>
+<body>
+   <div id="initial-screen">
+    <div id="title-text">CHIMERA CATS CAFE</div>
+    <video id="cafe-video" src="introvids/stardrinkscoffeeveil.mp4" autoplay muted loop onclick="showChatbot()" style="width:200px; height:auto; border-radius:50%; object-fit:cover;"></video>
+  </div>
+
+    <div id="credits-container">
+        <div id="credits-content">
+            CHIMERA CATS CAFE<br>
+            A Legendary Tale<br><br>
+            Directed by<br>
+            ÉLODIE LUMIÈRE<br><br>
+            Written by<br>
+            AURELIEN NOIR<br><br>
+            Starring<br>
+            YESHUA, the Guardian of Shadows .......... Played by MARCEL GAUDIN<br>
+            LUNA, the Dream-Weaver Cat ............... Voiced by ISABELLE RENAUD<br>
+            SHADOW, the Phantom Prowler Cat .......... Voiced by PIERRE LEBLANC<br>
+            MYST, the Illusionist Cat ................ Voiced by SOPHIE DUPONT<br>
+            DR. VIKTOR GRAVE, the Obsessed Scientist . Played by ALEXANDRE MOREAU<br>
+            Café Patrons and Allies .................. Ensemble Cast: Parisian Locals<br><br>
+            Music Composed by<br>
+            CLAUDIA VIOLETTE<br>
+            Featuring the haunting melody "Whispers of the Chimera"<br>
+            Performed by the Paris Nocturne Orchestra<br>
+            With original tracks: "Escape from the Lab" and "Sanctuary Serenade"<br><br>
+            Produced by<br>
+            Atelier des Rêves Productions<br>
+            In association with Mystic Feline Films<br><br>
+            In the shadows of a forgotten Paris, where science dances with the arcane,<br>
+            the Chimera cats were born—feline marvels with eyes like stars and fur that shimmers like twilight.<br>
+            Captured in the iron grip of mad scientists, led by the relentless Dr. Viktor Grave,<br>
+            these creatures dreamed of freedom, their whispers echoing through cold laboratory halls.<br><br>
+            Enter Yeshua, a man of quiet strength and boundless heart, whose compassion ignited a rebellion.<br>
+            With stealth and courage, he shattered their chains, leading the cats to safety through rain-slicked streets.<br>
+            In a hidden corner of the city, Yeshua opened Chimera Cats Cafe—a haven where lattes mingle with magic,<br>
+            and the cats roam free, their purrs weaving tales of resilience and renewal.<br><br>
+            Yet, as the scientists plot their return, the cafe becomes a legend:<br>
+            A beacon for the lost, a reminder that even in darkness, light prevails.<br><br>
+            Dedicated to the dreamers and defenders of the world,<br>
+            May this story honor the wild spirit within us all.
+        </div>
+    </div>
+
+    <div id="spiderweb-emoji" onclick="toggleMusicDrawer()">🕸️</div>
+
+    <div id="music-drawer">
+        <button id="close-drawer" onclick="toggleMusicDrawer()">×</button>
+        <h2>Music Soundtrack</h2>
+        <audio id="background-music" loop>
+            <source src="audio/intro-chimi.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        
+        <div id="audio-controls">
+            <button onclick="playMusic()">Play</button>
+            <button onclick="pauseMusic()">Pause</button>
+            <button onclick="volumeUp()">Louder</button>
+        </div>
+        
+        <div id="playlist">
+            <div class="playlist-item" onclick="playTrack(1)">Whispers of the Chimera</div>
+            <div class="playlist-item" onclick="playTrack(2)">Escape from the Lab</div>
+            <div class="playlist-item" onclick="playTrack(3)">Sanctuary Serenade</div>
+        </div>
+    </div>
+
+    <div id="chatbot-modal">
+        <span>🕷️ Hello! I'm the Spider Guide. What would you like to be called?</span>
+        <input type="text" id="user-name" placeholder="Enter your name">
+        <label for="speed-slider">Credits Speed (30s to 120s): </label>
+        <input type="range" id="speed-slider" min="30" max="120" value="60">
+        <button onclick="startChat()">Submit</button>
+    </div>
+
+    <script>
+    const video = document.getElementById('cafe-video');
+
+    // Play video automatically, no loop
+    video.loop = false;
+
+    // Add click event for glitch effect
+    video.addEventListener('click', () => {
+      // Restart glitch animation
+      video.classList.remove('glitch');
+      
+      // Trigger reflow
+      void video.offsetWidth;
+      
+      // Add glitch class to start animation
+      video.classList.add('glitch');
+
+      // After 3 seconds, you can transition or perform an action
+      setTimeout(() => {
+        // For example, redirect to another page or reveal content
+        // window.location.href = 'your-website.html';
+
+        // Or fade out the video and show the website content
+        // Here, just an example:
+        alert('Transitioning to website...');
+        // You can add code here to hide the video or redirect
+      }, 3000);
+    });
+
+    // Handle video end
+    video.onended = () => {
+      alert('Greetings PurrPeep. Click Star to begin.');
+    };
+        const audio = document.getElementById('background-music');
+        const chatbotModal = document.getElementById('chatbot-modal');
+        const speedSlider = document.getElementById('speed-slider');
+        const creditsContent = document.getElementById('credits-content');
+
+        audio.addEventListener('error', () => {
+            alert('Oops! The soundtrack failed to load. Enjoy the credits in silence or check your connection.');
+        });
+
+        function showChatbot() {
+            chatbotModal.style.display = 'block';
+        }
+
+        function startChat() {
+            const name = document.getElementById('user-name').value || 'adventurer';
+            if (confirm(`Great! Hello, ${name}! You're about to watch the beginning of a legendary movie. Shall we proceed?`)) {
+                const speed = speedSlider.value + 's';
+                creditsContent.style.animation = `scrollCredits ${speed} linear forwards`;
+                audio.play().catch(error => console.error('Audio play failed:', error));
+                chatbotModal.style.display = 'none';
+                showCredits();
+            } else {
+                alert(`🕷️ No worries, ${name}! Take your time exploring the site. Check out the music or spiderweb for more fun.`);
+                chatbotModal.style.display = 'none';
+            }
+        }
+
+        function playMusic() {
+            audio.play();
+            highlightActiveTrack();
+        }
+
+        function pauseMusic() {
+            audio.pause();
+        }
+
+        function volumeUp() {
+            audio.volume = Math.min(1, audio.volume + 0.1);
+        }
+
+        function playTrack(trackId) {
+            audio.play();
+            highlightActiveTrack(trackId);
+        }
+
+        function highlightActiveTrack(trackId = 1) {
+            const items = document.querySelectorAll('.playlist-item');
+            items.forEach(item => item.classList.remove('active'));
+            items[trackId - 1].classList.add('active');
+        }
+
+        function toggleMusicDrawer() {
+            const drawer = document.getElementById('music-drawer');
+            drawer.classList.toggle('open');
+        }
+
+        function showCredits() {
+            document.getElementById('initial-screen').style.display = 'none';
+            const creditsContainer = document.getElementById('credits-container');
+            creditsContainer.style.display = 'block';
+            setTimeout(() => {
+                creditsContainer.style.display = 'none';
+                document.getElementById('initial-screen').style.display = 'flex';
+                audio.pause();
+            }, parseFloat(speedSlider.value) * 1000);
+        }
+    </script>
+</body>
+</html>
