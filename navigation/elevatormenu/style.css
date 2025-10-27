@@ -1,0 +1,86 @@
+/* Base Page */
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, #2a003f, #0d001a);
+  font-family: Arial, sans-serif;
+  overflow: hidden; /* prevent scrollbars during animation */
+  transition: background 1s ease;
+}
+
+/* Elevator Booth */
+.elevator {
+  position: relative;
+  width: 200px;
+  height: 400px;
+  background: rgba(120, 60, 180, 0.6);
+  border: 3px solid rgba(200, 150, 255, 0.8);
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(180, 100, 255, 0.8);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.door {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  background: rgba(80, 20, 140, 0.9);
+  backdrop-filter: blur(6px);
+  transition: all 1s ease;
+}
+
+.left-door { left: 0; border-right: 2px solid rgba(255,255,255,0.3); }
+.right-door { right: 0; border-left: 2px solid rgba(255,255,255,0.3); }
+
+.elevator.open .left-door { transform: translateX(-100%); }
+.elevator.open .right-door { transform: translateX(100%); }
+
+/* Portal Buttons */
+.portal-buttons {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.portal-buttons button {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(150, 80, 220, 0.6);
+  color: white;
+  font-size: 18px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(200, 150, 255, 0.7);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.portal-buttons button:hover {
+  transform: scale(1.1);
+  background: rgba(200, 120, 255, 0.8);
+}
+
+.hidden {
+  display: none;
+}
+
+/* Elevator Ride Animation */
+@keyframes rideUp {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-120%); opacity: 0.8; }
+}
+
+body.ride {
+  animation: rideUp 1.5s ease-in-out forwards;
+}
