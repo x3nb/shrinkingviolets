@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>The Tea Guild</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Caveat&display=swap" rel="stylesheet">
+  <!-- Mystical glyph font (pseudo-Aramaic style) -->
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <style>
+    body { background: #0d0f0d; color: #7CFC00; overflow-x:hidden; }
+    .font-cryptic { font-family: 'Cinzel Decorative', serif; }
+    .font-hand { font-family: 'Caveat', cursive; }
+    .font-glyph { font-family: 'MedievalSharp', cursive; letter-spacing: 2px; }
+    .room { transition: all 0.3s ease; cursor: pointer; }
+    .room:hover { background: rgba(124,252,0,0.1); transform: scale(1.05); }
+    .room.active { background: rgba(124,252,0,0.2); box-shadow: 0 0 10px #7CFC00; }
+    .sprite { position:absolute; width:6px; height:6px; background:#7CFC00; border-radius:50%; opacity:0.6; animation: float 12s linear infinite; }
+    @keyframes float {
+      0% { transform: translateY(0) translateX(0); opacity:0; }
+      20% { opacity:0.6; }
+      100% { transform: translateY(-800px) translateX(100px); opacity:0; }
+    }
+    .glyph { font-size:1.5rem; cursor:pointer; transition: color 0.3s; }
+    .glyph:hover { color:white; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center relative">
+
+  <!-- Floating Sprites -->
+  <div id="sprites"></div>
+
+  <!-- Title -->
+  <header class="text-center py-6 relative z-10">
+    <h1 class="font-cryptic text-4xl tracking-widest text-[#7CFC00] drop-shadow-lg">
+      The 7 Realms
+    </h1>
+    <p class="font-hand text-lg text-gray-300 mt-2">
+      A mystical map of lore-rooms, riddles and mysteries
+    </p>
+  </header>
+
+  <!-- Blueprint Layout -->
+  <div id="blueprint" class="grid grid-cols-4 grid-rows-4 gap-2 max-w-5xl w-full h-[500px] border-2 border-[#7CFC00] rounded-2xl bg-[#111]/40 p-2 relative z-10">
+    <div class="room border border-[#7CFC00] rounded-xl flex items-center justify-center col-span-2 row-span-2" data-room="solarsystem">Quests</div>
+    <div class="room border border-[#7CFC00] rounded-xl flex items-center justify-center col-span-2" data-room="riverbed">Riverbed</div>
+    <div class="room border border-[#7CFC00] rounded-xl flex items-center justify-center row-span-2" data-room="tractor">Tractor</div>
+    <div class="room border border-[#7CFC00] rounded-xl flex items-center justify-center col-span-2" data-room="savanna">Savanna</div>
+    <div class="room border border-[#7CFC00] rounded-xl flex items-center justify-center" data-room="crystalline">Crystalline</div>
+    <div class="room border border-[#7CFC00] rounded-xl flex items-center justify-center" data-room="mud">Mud</div>
+    <div class="room border border-[#7CFC00] rounded-xl flex items-center justify-center col-span-2" data-room="orchard">Orchard</div>
+  </div>
+
+  <!-- Door Glyphs -->
+  <div class="flex gap-6 mt-6 text-[#7CFC00] font-glyph z-10">
+    <span class="glyph" data-glyph="flow">𐎀</span>
+    <span class="glyph" data-glyph="root">𐎃</span>
+    <span class="glyph" data-glyph="light">𐎄</span>
+  </div>
+  <p id="glyph-meaning" class="font-hand text-gray-400 mt-2"></p>
+
+  <!-- Lore Portal -->
+  <div id="lore" class="mt-12 p-6 max-w-3xl mx-auto border border-[#7CFC00] rounded-2xl bg-[#111]/70 shadow-lg relative z-10">
+    <h2 id="lore-title" class="font-cryptic text-3xl text-[#7CFC00] capitalize mb-4">mystical map-system</h2>
+    <p id="lore-text" class="font-hand text-xl text-gray-200 leading-relaxed">
+      An observatory chamber where planets steep in starlight and teacups hum with cosmic rhythm.
+    </p>
+  </div>
+
+  <!-- Script -->
+  <script>
+    // --- Lore Data ---
+    const loreData = {
+      Quests: "A chamber where quests abound. Which one will you choose?",
+      riverbed: "A hallway of flowing silver streams, where tea sprites wade ankle-deep through moss-lit waters.",
+      tractor: "Mechanical walls thrum with hidden kettles, gears turning like spoons in a cosmic pot.",
+      savanna: "Open plains of cinnamon dust and tea leaves, lions pawing gently at porcelain cups.",
+      crystalline: "Shards of glassy stone form angular alcoves, each reflecting emerald infusions.",
+      mud: "A grounding chamber, roots curling like teapots in soil, whispering earth’s secrets.",
+      orchard: "An airy hall blooming with fruit-sweet fragrance, bees buzzing like tiny kettles."
+    };
+
+    // --- Ritual Combos ---
+    const rituals = {
+      "riverbed+crystalline": "Ritual of the Glass Stream: water becomes song as it flows into crystal light.",
+      "mud+orchard": "Ritual of Fertility: soil and blossom entwine, whispering abundance.",
+    };
+
+    let lastRoom = null;
+
+    // --- Elements ---
+    const rooms = document.querySelectorAll('.room');
+    const loreTitle = document.getElementById('lore-title');
+    const loreText = document.getElementById('lore-text');
+    const glyphs = document.querySelectorAll('.glyph');
+    const glyphMeaning = document.getElementById('glyph-meaning');
+
+    // --- Room Click Logic ---
+    rooms.forEach(room => {
+      room.addEventListener('click', () => {
+        rooms.forEach(r => r.classList.remove('active'));
+        room.classList.add('active');
+        const roomId = room.getAttribute('data-room');
+
+        // Ritual check
+        if (lastRoom && rituals[lastRoom + "+" + roomId]) {
+          loreTitle.textContent = "Secret Ritual";
+          loreText.textContent = rituals[lastRoom + "+" + roomId];
+          speakLore(loreText.textContent);
+        } else {
+          loreTitle.textContent = roomId;
+          loreText.textContent = loreData[roomId];
+          speakLore(loreData[roomId]);
+        }
+        lastRoom = roomId;
+
+        playHarpNote();
+      });
+    });
+
+    // --- Glyph Hover Meanings ---
+    const glyphMeanings = {
+      flow: "Symbol of Flow: the endless river of tea.",
+      root: "Symbol of Root: grounding, fertile soil of lore.",
+      light: "Symbol of Light: guiding lanterns of wisdom."
+    };
+    glyphs.forEach(g => {
+      g.addEventListener('mouseenter', () => {
+        glyphMeaning.textContent = glyphMeanings[g.dataset.glyph];
+      });
+      g.addEventListener('mouseleave', () => {
+        glyphMeaning.textContent = "";
+      });
+    });
+
+    // --- Harp Sound ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playHarpNote() {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(440 + Math.random()*200, audioCtx.currentTime); // random harp pitch
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 2);
+    }
+
+    // --- Speech (British Accent) ---
+    function speakLore(text) {
+      if ("speechSynthesis" in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-GB"; // British
+        const voices = speechSynthesis.getVoices();
+        const ukVoice = voices.find(v => v.lang === "en-GB" && v.name.toLowerCase().includes("female"));
+        if (ukVoice) utterance.voice = ukVoice;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utterance);
+      }
+    }
+
+    // --- Floating Sprites ---
+    const spriteContainer = document.getElementById('sprites');
+    for (let i = 0; i < 40; i++) {
+      const s = document.createElement('div');
+      s.className = "sprite";
+      s.style.left = Math.random()*100 + "vw";
+      s.style.bottom = Math.random()*100 + "vh";
+      s.style.animationDelay = (Math.random()*10)+"s";
+      spriteContainer.appendChild(s);
+    }
+
+    // Default active
+    document.querySelector('[data-room="solarsystem"]').classList.add('active');
+  </script>
+</body>
+</html>
