@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Mindmap — Phaser & Dew Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+    }
+    :root {
+      --gradient-colors: linear-gradient(90deg, indigo, cornflowerblue, purple);
+      --line-color: rgba(100, 149, 237, 0.8);
+      --glint-color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Canvas layers */
+    #starsCanvas, #bubblesCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    svg#lineCanvas {
+      position: absolute;
+      width: 100%; height: 100%;
+      z-index: 1;
+    }
+
+    #searchSlither {
+      position: fixed;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      max-width: 600px;
+      height: 38px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 20px;
+      border: 2px solid transparent;
+      background-image: var(--gradient-colors);
+      background-clip: padding-box, border-box;
+      background-origin: padding-box, border-box;
+      box-shadow: 0 0 12px purple;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      z-index: 10;
+      overflow: hidden;
+    }
+    #searchInput {
+      width: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.9em;
+      color: white;
+      padding: 0 10px;
+      height: 100%;
+    }
+    #responseBox {
+      position: fixed;
+      top: 54px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 75%;
+      max-width: 700px;
+      height: 32px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 20px;
+      border: 2px solid transparent;
+      background-image: var(--gradient-colors);
+      background-clip: padding-box, border-box;
+      background-origin: padding-box, border-box;
+      box-shadow: 0 0 12px purple;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75em;
+      padding: 0 15px;
+      transition: opacity 0.4s;
+      opacity: 0;
+      z-index: 10;
+    }
+
+    .center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px; height: 180px;
+      background: #222;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid;
+      border-image: linear-gradient(to right, indigo, cornflowerblue, purple) 1;
+      z-index: 5;
+      text-align: center;
+    }
+    #topicImage {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 230px; max-height: 230px;
+      border: 4px solid;
+      border-image: linear-gradient(to right, indigo, cornflowerblue, purple) 1;
+      border-radius: 10px;
+      display: none;
+      cursor: pointer;
+      z-index: 6;
+      box-shadow: 0 0 22px cornflowerblue;
+    }
+
+    .label {
+      position: absolute;
+      width: 110px;
+      padding: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid transparent;
+      border-image: linear-gradient(to right, indigo, cornflowerblue, purple) 1;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.75em;
+      cursor: pointer;
+      transition: all 0.25s;
+      z-index: 4;
+      box-shadow: 0 0 5px rgba(123, 104, 238, 0.6);
+    }
+    .label.highlight {
+      box-shadow: 0 0 10px white, 0 0 20px white inset;
+      border-color: white;
+    }
+
+    .right-top { top: 18%; right: 8%; transform: translateY(-50%); }
+    .right-bottom { bottom: 18%; right: 8%; transform: translateY(50%); }
+    .left-top { top: 18%; left: 8%; transform: translateY(-50%); }
+    .left-bottom { bottom: 18%; left: 8%; transform: translateY(50%); }
+
+    @keyframes drawLine {
+      from { stroke-dashoffset: 600; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    @media (max-width: 600px) {
+      .center { width: 140px; height: 140px; }
+      #searchSlither { width: 85%; height: 32px; top: 6px; }
+      #responseBox { top: 46px; height: 28px; font-size: 0.65em; }
+      .label { width: 90px; font-size: 0.65em; padding: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="starsCanvas"></canvas>
+  <canvas id="bubblesCanvas"></canvas>
+  <svg id="lineCanvas"></svg>
+
+  <div class="center" id="hero">Hero</div>
+  <img id="topicImage" src="" alt="Topic Image">
+
+  <div class="label right-top" data-topic="About" data-img="https://via.placeholder.com/250?text=About" data-link="#">About</div>
+  <div class="label right-bottom" data-topic="Gallery" data-img="https://via.placeholder.com/250?text=Gallery" data-link="#">Gallery</div>
+  <div class="label left-top" data-topic="Support" data-img="https://via.placeholder.com/250?text=Support" data-link="#">Support</div>
+  <div class="label left-bottom" data-topic="Members" data-img="https://3society.neocities.org/2026/IMAGES/chatchat-removebg-preview.png" data-link="#">Members</div>
+  <div class="label right-top" style="top:32%; right:8%;" data-topic="Cafe" data-img="https://3society.neocities.org/COMFYCAFE.IMAGES/COMFYCAFERPGbanner.jpeg" data-link="#">Cafe</div>
+  <div class="label right-bottom" style="bottom:32%; right:8%;" data-topic="Adoptables" data-img="https://via.placeholder.com/250?text=Adoptables" data-link="#">Adoptables</div>
+  <div a class="label left-top" style="top:32%; left:8%;" data-topic="Quests" data-img="https://3society.neocities.org/2026/IMAGES/3-removebg-preview.png" data-link="#">Quests</div>
+
+  <div id="searchSlither"><input type="text" id="searchInput" placeholder="Type keywords..." /></div>
+  <div id="responseBox"></div>
+
+<script>
+  // —————————————————————————————
+  // Setup contexts & elements
+  const starsCanvas = document.getElementById('starsCanvas');
+  const bubblesCanvas = document.getElementById('bubblesCanvas');
+  const starCtx = starsCanvas.getContext('2d');
+  const bubCtx = bubblesCanvas.getContext('2d');
+
+  const svg = document.getElementById('lineCanvas');
+  const center = document.getElementById('hero');
+  const labels = document.querySelectorAll('.label');
+  const topicImage = document.getElementById('topicImage');
+  const responseBox = document.getElementById('responseBox');
+  const searchInput = document.getElementById('searchInput');
+
+  function resizeAll() {
+    starsCanvas.width = window.innerWidth;
+    starsCanvas.height = window.innerHeight;
+    bubblesCanvas.width = window.innerWidth;
+    bubblesCanvas.height = window.innerHeight;
+    svg.setAttribute('width', window.innerWidth);
+    svg.setAttribute('height', window.innerHeight);
+    drawConnections();
+  }
+  window.addEventListener('resize', resizeAll);
+
+  // —————————————————————————————
+  // Stars
+  const stars = [];
+  const STAR_COUNT = 120;
+  function initStars() {
+    stars.length = 0;
+    for (let i = 0; i < STAR_COUNT; i++) {
+      stars.push({
+        x: Math.random() * starsCanvas.width,
+        y: Math.random() * starsCanvas.height,
+        r: Math.random() * 1.5 + 0.3,
+        alpha: Math.random() * 0.5 + 0.3,
+        d: Math.random() * 0.02 + 0.005
+      });
+    }
+  }
+  function drawStars() {
+    starCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+    for (const s of stars) {
+      s.alpha += s.d;
+      if (s.alpha > 1 || s.alpha < 0.2) s.d *= -1;
+      starCtx.beginPath();
+      starCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+      starCtx.fill();
+    }
+  }
+
+  // —————————————————————————————
+  // Bubbles
+  const bubbles = [];
+  const BUB_COUNT = 40;
+  function initBubbles() {
+    bubbles.length = 0;
+    for (let i = 0; i < BUB_COUNT; i++) {
+      bubbles.push({
+        x: Math.random() * bubblesCanvas.width,
+        y: bubblesCanvas.height + Math.random() * 200,
+        r: Math.random() * 8 + 2,
+        speed: Math.random() * 0.5 + 0.2,
+        alpha: Math.random() * 0.5 + 0.2
+      });
+    }
+  }
+  function drawBubbles() {
+    bubCtx.clearRect(0, 0, bubblesCanvas.width, bubblesCanvas.height);
+    for (const b of bubbles) {
+      b.y -= b.speed;
+      b.alpha -= 0.001;
+      if (b.alpha <= 0 || b.y < -50) {
+        b.x = Math.random() * bubblesCanvas.width;
+        b.y = bubblesCanvas.height + 10;
+        b.r = Math.random() * 8 + 2;
+        b.speed = Math.random() * 0.5 + 0.2;
+        b.alpha = Math.random() * 0.5 + 0.2;
+      }
+      bubCtx.beginPath();
+      bubCtx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+      bubCtx.fillStyle = `rgba(173,216,230,${b.alpha * 0.6})`;
+      bubCtx.fill();
+    }
+  }
+
+  // —————————————————————————————
+  // Web line + glints (curved)
+  function connect(elem1, elem2) {
+    const r1 = elem1.getBoundingClientRect();
+    const r2 = elem2.getBoundingClientRect();
+    const x1 = r1.left + r1.width/2;
+    const y1 = r1.top + r1.height/2;
+    const x2 = r2.left + r2.width/2;
+    const y2 = r2.top + r2.height/2;
+
+    // Compute a control point for the Bézier curve
+    const dx = x2 - x1, dy = y2 - y1;
+    const ctrlX = x1 + dx * 0.5 + dy * 0.2;
+    const ctrlY = y1 + dy * 0.5 - dx * 0.2;
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const d = `M ${x1},${y1} Q ${ctrlX},${ctrlY} ${x2},${y2}`;
+    path.setAttribute("d", d);
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "var(--line-color)");
+    path.setAttribute("stroke-width", "1");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-dasharray", "600");
+    path.setAttribute("stroke-dashoffset", "600");
+    path.style.animation = "drawLine 0.9s ease-out forwards";
+    path.style.filter = "drop-shadow(0 0 3px cornflowerblue)";
+
+    svg.appendChild(path);
+
+    // Add a few glint dots along the path
+    const glintCount = 3;
+    for (let i = 1; i <= glintCount; i++) {
+      const t = i / (glintCount + 1);
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      // compute point along the quadratic Bézier
+      const x = (1 - t)*(1 - t)*x1 + 2*(1-t)*t*ctrlX + t*t*x2;
+      const y = (1 - t)*(1 - t)*y1 + 2*(1-t)*t*ctrlY + t*t*y2;
+      circle.setAttribute("cx", x);
+      circle.setAttribute("cy", y);
+      circle.setAttribute("r", "1.5");
+      circle.setAttribute("fill", "var(--glint-color)");
+      circle.style.opacity = "0";
+      circle.style.transition = `opacity 0.8s ${0.2 * i}s ease-in-out`;
+      svg.appendChild(circle);
+      // Fade in/out glint
+      setTimeout(() => { circle.style.opacity = "1"; }, 100 + i * 100);
+      setTimeout(() => { circle.style.opacity = "0"; }, 1000 + i * 150);
+    }
+  }
+
+  function drawConnections() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    labels.forEach(lbl => connect(center, lbl));
+  }
+
+  // —————————————————————————————
+  // Animation loop
+  function animateAll() {
+    drawStars();
+    drawBubbles();
+    requestAnimationFrame(animateAll);
+  }
+
+  // —————————————————————————————
+  // Search / label click logic
+  const topicsDetails = {
+    "About": { image: "https://via.placeholder.com/250?text=About", link: "#" },
+    "Gallery": { image: "https://via.placeholder.com/250?text=Gallery", link: "#" },
+    "Support": { image: "https://via.placeholder.com/250?text=Support", link: "#" },
+    "Members": { image: "https://3society.neocities.org/2026/IMAGES/chatchat-removebg-preview.png", link: "#" },
+    "Cafe": { image: "https://3society.neocities.org/COMFYCAFE.IMAGES/COMFYCAFERPGbanner.jpeg", link: "#" },
+    "Adoptables": { image: "https://via.placeholder.com/250?text=Adoptables", link: "#" },
+    "Quests": { image: "https://3society.neocities.org/2026/IMAGES/3-removebg-preview.png", link: "#" }
+  };
+  const keywordMap = {
+    "about": "About", "gallery": "Gallery", "support": "Support", "help": "Support",
+    "members": "Members", "join": "Members", "subscribe": "Members",
+    "cafe": "Cafe", "recipes": "Cafe", "music": "Cafe", "downloads": "Cafe", "shop": "Cafe",
+    "adopt": "Adoptables", "pets": "Adoptables", "cats": "Adoptables",
+    "quests": "Quests", "adventure": "Quests", "games": "Quests"
+  };
+
+  function clearHighlights() {
+    labels.forEach(lbl => lbl.classList.remove('highlight'));
+  }
+  function highlightTopic(name) {
+    labels.forEach(lbl => {
+      if (lbl.dataset.topic === name) lbl.classList.add('highlight');
+    });
+  }
+  function showTopic(name) {
+    const d = topicsDetails[name];
+    if (d) {
+      topicImage.src = d.image;
+      topicImage.style.display = 'block';
+      topicImage.setAttribute('data-link', d.link);
+    }
+  }
+
+  // —————————————————————————————
+  // Audio context and bass synth setup
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // Phaser / sweep sound effect (existing)
+  function playPhaserTone() {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const biquad = audioCtx.createBiquadFilter();
+    // Setup
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 0.05);
+    gain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 0.7);
+
+    biquad.type = "allpass";
+    // animate the frequency of the biquad filter for phasing effect
+    biquad.frequency.setValueAtTime(400, audioCtx.currentTime);
+    biquad.frequency.linearRampToValueAtTime(1600, audioCtx.currentTime + 0.7);
+
+    osc.connect(biquad).connect(gain).connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.7);
+  }
+
+  // Bass synth note player for baseline with enhancements
+  function playBassNote(freq, duration = 0.5) {
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    const distortion = audioCtx.createWaveShaper();
+
+    // Oscillator setup: mix sawtooth and square for richer tone
+    osc1.type = 'sawtooth';
+    osc2.type = 'square';
+    osc1.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc2.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+    // Filter setup: lowpass with dynamic cutoff sweep
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, audioCtx.currentTime); // start darker
+    filter.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + duration * 0.6); // sweep up
+    filter.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + duration); // settle down
+    filter.Q.setValueAtTime(12, audioCtx.currentTime);
+
+    // Distortion curve for grit
+    function makeDistortionCurve(amount) {
+      const k = typeof amount === 'number' ? amount : 50;
+      const n_samples = 44100;
+      const curve = new Float32Array(n_samples);
+      const deg = Math.PI / 180;
+      for (let i = 0; i < n_samples; ++i) {
+        const x = i * 2 / n_samples - 1;
+        curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+      }
+      return curve;
+    }
+    distortion.curve = makeDistortionCurve(30);
+    distortion.oversample = '4x';
+
+    // Gain envelope for punchy bass
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+    // Pitch slide (portamento) - slide up 2 semitones quickly
+    const slideAmount = freq * Math.pow(2, 2/12) - freq; // 2 semitones up
+    osc1.frequency.setValueAtTime(freq - slideAmount, audioCtx.currentTime);
+    osc1.frequency.linearRampToValueAtTime(freq, audioCtx.currentTime + 0.05);
+    osc2.frequency.setValueAtTime(freq - slideAmount, audioCtx.currentTime);
+    osc2.frequency.linearRampToValueAtTime(freq, audioCtx.currentTime + 0.05);
+
+    // Connect nodes: oscillators -> filter -> distortion -> gain -> destination
+    osc1.connect(filter);
+    osc2.connect(filter);
+    filter.connect(distortion);
+    distortion.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc1.start();
+    osc2.start();
+    osc1.stop(audioCtx.currentTime + duration);
+    osc2.stop(audioCtx.currentTime + duration);
+  }
+
+  // Map topics to bass note frequencies (Hz)
+  const topicNotes = {
+    "About": 65.41,      // C2
+    "Gallery": 77.78,    // D#2
+    "Support": 87.31,    // F2
+    "Members": 98.00,    // G2
+    "Cafe": 116.54,      // A#2
+    "Adoptables": 130.81,// C3
+    "Quests": 155.56     // D#3
+  };
+
+  // Play baseline sequence of all notes on load
+  function playBaselineSequence() {
+    const notes = Object.values(topicNotes);
+    const noteDuration = 0.4;
+    notes.forEach((freq, i) => {
+      setTimeout(() => {
+        playBassNote(freq, noteDuration);
+      }, i * noteDuration * 1000);
+    });
+  }
+
+  // —————————————————————————————
+  // Label click event with bass note play
+  labels.forEach(lbl => {
+    lbl.style.cursor = 'pointer';
+    lbl.addEventListener('click', () => {
+      const nm = lbl.dataset.topic;
+      highlightTopic(nm);
+      showTopic(nm);
+      responseBox.innerHTML = `<div style="text-align:center;">Selected: <b>${nm}</b></div>`;
+      // Play bass note for the topic
+      if (topicNotes[nm]) {
+        playBassNote(topicNotes[nm]);
+      }
+    });
+  });
+
+  let fadeT;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(fadeT);
+    responseBox.style.opacity = 1;
+    const q = searchInput.value.toLowerCase().trim();
+    let matched = null;
+    for (const k in keywordMap) {
+      if (q === k || q.includes(k)) {
+        matched = keywordMap[k];
+        break;
+      }
+    }
+    if (matched) {
+      highlightTopic(matched);
+      showTopic(matched);
+      responseBox.innerHTML = `<div style="text-align:center;">Click to explore: <b>${matched}</b></div>`;
+    } else {
+      clearHighlights();
+      topicImage.style.display = 'none';
+      fadeT = setTimeout(() => {
+        responseBox.style.opacity = 0;
+        responseBox.innerHTML = "";
+      }, 800);
+    }
+  });
+
+  topicImage.addEventListener('click', () => {
+    const url = topicImage.getAttribute('data-link');
+    if (url) window.open(url, '_blank');
+    playPhaserTone();
+  });
+
+  // —————————————————————————————
+  // Initialization
+  function initAll() {
+    resizeAll();
+    initStars();
+    initBubbles();
+    animateAll();
+    // Play baseline sequence on load
+    playBaselineSequence();
+  }
+  window.addEventListener('load', initAll);
+
+</script>
+</body>
+</html>
