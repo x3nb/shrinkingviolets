@@ -67,7 +67,50 @@
   color: #ffd700;
 }
 
-/* Header area with greeting, guide icon, and letter icon in center */
+/* Cover page style */
+#cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  padding: 20px;
+  box-sizing: border-box;
+}
+#cover h1 {
+  color: #fff;
+  margin-bottom: 20px;
+}
+#name-input {
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 5px;
+  border: none;
+  max-width: 250px;
+  width: 80%;
+  margin-bottom: 20px;
+}
+#submit-name {
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #6495ED;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+#submit-name:hover {
+  background-color: #4682B4;
+}
+
+/* Header with greeting, guide icon, and letter icon in center */
 #header-area {
   margin-top: 70px;
   display: flex;
@@ -84,6 +127,11 @@
   background: linear-gradient(to right, #ccc, #888);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+#personal-greeting {
+  font-size: 2em;
+  color: #ccc;
   margin-bottom: 10px;
 }
 
@@ -107,7 +155,7 @@
   transform: scale(1.1);
 }
 
-/* Letter icon styled as a letter with glow and positioned in center */
+/* Letter icon styled as a letter with glow, centered */
 #letter-icon {
   margin-top: 15px;
   width: 80px;
@@ -208,16 +256,14 @@
 
 <!-- Header with greeting, guide icon, and letter icon -->
 <div id="header-area">
-  <div id="greeting-text">Welcome back...</div>
+  <div id="personal-greeting">Welcome</div> <!-- Will update after name input -->
   <div id="guide-image" title="Click for a greeting">☕</div>
-  <!-- Letter icon as a stylized letter -->
-  <div id="letter-icon" title="Open your mail">✉️</div>
+  <!-- Letter icon styled as a letter -->
+  <div id="letter-icon" title="Open your mail" style="display:none;">✉️</div>
 </div>
 
 <!-- Main content area -->
-<div id="main">
-  <!-- Content for instructions, contact, about, shop can go here -->
-</div>
+<div id="main"></div>
 
 <!-- Message box -->
 <div id="message-box">
@@ -226,125 +272,128 @@
 </div>
 
 <script>
-  const starsContainer = document.getElementById('stars');
-  const guideImage = document.getElementById('guide-image');
-  const headerText = document.getElementById('greeting-text');
-  const letterIcon = document.getElementById('letter-icon');
-  const messageBox = document.getElementById('message-box');
-  const messageContent = document.getElementById('message-content');
-  const confirmButton = document.getElementById('confirm-button');
+const starsContainer = document.getElementById('stars');
+const guideImage = document.getElementById('guide-image');
+const personalGreeting = document.getElementById('personal-greeting');
+const letterIcon = document.getElementById('letter-icon');
+const messageBox = document.getElementById('message-box');
+const messageContent = document.getElementById('message-content');
+const confirmButton = document.getElementById('confirm-button');
 
-  // Generate stars
-  function createStars(count) {
-    for (let i = 0; i < count; i++) {
-      const star = document.createElement('div');
-      star.className = 'star';
-      star.style.top = Math.random() * 100 + '%';
-      star.style.left = Math.random() * 100 + '%';
-      star.style.width = '2px';
-      star.style.height = '2px';
-      star.style.transform = 'translateY(0)';
-      star.style.opacity = Math.random();
-      star.style.animationDuration = (3 + Math.random() * 2) + 's';
-      starsContainer.appendChild(star);
-    }
+let userName = '';
+
+// Generate stars
+function createStars(count) {
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.width = '2px';
+    star.style.height = '2px';
+    star.style.transform = 'translateY(0)';
+    star.style.opacity = Math.random();
+    star.style.animationDuration = (3 + Math.random() * 2) + 's';
+    starsContainer.appendChild(star);
   }
-  createStars(100);
+}
+createStars(100);
 
-  // Initialize
-  function initialize() {
-    const savedName = localStorage.getItem('gamerName');
-    const hasRead = localStorage.getItem('hasReadMessage');
+// Show cover to ask for username
+function showCover() {
+  document.getElementById('cover').style.display = 'flex';
+}
+showCover();
 
-    if (savedName) {
-      headerText.textContent = 'Welcome back, ' + savedName + '...';
-      // Show the mail icon
-      letterIcon.style.display = 'block';
-      if (hasRead === 'true') {
-        showMessageCenter();
-      }
-    } else {
-      headerText.textContent = 'Welcome back...';
-    }
-    // Make sure the mail icon is visible after setup
+const cover = document.createElement('div');
+cover.id = 'cover';
+cover.innerHTML = `
+<h1>Enter Your Gamer Name</h1>
+<input type="text" id="name-input" placeholder="Gamer Name"/>
+<button id="submit-name">Enter</button>
+`;
+document.body.appendChild(cover);
+
+document.getElementById('submit-name').addEventListener('click', () => {
+  const input = document.getElementById('name-input');
+  userName = input.value.trim() || 'Gamer';
+  // Save name
+  localStorage.setItem('gamerName', userName);
+  // Remove cover
+  document.getElementById('cover').remove();
+  // Update greeting
+  personalGreeting.textContent = `Welcome ${userName}`;
+  // Show the mail icon
+  letterIcon.style.display = 'block';
+  // Show main content
+  document.getElementById('main').style.display = 'block';
+});
+
+// Initialize after load
+window.onload = () => {
+  const savedName = localStorage.getItem('gamerName');
+  if (savedName) {
+    userName = savedName;
+    personalGreeting.textContent = `Welcome ${userName}`;
     letterIcon.style.display = 'block';
   }
+}
 
-  // Greeting alert for guide icon
-  document.getElementById('guide-image').addEventListener('click', () => {
-    alert("Hello, brave gamer! Here's a special message just for you!");
-  });
+// Greet on guide icon
+document.getElementById('guide-image').addEventListener('click', () => {
+  alert("Hello, brave gamer! Here's a special message just for you!");
+});
 
-  // Show first message when user clicks mail icon
-  document.getElementById('letter-icon').addEventListener('click', () => {
-    localStorage.setItem('hasReadMessage', 'true');
-    displayMessage(0);
-  });
+// When clicking the mail icon, start message sequence
+letterIcon.addEventListener('click', () => {
+  localStorage.setItem('hasReadMessage', 'true');
+  displayMessage(0);
+});
 
-  // Messages array
-  const messages = [
-    // First message
-    `
-    <div>Greetings <strong>${localStorage.getItem('gamerName') || 'Gamer'}</strong>, thank you for visiting. Stay connected by following me, Zen, on YouTube.</div>
-    `,
-    // Second message
-    `
-    <div>Dearest <strong>${localStorage.getItem('gamerName') || 'Gamer'}</strong>, I received your message. Thank you so much! 😊</div>
-    <div style="margin-top:15px;">If you have a YouTube channel, I'll be sure to come visit! ❤️</div>
-    <div style="margin-top:10px;">
-      <a href="#" target="_blank" style="color:#4B0082;text-decoration:underline;">Visit Zen</a>
-    </div>
-    `
-  ];
+// Messages array
+const messages = [
+  `
+  <div>Greetings <strong>${userName}</strong>, thank you for visiting. Stay connected by following me, Zen, on YouTube.</div>
+  `,
+  `
+  <div>Dearest <strong>${userName}</strong>, I received your message. Thank you so much! 😊</div>
+  <div style="margin-top:15px;">If you have a YouTube channel, I'll be sure to come visit! ❤️</div>
+  <div style="margin-top:10px;">
+    <a href="https://www.youtube.com/channel/yourchannel" target="_blank" style="color:#4B0082;text-decoration:underline;">Visit Zen</a>
+  </div>
+  `
+];
 
-  // Function to display messages
-  function displayMessage(index) {
-    if (index >= messages.length) {
-      document.getElementById('message-box').style.display = 'none';
-      return;
-    }
-    messageContent.innerHTML = messages[index];
-    // Change button text for first message
-    if (index === 0) {
-      confirmButton.textContent = 'Confirm';
-    } else {
-      confirmButton.textContent = 'Next Message';
-    }
-    confirmButton.style.display = 'inline-block';
+function displayMessage(index) {
+  if (index >= messages.length) {
+    document.getElementById('message-box').style.display = 'none';
+    return;
+  }
+  messageContent.innerHTML = messages[index];
+  if (index === 0) {
+    // First message: button says "Confirm"
+    confirmButton.textContent = 'Confirm';
     confirmButton.onclick = () => {
-      // Mark message as read
-      localStorage.setItem('readMessage' + index, 'true');
-      // Show next message
-      displayMessage(index + 1);
+      localStorage.setItem('readMessage0', 'true');
+      displayMessage(1);
     };
-    document.getElementById('message-box').style.display = 'block';
+  } else {
+    // Subsequent message: button says "Next Message"
+    confirmButton.textContent = 'Next Message';
+    confirmButton.onclick = () => {
+      localStorage.setItem('readMessage1', 'true');
+      // Add more if needed
+    };
   }
+  confirmButton.style.display = 'inline-block';
+  document.getElementById('message-box').style.display = 'block';
+}
 
-  // Show the first message after user confirms
-  function startMessages() {
-    localStorage.setItem('hasReadMessage', 'true');
-    displayMessage(0);
-  }
-
-  // When user clicks the mail icon, start message sequence
-  document.getElementById('letter-icon').addEventListener('click', startMessages);
-
-  // Initialize on load
-  window.onload = () => {
-    const savedName = localStorage.getItem('gamerName');
-    const hasRead = localStorage.getItem('hasReadMessage');
-    if (savedName) {
-      headerText.textContent = 'Welcome back, ' + savedName + '...';
-      // Show mail icon
-      document.getElementById('letter-icon').style.display = 'block';
-      if (hasRead === 'true') {
-        showMessageCenter();
-      }
-    } else {
-      headerText.textContent = 'Welcome back...';
-    }
-    document.getElementById('letter-icon').style.display = 'block';
-  };
+// Start message sequence
+function startSequence() {
+  localStorage.setItem('hasReadMessage', 'true');
+  displayMessage(0);
+}
 </script>
 </body>
-  </html>
+</html>
