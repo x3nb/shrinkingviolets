@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spider Web Developer Tools Navigator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+  body {
+    margin: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(128, 90, 213, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(138, 43, 226, 0.1) 0%, transparent 40%),
+                #000000;
+    color: #ddd;
+    font-family: 'Roboto Mono', monospace, monospace;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    text-align: center;
+    color: #b399f7;
+    margin-top: 1rem;
+    margin-bottom: 0.2rem;
+  }
+
+  p.subtitle {
+    text-align: center;
+    color: #9a7edb;
+    margin-bottom: 2rem;
+  }
+
+  #search-container {
+    max-width: 400px;
+    margin: 0 auto 2rem auto;
+    position: relative;
+  }
+
+  #search-input {
+    width: 100%;
+    padding: 0.6rem 2.5rem 0.6rem 1rem;
+    border-radius: 12px;
+    border: 2px solid #6e4bd8;
+    background: rgba(110, 75, 216, 0.3);
+    color: #eee;
+    font-size: 1rem;
+    outline: none;
+  }
+
+  #search-input::placeholder {
+    color: #b9aaff;
+  }
+
+  #search-icon {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #b9aaff;
+    font-size: 1.2rem;
+  }
+
+  #web-container {
+    position: relative;
+    width: 90vw;
+    max-width: 700px;
+    height: 400px;
+    margin: 0 auto 3rem auto;
+    border: 2px solid #6e4bd8;
+    border-radius: 20px;
+    background: transparent;
+  }
+
+  /* Spider web lines */
+  #web-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      repeating-conic-gradient(
+        from 0deg,
+        rgba(138, 43, 226, 0.15) 0deg 1deg,
+        transparent 1deg 5deg
+      );
+    border-radius: 20px;
+  }
+
+  /* Concentric circles */
+  #web-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 1px rgba(138, 43, 226, 0.15),
+      0 0 0 60px rgba(138, 43, 226, 0.1),
+      0 0 0 120px rgba(138, 43, 226, 0.07);
+  }
+
+  /* Spider emoji container */
+  #spider {
+    position: absolute;
+    font-size: 2.5rem;
+    user-select: none;
+    cursor: default;
+    transition: left 1s ease, top 1s ease;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Speech bubble for spider guide */
+  #spider-bubble {
+    margin-top: 0.3rem;
+    max-width: 180px;
+    background: rgba(179, 153, 247, 0.9);
+    color: #2a0a6a;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.4rem 0.7rem;
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 0 0 8px #b399f7;
+    user-select: text;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  #spider-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent rgba(179, 153, 247, 0.9) transparent;
+  }
+
+  #spider-bubble.show {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Keyword buttons */
+  .keyword-btn {
+    position: absolute;
+    background: rgba(110, 75, 216, 0.7);
+    border-radius: 9999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    color: #eee;
+    border: 1.5px solid #b399f7;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+  }
+
+  .keyword-btn:hover {
+    background: #b399f7;
+    color: #1a0a4a;
+    box-shadow: 0 0 8px #b399f7;
+  }
+
+  .keyword-btn.active {
+    background: #d1b3ff;
+    color: #2a0a6a;
+    box-shadow: 0 0 12px #d1b3ff;
+  }
+
+  /* Bottom panel */
+  #bottom-panel {
+    max-width: 700px;
+    margin: 0 auto 3rem auto;
+    background: linear-gradient(135deg, #4b0082, #6e4bd8);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    color: #eee;
+    box-shadow: 0 0 15px #6e4bd8;
+    display: none;
+  }
+
+  #bottom-panel h2 {
+    margin-top: 0;
+    color: #d1b3ff;
+  }
+
+  #bottom-panel ul {
+    list-style: none;
+    padding-left: 1rem;
+  }
+
+  #bottom-panel ul li::before {
+    content: "•";
+    color: #b399f7;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+  }
+
+  #return-center-btn {
+    display: block;
+    margin: 0 auto 2rem auto;
+    background: #6e4bd8;
+    border: none;
+    border-radius: 12px;
+    padding: 0.7rem 1.5rem;
+    color: #eee;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0 10px #6e4bd8;
+    transition: background-color 0.3s ease;
+  }
+
+  #return-center-btn:hover {
+    background: #b399f7;
+    color: #2a0a6a;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    #web-container {
+      height: 300px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>Developer Resources Spider Web</h1>
+<p class="subtitle">Navigate the web of development tools and resources</p>
+
+<div id="search-container">
+  <input id="search-input" type="text" placeholder="Search keywords..." autocomplete="off" />
+  <span id="search-icon">🔍</span>
+</div>
+
+<div id="web-container" aria-label="Spider web navigation">
+  <div id="spider" aria-hidden="true">
+    🕷️
+    <div id="spider-bubble" role="alert" aria-live="polite" aria-atomic="true" style="display:none;"></div>
+  </div>
+</div>
+
+<button id="return-center-btn" aria-label="Return spider to center">Return to Center</button>
+
+<div id="bottom-panel" role="region" aria-live="polite" aria-atomic="true">
+  <h2 id="resource-title"></h2>
+  <p id="resource-description"></p>
+  <ul id="resource-list"></ul>
+</div>
+
+<script>
+  (() => {
+    const keywords = [
+      'code', 'html', 'css', 'javascript', 'build website from code', 'bootstrap',
+      'membership registration', 'node', 'dynamic', 'forums', 'comment boards',
+      'community', 'hub', 'embed', 'disqus', 'figma', 'notion', 'weje', 'raindrop io',
+      'bookmark web tools', 'hexcode', 'database', 'code editors', 'hobby hosts',
+      'opensource tools'
+    ];
+
+    const resources = {
+      'code': ['Official docs', 'Code examples', 'Tutorials'],
+      'html': ['MDN HTML Guide', 'W3Schools HTML', 'HTML5 Boilerplate'],
+      'css': ['CSS Tricks', 'MDN CSS', 'Bootstrap Docs'],
+      'javascript': ['JavaScript.info', 'MDN JS', 'ES6 Tutorials'],
+      'build website from code': ['Step-by-step guides', 'Starter templates', 'Video tutorials'],
+      'bootstrap': ['Bootstrap Docs', 'Components', 'Grid system'],
+      'membership registration': ['Auth0', 'Firebase Auth', 'Passport.js'],
+      'node': ['Node.js Docs', 'Express.js', 'NPM Packages'],
+      'dynamic': ['AJAX tutorials', 'React Docs', 'Vue.js Guide'],
+      'forums': ['Discourse', 'phpBB', 'Vanilla Forums'],
+      'comment boards': ['Disqus', 'Facebook Comments', 'Commento'],
+      'community': ['Slack', 'Discord', 'Reddit'],
+      'hub': ['GitHub', 'GitLab', 'Bitbucket'],
+      'embed': ['YouTube Embed', 'Google Maps Embed', 'Twitter Embed'],
+      'disqus': ['Disqus Setup', 'Moderation', 'Customization'],
+      'figma': ['Figma Tutorials', 'UI Kits', 'Plugins'],
+      'notion': ['Notion Templates', 'API Docs', 'Integrations'],
+      'weje': ['Weje Features', 'Tutorials', 'Use Cases'],
+      'raindrop io': ['Bookmarking Tips', 'Collections', 'Extensions'],
+      'bookmark web tools': ['Raindrop.io', 'Pinboard', 'Pocket'],
+      'hexcode': ['Color Pickers', 'CSS Colors', 'Palette Generators'],
+      'database': ['MongoDB', 'MySQL', 'PostgreSQL'],
+      'code editors': ['VSCode', 'Sublime Text', 'Atom'],
+      'hobby hosts': ['Netlify', 'Vercel', 'GitHub Pages'],
+      'opensource tools': ['Git', 'Docker', 'Jenkins']
+    };
+
+    const webContainer = document.getElementById('web-container');
+    const spider = document.getElementById('spider');
+    const spiderBubble = document.getElementById('spider-bubble');
+    const searchInput = document.getElementById('search-input');
+    const bottomPanel = document.getElementById('bottom-panel');
+    const resourceTitle = document.getElementById('resource-title');
+    const resourceDescription = document.getElementById('resource-description');
+    const resourceList = document.getElementById('resource-list');
+    const returnCenterBtn = document.getElementById('return-center-btn');
+
+    let activeBtn = null;
+
+    // Helpful guide messages for no results
+    const guideMessages = [
+      "Try simpler keywords like 'code' or 'html'.",
+      "Check spelling or try related terms like 'javascript' or 'node'.",
+      "Looking for tools? Try 'bootstrap', 'figma', or 'notion'.",
+      "Need community features? Try 'forums', 'membership', or 'comment boards'.",
+      "Can't find it? Try broad terms like 'build website' or 'opensource'."
+    ];
+
+    // Calculate center coordinates of web container
+    function getCenterCoords() {
+      const rect = webContainer.getBoundingClientRect();
+      return {
+        x: rect.width / 2,
+        y: rect.height / 2
+      };
+    }
+
+    // Position spider emoji
+    function moveSpider(x, y) {
+      spider.style.left = `${x}px`;
+      spider.style.top = `${y}px`;
+    }
+
+    // Create keyword buttons arranged in a circle
+    function createKeywordButtons(filteredKeywords) {
+      // Clear existing buttons except spider
+      [...webContainer.querySelectorAll('.keyword-btn')].forEach(btn => btn.remove());
+
+      const center = getCenterCoords();
+      const radiusBase = 120;
+      const radiusStep = 30;
+
+      // Group keywords by length to create concentric circles
+      // For simplicity, just split into 3 rings by index
+      const rings = [[], [], []];
+      filteredKeywords.forEach((kw, i) => {
+        if (i < 10) rings[0].push(kw);
+        else if (i < 20) rings[1].push(kw);
+        else rings[2].push(kw);
+      });
+
+      rings.forEach((ring, ringIndex) => {
+        const radius = radiusBase + ringIndex * radiusStep;
+        const count = ring.length;
+        ring.forEach((keyword, i) => {
+          const angle = (i / count) * 2 * Math.PI - Math.PI / 2; // start top center
+          const x = center.x + radius * Math.cos(angle);
+          const y = center.y + radius * Math.sin(angle);
+
+          const btn = document.createElement('button');
+          btn.className = 'keyword-btn';
+          btn.textContent = keyword;
+          btn.style.left = `${x}px`;
+          btn.style.top = `${y}px`;
+          btn.setAttribute('aria-label', `Keyword: ${keyword}`);
+          btn.addEventListener('click', () => {
+            if (activeBtn) activeBtn.classList.remove('active');
+            btn.classList.add('active');
+            activeBtn = btn;
+            moveSpider(x, y);
+            showResources(keyword);
+            hideGuideMessage();
+          });
+
+          webContainer.appendChild(btn);
+        });
+      });
+    }
+
+    // Show resources in bottom panel
+    function showResources(keyword) {
+      resourceTitle.textContent = `Resources for: ${keyword}`;
+      resourceDescription.textContent = `Explore guides, tools, and community resources related to "${keyword}".`;
+      resourceList.innerHTML = '';
+
+      const res = resources[keyword.toLowerCase()] || ['No resources found.'];
+
+      res.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        resourceList.appendChild(li);
+      });
+
+      bottomPanel.style.display = 'block';
+      bottomPanel.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Return spider to center and hide bottom panel
+    function returnSpiderToCenter() {
+      const center = getCenterCoords();
+      moveSpider(center.x, center.y);
+      bottomPanel.style.display = 'none';
+      if (activeBtn) {
+        activeBtn.classList.remove('active');
+        activeBtn = null;
+      }
+      hideGuideMessage();
+    }
+
+    // Filter keywords based on search input
+    function filterKeywords(query) {
+      if (!query) return keywords;
+      return keywords.filter(kw => kw.toLowerCase().includes(query.toLowerCase()));
+    }
+
+    // Show guide message near spider
+    function showGuideMessage() {
+      const msg = guideMessages[Math.floor(Math.random() * guideMessages.length)];
+      spiderBubble.textContent = msg;
+      spiderBubble.classList.add('show');
+      spiderBubble.style.display = 'block';
+    }
+
+    // Hide guide message
+    function hideGuideMessage() {
+      spiderBubble.classList.remove('show');
+      // Delay hiding to allow opacity transition
+      setTimeout(() => {
+        spiderBubble.style.display = 'none';
+      }, 300);
+    }
+
+    // Initialize
+    function init() {
+      const center = getCenterCoords();
+      moveSpider(center.x, center.y);
+      createKeywordButtons(keywords);
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      const filtered = filterKeywords(query);
+      createKeywordButtons(filtered);
+
+      if (filtered.length === 0 && query.length > 0) {
+        // No matches found
+        returnSpiderToCenter();
+        showGuideMessage();
+        bottomPanel.style.display = 'none';
+      } else {
+        hideGuideMessage();
+        bottomPanel.style.display = 'none';
+        if (activeBtn) {
+          activeBtn.classList.remove('active');
+          activeBtn = null;
+        }
+        returnSpiderToCenter();
+      }
+    });
+
+    returnCenterBtn.addEventListener('click', () => {
+      returnSpiderToCenter();
+      searchInput.value = '';
+      createKeywordButtons(keywords);
+    });
+
+    // On window resize reposition spider and buttons
+    window.addEventListener('resize', () => {
+      const filtered = filterKeywords(searchInput.value.trim());
+      createKeywordButtons(filtered);
+      if (activeBtn) {
+        // Move spider to active button
+        const rect = activeBtn.getBoundingClientRect();
+        const containerRect = webContainer.getBoundingClientRect();
+        const x = rect.left - containerRect.left + rect.width / 2;
+        const y = rect.top - containerRect.top + rect.height / 2;
+        moveSpider(x, y);
+      } else {
+        returnSpiderToCenter();
+      }
+    });
+
+    // Run init on page load
+    window.addEventListener('load', init);
+  })();
+</script>
+
+</body>
+</html>
