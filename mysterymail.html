@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Message Membership Site</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #e0e0e0; /* Light grey background */
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+
+  #message-box {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 600px;
+    margin: 50px auto;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-top: 10px solid #4B0082; /* Deep purple border on top */
+  }
+
+  #initial-message {
+    font-family: cursive;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #6495ED; /* Cornflower Blue */
+    color: #fff;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #4682B4; /* Darker blue on hover */
+  }
+
+  /* Mailbox icon pulsate animation */
+  #mailbox {
+    font-size: 50px;
+    margin: 40px auto;
+    cursor: pointer;
+    animation: pulse 2s infinite;
+    display: none; /* Hidden initially */
+    color: #4B0082; /* Deep purple for mailbox icon */
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Message style */
+  #letter {
+    display: none;
+    font-family: cursive;
+    font-size: 1.2em;
+    border: 2px solid #ccc;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+
+<div id="message-box">
+  <div id="initial-message">
+    Dear reader, thank you for visiting. I want to invite you to my Instagram page. Please go there at once. Let's be friends! :-)
+  </div>
+  <button id="confirmButton">I've Read This</button>
+
+  <div id="mailbox">&#128236;</div> <!-- Envelope emoji as mailbox icon -->
+  <div id="letter"></div>
+</div>
+
+<script>
+  const confirmButton = document.getElementById('confirmButton');
+  const mailbox = document.getElementById('mailbox');
+  const letter = document.getElementById('letter');
+  const initialMessageDiv = document.getElementById('initial-message');
+
+  // Function to check local storage and initialize state
+  function initialize() {
+    const hasRead = localStorage.getItem('hasReadMessage');
+    if (hasRead === 'true') {
+      showMessageCenter();
+    }
+  }
+
+  function showMessageCenter() {
+    // Hide initial message and button
+    initialMessageDiv.style.display = 'none';
+    confirmButton.style.display = 'none';
+
+    // Show mailbox with pulsate animation
+    mailbox.style.display = 'block';
+  }
+
+  confirmButton.addEventListener('click', () => {
+    localStorage.setItem('hasReadMessage', 'true');
+    showMessageCenter();
+  });
+
+  mailbox.addEventListener('click', () => {
+    // Show the message in cursive
+    letter.innerHTML = `
+      Dearest, Reader Friend, Thank you for subscribing to my Instagram and YouTube channel, I'll be sure to follow you back if you have a channel. Be sure to come back, bookmark this site for future messages! Zen.
+    `;
+    letter.style.display = 'block';
+
+    // Optional: stop the pulsate animation
+    mailbox.style.animation = 'none';
+  });
+
+  // Initialize on page load
+  window.onload = initialize;
+</script>
+
+</body>
+  </html>
