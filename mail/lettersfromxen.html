@@ -4,10 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Personal Message Site</title>
+<!-- Import a gothic font from Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet" />
+
 <style>
   body {
     margin: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: 'UnifrakturCook', cursive;
     background-color: black;
     overflow: hidden;
   }
@@ -23,7 +26,6 @@
     z-index: 0;
   }
 
-  /* Generate many tiny stars with animation */
   .star {
     position: absolute;
     background: white;
@@ -39,52 +41,71 @@
     to { transform: translateY(-200px); opacity: 0; }
   }
 
-  /* Cover page styles */
-#cover {
+  /* Navigation banner */
+#nav-banner {
+  width: 100%;
+  background: linear-gradient(to right, #4B0082, #8A2BE2); /* Deep purple to purple gradient */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: black;
+  z-index: 9;
+  font-family: 'UnifrakturCook', cursive;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+#nav-banner a {
+  color: #fff;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.2em;
+  transition: color 0.3s;
+}
+#nav-banner a:hover {
+  color: #ffd700; /* Gold on hover */
+}
+
+/* Guide icon and greeting container */
+#header-area {
+  margin-top: 70px; /* to go below nav bar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: 'UnifrakturCook', cursive;
+  padding: 20px;
+  color: #ccc;
+}
+
+/* Placeholder for guide picture */
+#guide-image {
+  width: 100px;
+  height: 100px;
+  background-color: #555; /* placeholder grey */
+  border-radius: 50%;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-  flex-direction: column;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-#cover h1 {
-  color: #fff;
-  font-size: 2em;
-  margin-bottom: 20px;
-}
-
-#nameInput {
-  padding: 10px;
-  font-size: 1em;
-  border-radius: 5px;
-  border: none;
-  width: 250px;
-  max-width: 80%;
-  margin-bottom: 20px;
-}
-
-#submitName {
-  padding: 10px 20px;
-  font-size: 1em;
-  background-color: #6495ED; /* Cornflower Blue */
-  color: #fff;
-  border: none;
-  border-radius: 5px;
+  font-size: 24px;
+  color: #ccc;
   cursor: pointer;
-  transition: background-color 0.3s;
+  border: 2px solid #888;
+  transition: transform 0.3s;
+}
+#guide-image:hover {
+  transform: scale(1.1);
 }
 
-#submitName:hover {
-  background-color: #4682B4;
+/* Greeting text */
+#greeting-text {
+  font-size: 2em;
+  background: linear-gradient(to right, #ccc, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
 }
 
 /* Main message center styles */
@@ -96,39 +117,38 @@
   max-width: 700px;
   margin: 0 auto;
   text-align: center;
+  font-family: 'UnifrakturCook', cursive;
+  color: #ccc;
 }
-
-/* Header */
 #header {
-  color: #fff;
   font-size: 2em;
   margin-bottom: 20px;
 }
-
-/* Mailbox icon top right corner */
-#mailbox {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  font-size: 50px;
-  cursor: pointer;
-  animation: pulse 2s infinite;
-  display: none; /* Hidden until user has entered name and read initial message */
-  color: #4B0082; /* Deep purple */
-  z-index: 4;
+#header span {
+  color: #fff;
 }
 
+/* Mailbox icon style - positioned bottom right for visibility */
+#mailbox {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  font-size: 60px;
+  cursor: pointer;
+  animation: pulse 2s infinite;
+  display: none; /* Hidden until user enters name and initial message */
+  background: linear-gradient(to right, #4B0082, #8A2BE2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  z-index: 8;
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+}
 @keyframes pulse {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.1); opacity: 0.7; }
   100% { transform: scale(1); opacity: 1; }
-}
-
-/* Greeting message */
-#greeting {
-  color: #fff;
-  font-size: 1.5em;
-  margin-bottom: 20px;
 }
 
 /* Message box styling */
@@ -147,12 +167,7 @@
   font-family: cursive;
   font-size: 1.2em;
   color: #333;
-  border-top: 10px solid #4B0082; /* Deep purple border for style */
-}
-
-/* Hide message center when not active */
-#message-center {
-  display: none;
+  border-top: 10px solid #4B0082; /* Deep purple */
 }
 </style>
 </head>
@@ -161,22 +176,26 @@
 <!-- Starry background -->
 <div id="stars"></div>
 
-<!-- Cover page for name input -->
-<div id="cover">
-  <h1>Welcome to Zen's Messages</h1>
-  <p style="color:#ccc;">Enter your gamer name to receive personalized messages</p>
-  <input type="text" id="nameInput" placeholder="Gamer Name" />
-  <br />
-  <button id="submitName">Enter</button>
+<!-- Navigation menu -->
+<div id="nav-banner">
+  <a href="#instructions">Instructions</a>
+  <a href="#contact">Contact</a>
+  <a href="#about">About</a>
+  <a href="#shop">Shop</a>
+</div>
+
+<!-- Header area with guide icon and greeting -->
+<div id="header-area">
+  <div id="greeting-text">Welcome back...</div>
+  <div id="guide-image" title="Click for a greeting">☕</div>
 </div>
 
 <!-- Main content area -->
 <div id="main">
-  <div id="header">Welcome back, <span id="gamerName"></span>...</div>
-  <div id="greeting">Here's a special message for you!</div>
+  <!-- Content for instructions, contact, about, shop can be added here if needed -->
 </div>
 
-<!-- Mailbox icon -->
+<!-- Mailbox icon (styled as a cool icon) -->
 <div id="mailbox">&#128236;</div>
 
 <!-- Message center -->
@@ -184,11 +203,8 @@
 
 <script>
   const starsContainer = document.getElementById('stars');
-  const cover = document.getElementById('cover');
-  const submitBtn = document.getElementById('submitName');
-  const nameInput = document.getElementById('nameInput');
-  const main = document.getElementById('main');
-  const headerSpan = document.getElementById('gamerName');
+  const guideImage = document.getElementById('guide-image');
+  const headerText = document.getElementById('greeting-text');
   const mailbox = document.getElementById('mailbox');
   const messageBox = document.getElementById('message-box');
 
@@ -207,62 +223,61 @@
       starsContainer.appendChild(star);
     }
   }
+  createStars(100);
 
-  createStars(100); // Create 100 tiny stars
-
-  // Save name and initialize
+  // Initialize function
   function initialize() {
     const savedName = localStorage.getItem('gamerName');
     const hasRead = localStorage.getItem('hasReadMessage');
 
     if (savedName) {
-      // Skip cover, show main
-      cover.style.display = 'none';
-      main.style.display = 'block';
-      headerSpan.textContent = savedName;
+      // User has entered name before
+      headerText.textContent = 'Welcome back, ' + savedName + '...';
+      document.querySelector('#header-area').appendChild(headerText);
+      document.querySelector('#header-area').insertBefore(headerText, guideImage);
+      document.getElementById('greeting-text').style.display = 'none';
+
       if (hasRead === 'true') {
+        // Already read message
         showMessageCenter();
       } else {
-        // Show mailbox icon if user hasn't read the message yet
+        // Show mailbox to prompt message
         mailbox.style.display = 'block';
       }
+    } else {
+      // No name, show the greeting prompt
+      headerText.textContent = 'Welcome back...';
+      document.querySelector('#header-area').appendChild(headerText);
     }
   }
 
-  // Handle name submission
-  submitBtn.addEventListener('click', () => {
-    const name = nameInput.value.trim();
-    if (name) {
-      localStorage.setItem('gamerName', name);
-      localStorage.setItem('hasReadMessage', 'false');
-      headerSpan.textContent = name;
-      // Hide cover and show main
-      cover.style.display = 'none';
-      main.style.display = 'block';
-      mailbox.style.display = 'block';
-    }
+  // Handle guide icon click for greeting message
+  guideImage.addEventListener('click', () => {
+    alert("Hello, brave gamer! Here's a special message just for you!");
   });
 
-  // Show message center
+  // Handle mailbox click to show message
   function showMessageCenter() {
-    // Hide mailbox icon
     mailbox.style.display = 'none';
-    // Show message box
     messageBox.innerHTML = `
       <div>Dearest, Reader Friend, Thank you for subscribing to my Instagram and YouTube channel, I'll be sure to follow you back if you have a channel. Be sure to come back, bookmark this site for future messages! Zen.</div>
     `;
     messageBox.style.display = 'block';
   }
 
-  // Handle mailbox click
   mailbox.addEventListener('click', () => {
     showMessageCenter();
     localStorage.setItem('hasReadMessage', 'true');
   });
 
-  // Initialize on load
+  // Additional: Save gamer name and greet
+  function setGamerName(name) {
+    localStorage.setItem('gamerName', name);
+    headerText.textContent = 'Welcome back, ' + name + '...';
+  }
+
+  // Call initialize on load
   window.onload = initialize;
 </script>
-
 </body>
 </html>
