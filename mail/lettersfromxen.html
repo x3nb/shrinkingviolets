@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Personal Message Site</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: black;
+    overflow: hidden;
+  }
+
+  /* Stars background animation */
+  #stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 0;
+  }
+
+  /* Generate many tiny stars with animation */
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    width: 2px;
+    height: 2px;
+    animation: rise 5s linear forwards;
+  }
+
+  @keyframes rise {
+    from { transform: translateY(0); opacity: 0.8; }
+    to { transform: translateY(-200px); opacity: 0; }
+  }
+
+  /* Cover page styles */
+#cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#cover h1 {
+  color: #fff;
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+#nameInput {
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 5px;
+  border: none;
+  width: 250px;
+  max-width: 80%;
+  margin-bottom: 20px;
+}
+
+#submitName {
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #6495ED; /* Cornflower Blue */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#submitName:hover {
+  background-color: #4682B4;
+}
+
+/* Main message center styles */
+#main {
+  display: none; /* Hidden initially, shown after name entry */
+  position: relative;
+  z-index: 5;
+  padding: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Header */
+#header {
+  color: #fff;
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+/* Mailbox icon top right corner */
+#mailbox {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-size: 50px;
+  cursor: pointer;
+  animation: pulse 2s infinite;
+  display: none; /* Hidden until user has entered name and read initial message */
+  color: #4B0082; /* Deep purple */
+  z-index: 4;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Greeting message */
+#greeting {
+  color: #fff;
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+/* Message box styling */
+#message-box {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  display: none; /* Hidden initially, shown after clicking mailbox */
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 5;
+  font-family: cursive;
+  font-size: 1.2em;
+  color: #333;
+  border-top: 10px solid #4B0082; /* Deep purple border for style */
+}
+
+/* Hide message center when not active */
+#message-center {
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<!-- Starry background -->
+<div id="stars"></div>
+
+<!-- Cover page for name input -->
+<div id="cover">
+  <h1>Welcome to Zen's Messages</h1>
+  <p style="color:#ccc;">Enter your gamer name to receive personalized messages</p>
+  <input type="text" id="nameInput" placeholder="Gamer Name" />
+  <br />
+  <button id="submitName">Enter</button>
+</div>
+
+<!-- Main content area -->
+<div id="main">
+  <div id="header">Welcome back, <span id="gamerName"></span>...</div>
+  <div id="greeting">Here's a special message for you!</div>
+</div>
+
+<!-- Mailbox icon -->
+<div id="mailbox">&#128236;</div>
+
+<!-- Message center -->
+<div id="message-box"></div>
+
+<script>
+  const starsContainer = document.getElementById('stars');
+  const cover = document.getElementById('cover');
+  const submitBtn = document.getElementById('submitName');
+  const nameInput = document.getElementById('nameInput');
+  const main = document.getElementById('main');
+  const headerSpan = document.getElementById('gamerName');
+  const mailbox = document.getElementById('mailbox');
+  const messageBox = document.getElementById('message-box');
+
+  // Generate stars
+  function createStars(count) {
+    for (let i = 0; i < count; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.width = '2px';
+      star.style.height = '2px';
+      star.style.transform = 'translateY(0)';
+      star.style.opacity = Math.random();
+      star.style.animationDuration = (3 + Math.random() * 2) + 's';
+      starsContainer.appendChild(star);
+    }
+  }
+
+  createStars(100); // Create 100 tiny stars
+
+  // Save name and initialize
+  function initialize() {
+    const savedName = localStorage.getItem('gamerName');
+    const hasRead = localStorage.getItem('hasReadMessage');
+
+    if (savedName) {
+      // Skip cover, show main
+      cover.style.display = 'none';
+      main.style.display = 'block';
+      headerSpan.textContent = savedName;
+      if (hasRead === 'true') {
+        showMessageCenter();
+      } else {
+        // Show mailbox icon if user hasn't read the message yet
+        mailbox.style.display = 'block';
+      }
+    }
+  }
+
+  // Handle name submission
+  submitBtn.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    if (name) {
+      localStorage.setItem('gamerName', name);
+      localStorage.setItem('hasReadMessage', 'false');
+      headerSpan.textContent = name;
+      // Hide cover and show main
+      cover.style.display = 'none';
+      main.style.display = 'block';
+      mailbox.style.display = 'block';
+    }
+  });
+
+  // Show message center
+  function showMessageCenter() {
+    // Hide mailbox icon
+    mailbox.style.display = 'none';
+    // Show message box
+    messageBox.innerHTML = `
+      <div>Dearest, Reader Friend, Thank you for subscribing to my Instagram and YouTube channel, I'll be sure to follow you back if you have a channel. Be sure to come back, bookmark this site for future messages! Zen.</div>
+    `;
+    messageBox.style.display = 'block';
+  }
+
+  // Handle mailbox click
+  mailbox.addEventListener('click', () => {
+    showMessageCenter();
+    localStorage.setItem('hasReadMessage', 'true');
+  });
+
+  // Initialize on load
+  window.onload = initialize;
+</script>
+
+</body>
+</html>
