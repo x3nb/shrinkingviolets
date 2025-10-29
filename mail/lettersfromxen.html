@@ -2,39 +2,89 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Personal Message Site</title>
-<!-- Import a gothic font from Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet" />
-
+<title>Messages from Zen</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Lora&display=swap" rel="stylesheet" />
 <style>
   body {
     margin: 0;
-    font-family: 'UnifrakturCook', cursive;
-    background-color: black;
-    overflow: hidden;
+    background: linear-gradient(to bottom, #3b0064, #1a1a1a);
+    font-family: 'Lora', serif;
+    color: #d3d3d3;
+    font-size: 1.2em;
+    padding: 20px;
   }
+  h1 {
+    font-family: 'Cinzel', serif;
+    color: #89CFF0;
+  }
+  #guide {
+    background-color: rgba(0,0,0,0.7);
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: auto;
+  }
+  .icon {
+    display: inline-block;
+    margin: 10px;
+    cursor: pointer;
+    font-size: 2em;
+  }
+</style>
+</head>
+<body>
 
-  /* Stars background animation */
-  #stars {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    z-index: 0;
-  }
+<div id="guide">
+  <h1>Messages from Zen</h1>
+  <div id="message"></div>
+  <div id="icons">
+    <!-- Icons for mystery messages -->
+    <div class="icon" data-message="The stars whisper secrets." data-sound="tone1.mp3">✨</div>
+    <div class="icon" data-message="A new adventure awaits." data-sound="tone2.mp3">🗝️</div>
+    <div class="icon" data-message="Mysteries abound." data-sound="tone3.mp3">🔮</div>
+  </div>
+</div>
 
-  .star {
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
-    width: 2px;
-    height: 2px;
-    animation: rise 5s linear forwards;
+<!-- Audio elements for sounds -->
+<audio id="sound1" src="tone1.mp3"></audio>
+<audio id="sound2" src="tone2.mp3"></audio>
+<audio id="sound3" src="tone3.mp3"></audio>
+
+<script>
+  const messageDiv = document.getElementById('message');
+  const icons = document.querySelectorAll('.icon');
+
+function askName() {
+  let name = localStorage.getItem('userName');
+  if (!name) {
+    name = prompt("Who are you? What should I call you?");
+    if (name) localStorage.setItem('userName', name);
   }
+  greetUser(name);
+}
+
+function greetUser(name) {
+  messageDiv.innerHTML = `Hi there, ${name}! Subscribe to my YouTube Channel for more secret links that will take you to your next Quest! <br><a href="https://youtube.com/yourchannel" target="_blank">Subscribe here</a>`;
+  // Add further interactions here...
+}
+
+// Mystery icon click
+icons.forEach(icon => {
+  icon.addEventListener('click', () => {
+    const msg = icon.getAttribute('data-message');
+    const soundID = 'sound' + (Array.from(icons).indexOf(icon) + 1);
+    document.getElementById(soundID).play();
+    alert(msg); // Or display in styled div
+  });
+});
+
+askName();
+
+</script>
+
+</body>
+</html>  }
 
   @keyframes rise {
     from { transform: translateY(0); opacity: 0.8; }
