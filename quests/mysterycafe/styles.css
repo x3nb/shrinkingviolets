@@ -1,0 +1,122 @@
+/* Canvas for floating bubbles background */
+#starCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: -1;
+}
+
+body {
+  margin: 0;
+  font-family: 'Lora', serif;
+  background-color: #000;
+  color: #f0f0f0;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Title with gradient using Cinzel font */
+.title {
+  font-family: 'Cinzel', serif;
+  font-size: 3em;
+  background: linear-gradient(45deg, #6495ED, #8A2BE2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.2em;
+  text-align: center;
+}
+
+/* Header paragraph */
+header p {
+  font-family: 'Lora', serif;
+  font-size: 1.2em;
+  font-style: italic;
+  text-align: center;
+  margin-top: 0;
+}
+
+/* Quest navigation styles */
+.quest-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 1em;
+  background: #000;
+}
+
+.quest-button {
+  background: transparent;
+  border: 2px solid #6495ED;
+  color: #6495ED;
+  margin: 0.5em;
+  padding: 0.75em 1.5em;
+  cursor: pointer;
+  font-family: 'Lora', serif;
+  font-size: 1em;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.quest-button:hover {
+  background-color: #6495ED;
+  color: #fff;
+}
+
+.quest-container {
+  padding: 2em;
+  max-width: 800px;
+  margin: auto;
+  min-height: 300px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 10px;
+  margin-top: 1em;
+}
+
+h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 2em;
+  color: #8A2BE2;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-top: 1em;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  border-radius: 4px;
+  border: 1px solid #555;
+}
+
+button {
+  margin-top: 1.5em;
+  padding: 0.75em 1.5em;
+  background-color: #6495ED;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'Lora', serif;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #556BEE;
+}
+
+footer {
+  text-align: center;
+  padding: 1em;
+  background: #000;
+  border-top: 2px solid #6495ED;
+  font-size: 0.9em;
+}
