@@ -1,122 +1,270 @@
-/* Canvas for floating bubbles background */
-#starCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  z-index: -1;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Epic Quest</title>
+<!-- Google Fonts for Cinzel and Lora -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<canvas id="starCanvas"></canvas> <!-- Canvas for bubbles -->
+<header>
+  <h1 class="title">🌌 The Epic Quest of the Celestial Seeker 🌟</h1>
+  <p>Embark on your mystical journey. Complete quests to unlock new realms.</p>
+</header>
+
+<nav class="quest-nav">
+  <button id="quest1-btn" class="quest-button" onclick="startQuest(1)">Stars Cafe</button>
+  <button id="quest2-btn" class="quest-button" onclick="startQuest(2)">Hans Knowledge</button>
+  <button id="quest3-btn" class="quest-button" onclick="startQuest(3)">Cheri's Etiquette</button>
+  <button id="quest4-btn" class="quest-button" onclick="startQuest(4)">Final Wisdom</button>
+</nav>
+
+<main>
+  <div id="quest-container" class="quest-container">
+    <!-- Dynamic quest content will appear here -->
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2024 The Celestial Seeker. Seek, Dream, Illuminate.</p>
+</footer>
+
+<script>
+// --- Bubble animation setup ---
+const canvas = document.getElementById('starCanvas');
+const ctx = canvas.getContext('2d');
+
+let bubbles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Bubble class
+class Bubble {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * window.innerWidth;
+    this.y = Math.random() * window.innerHeight + window.innerHeight; // Start below screen
+    this.size = Math.random() * 1.5 + 0.5; // tiny
+    this.speed = Math.random() * 0.2 + 0.05; // slow ascent
+    this.alpha = Math.random() * 0.5 + 0.3; // transparency
+  }
+  update() {
+    this.y -= this.speed;
+    if (this.y < -this.size) {
+      this.reset();
+      this.y = window.innerHeight + this.size;
+    }
+  }
+  draw() {
+    ctx.globalAlpha = this.alpha;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+  }
 }
 
-body {
-  margin: 0;
-  font-family: 'Lora', serif;
-  background-color: #000;
-  color: #f0f0f0;
-  line-height: 1.6;
-  position: relative;
-  overflow-x: hidden;
+// Initialize bubbles
+for (let i = 0; i < 150; i++) {
+  bubbles.push(new Bubble());
 }
 
-/* Title with gradient using Cinzel font */
-.title {
-  font-family: 'Cinzel', serif;
-  font-size: 3em;
-  background: linear-gradient(45deg, #6495ED, #8A2BE2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.2em;
-  text-align: center;
+// Animation loop
+function animate() {
+  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  for (let bubble of bubbles) {
+    bubble.update();
+    bubble.draw();
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+
+// --- Quest system ---
+let currentQuest = 0;
+const questStates = {
+  1: { completed: false, unlocked: true },
+  2: { completed: false, unlocked: false },
+  3: { completed: false, unlocked: false },
+  4: { completed: false, unlocked: false }
+};
+
+function updateButtons() {
+  for (let q=1; q<=4; q++) {
+    const btn = document.getElementById(`quest${q}-btn`);
+    if (questStates[q].completed) {
+      btn.style.backgroundColor = '#555'; // dimmed if completed
+      btn.disabled = true;
+    } else if (questStates[q].unlocked) {
+      btn.style.backgroundColor = '#6495ED'; // active
+      btn.disabled = false;
+    } else {
+      btn.style.backgroundColor = '#333'; // locked
+      btn.disabled = true;
+    }
+  }
 }
 
-/* Header paragraph */
-header p {
-  font-family: 'Lora', serif;
-  font-size: 1.2em;
-  font-style: italic;
-  text-align: center;
-  margin-top: 0;
+function startQuest(qNumber) {
+  currentQuest = qNumber;
+  showQuest();
+  updateButtons();
 }
 
-/* Quest navigation styles */
-.quest-nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 1em;
-  background: #000;
+function showQuest() {
+  const container = document.getElementById('quest-container');
+  container.innerHTML = '';
+  switch(currentQuest) {
+    case 1:
+      showQuest1(container);
+      break;
+    case 2:
+      showQuest2(container);
+      break;
+    case 3:
+      showQuest3(container);
+      break;
+    case 4:
+      showFinalQuest(container);
+      break;
+  }
 }
 
-.quest-button {
-  background: transparent;
-  border: 2px solid #6495ED;
-  color: #6495ED;
-  margin: 0.5em;
-  padding: 0.75em 1.5em;
-  cursor: pointer;
-  font-family: 'Lora', serif;
-  font-size: 1em;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+function showQuest1(container) {
+  container.innerHTML = `
+    <h2>🌟 Stars Cafe</h2>
+    <p>Answer the questions about Lavender and Coffee brews to unlock the next realm.</p>
+    <div>
+      <label>What herb is known for its calming properties and used in lavender teas?</label><br/>
+      <input type="text" id="q1" placeholder="Your answer..."/><br/><br/>
+      
+      <label>What is the primary flavor note in a good espresso?</label><br/>
+      <input type="text" id="q2" placeholder="Your answer..."/><br/><br/>
+      
+      <button onclick="checkQuest1()">Submit</button>
+    </div>
+  `;
 }
 
-.quest-button:hover {
-  background-color: #6495ED;
-  color: #fff;
+function checkQuest1() {
+  const answer1 = document.getElementById('q1').value.toLowerCase();
+  const answer2 = document.getElementById('q2').value.toLowerCase();
+
+  if (answer1.includes('lavender') && (answer2.includes('bitter') || answer2.includes('rich') || answer2.includes('bold'))) {
+    alert('Correct! You have unlocked the next realm.');
+    questStates[1].completed = true;
+    questStates[2].unlocked = true;
+    updateButtons();
+    showHub();
+  } else {
+    alert('Incorrect answers. Try again.');
+  }
 }
 
-.quest-container {
-  padding: 2em;
-  max-width: 800px;
-  margin: auto;
-  min-height: 300px;
-  background: rgba(0,0,0,0.4);
-  border-radius: 10px;
-  margin-top: 1em;
+function showQuest2(container) {
+  container.innerHTML = `
+    <h2>🧠 Hans Knowledge</h2>
+    <p>Answer questions about Wisdom and Understanding to proceed.</p>
+    <div>
+      <label>What is the key to gaining true wisdom?</label><br/>
+      <input type="text" id="q1" placeholder="Your answer..."/><br/><br/>
+      
+      <label>Understanding is often described as a deep ____ of knowledge.</label><br/>
+      <input type="text" id="q2" placeholder="Your answer..."/><br/><br/>
+      
+      <button onclick="checkQuest2()">Submit</button>
+    </div>
+  `;
 }
 
-h2 {
-  font-family: 'Cinzel', serif;
-  font-size: 2em;
-  color: #8A2BE2;
-  margin-bottom: 0.5em;
-  text-align: center;
+function checkQuest2() {
+  const ans1 = document.getElementById('q1').value.toLowerCase();
+  const ans2 = document.getElementById('q2').value.toLowerCase();
+
+  if ((ans1.includes('patience') || ans1.includes('experience')) && (ans2.includes('depth') || ans2.includes('insight'))) {
+    alert('Excellent! Wisdom unlocked.');
+    questStates[2].completed = true;
+    questStates[3].unlocked = true;
+    updateButtons();
+    showHub();
+  } else {
+    alert('Answers not quite right. Try again.');
+  }
 }
 
-label {
-  display: block;
-  margin-top: 1em;
+function showQuest3(container) {
+  container.innerHTML = `
+    <h2>👗 Cheri's Etiquette</h2>
+    <p>Cheri asks you three questions about manners and decorum. Answer correctly to proceed.</p>
+    <div>
+      <label>What is the polite way to greet someone for the first time?</label><br/>
+      <input type="text" id="q1" placeholder="Your answer..."/><br/><br/>
+      
+      <label>Is it appropriate to interrupt during a formal conversation? (Yes/No)</label><br/>
+      <input type="text" id="q2" placeholder="Your answer..."/><br/><br/>
+      
+      <label>What should you do after receiving a gift?</label><br/>
+      <input type="text" id="q3" placeholder="Your answer..."/><br/><br/>
+      
+      <button onclick="checkQuest3()">Submit</button>
+    </div>
+  `;
 }
 
-input[type="text"] {
-  width: 100%;
-  padding: 0.5em;
-  margin-top: 0.5em;
-  border-radius: 4px;
-  border: 1px solid #555;
+function checkQuest3() {
+  const a1 = document.getElementById('q1').value.toLowerCase();
+  const a2 = document.getElementById('q2').value.toLowerCase();
+  const a3 = document.getElementById('q3').value.toLowerCase();
+
+  if ((a1.includes('hello') || a1.includes('hi')) && a2 === 'no' && a3.includes('thank you')) {
+    alert('Excellent manners! You may proceed.');
+    questStates[3].completed = true;
+    questStates[4].unlocked = true;
+    updateButtons();
+    showHub();
+  } else {
+    alert('Incorrect. Please answer all questions correctly.');
+  }
+}
+function showFinalQuest(container) {
+  container.innerHTML = `
+    <h2>🌟 Final Wisdom</h2>
+    <p>Congratulations! You have unlocked the final realm of understanding and enlightenment.</p>
+    <p>Here is a piece of ancient wisdom:</p>
+    <blockquote>"Knowledge speaks, but wisdom listens." - Jimi Hendrix</blockquote>
+    <p style="margin-top:20px; font-family:'Lora'; font-size:1.2em; text-align:center;">
+      What did you think about the quest? Was it fun? Follow me and my siblings on our YouTube channel <a href="https://www.youtube.com/channel/yourchannel" target="_blank" style="color:#ffd700;">here</a> for more adventures and mysteries! - Star
+    </p>
+    <button onclick="showHub()">Back to Hub</button>
+  `;
 }
 
-button {
-  margin-top: 1.5em;
-  padding: 0.75em 1.5em;
-  background-color: #6495ED;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  cursor: pointer;
-  font-family: 'Lora', serif;
-  transition: background-color 0.3s ease;
+// Show hub for easy navigation
+function showHub() {
+  const container = document.getElementById('quest-container');
+  container.innerHTML = `
+    <h2>🌌 Welcome to the Cosmic Hub</h2>
+    <p>Select a quest to continue your journey.</p>
+    <button onclick="startQuest(1)">Stars Cafe</button>
+    <button onclick="startQuest(2)">Hans Knowledge</button>
+    <button onclick="startQuest(3)">Cheri's Etiquette</button>
+    <button onclick="startQuest(4)">Final Wisdom</button>
+  `;
 }
 
-button:hover {
-  background-color: #556BEE;
-}
-
-footer {
-  text-align: center;
-  padding: 1em;
-  background: #000;
-  border-top: 2px solid #6495ED;
-  font-size: 0.9em;
-}
+// Initialize
+updateButtons();
+</script>
+</body>
+</body>
+</html>
