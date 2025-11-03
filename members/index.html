@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Cozy Tea Guild</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        .guild {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            border: 2px solid #9b59b6;
+        }
+
+        .guild h1 {
+            font-family: 'Zilla Slab', serif;
+            font-size: 3em;
+            color: #9b59b6;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+            animation: float 5s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .members {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .member {
+            margin: 10px;
+            border: 2px solid #9b59b6;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 120px;
+            height: 120px;
+            transition: transform 0.3s;
+        }
+
+        .member:hover {
+            transform: scale(1.1);
+            border-color: #1abc9c;
+        }
+
+        .member img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+
+        .member img:hover {
+            filter: grayscale(0%);
+        }
+
+        .wall {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            min-height: 200px;
+            position: relative;
+            border: 2px solid #9b59b6;
+            color: #ffffff; /* Change text color for excerpts */
+        }
+
+        .excerpt {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            border: 2px solid #9b59b6;
+        }
+
+        .excerpt img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .excerpt::before {
+            content: '~';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-size: 2em;
+            color: #9b59b6;
+        }
+
+        .login, .submit-excerpt, .notifications {
+            margin-top: 20px;
+        }
+
+        .login input, .login button, .submit-excerpt input, .submit-excerpt button, .notifications button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .login input, .submit-excerpt input {
+            width: calc(100% - 22px);
+            background: #333;
+            color: #fff;
+            border: 2px solid #9b59b6;
+        }
+
+        .login button, .submit-excerpt button, .notifications button {
+            background: #9b59b6;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login button:hover, .submit-excerpt button:hover, .notifications button:hover {
+            background: #8e44ad;
+        }
+
+        .avatar-upload {
+            margin-top: 20px;
+        }
+
+        .avatar-upload input {
+            display: none;
+        }
+
+        .avatar-upload label {
+            background: #9b59b6;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .avatar-upload label:hover {
+            background: #8e44ad;
+        }
+
+        .notifications {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            border: 2px solid #9b59b6;
+        }
+
+        .notifications p {
+            margin: 5px 0;
+        }
+
+        .profile {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .profile img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #9b59b6;
+        }
+
+        .profile h2 {
+            margin-top: 10px;
+        }
+
+        .profile p {
+            margin-top: 10px;
+        }
+
+        .profiles-section {
+            margin-top: 40px;
+        }
+
+        .profile-card {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+            border: 2px solid #9b59b6;
+        }
+
+        .profile-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #9b59b6;
+            float: left;
+            margin-right: 20px;
+        }
+
+        .profile-card h2 {
+            margin-top: 0;
+            color: #9b59b6;
+        }
+
+        .profile-card p {
+            margin-top: 10px;
+        }
+
+        .social-buttons {
+            margin-top: 10px;
+        }
+
+        .social-button {
+            background: #9b59b6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: background 0.3s;
+        }
+
+        .social-button:hover {
+            background: #8e44ad;
+        }
+
+        .edit-excerpt {
+            background: #9b59b6;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.3s;
+        }
+
+        .edit-excerpt:hover {
+            background: #8e44ad;
+        }
+
+        .floating-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            color: #9b59b6;
+            opacity: 0.8;
+            animation: floatText 10s linear infinite;
+        }
+
+        @keyframes floatText {
+            0% {
+                transform: translate(-50%, -50%) translateX(-100px);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(-50%, -50%) translateX(100px);
+                opacity: 0.8;
+            }
+        }
+
+        a {
+            color: #1abc9c; /* Neon green for links */
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #16a085; /* Darker neon green on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-text">"All that we see or seem is but a dream within a dream."</div>
+    <div class="guild">
+        <h1>The Cozy Tea Guild</h1>
+        <div class="members" id="members">
+            <!-- Member placeholders -->
+            <a href="#profile1"><div class="member" id="member1"><img src="https://3society.neocities.org/COMFYCAFE.IMAGES/MILO.comic.jpeg" alt="Milo"></div></a>
+            <a href="#profile2"><div class="member" id="member2"><img src="https://3society.neocities.org/COMFYCAFE.IMAGES/stellar.star.jpeg" alt="Stell"></div></a>
+            <a href="#profile3"><div class="member" id="member3"><img src="https://3society.neocities.org/COMFYCAFE.IMAGES/CharCat.jpeg" alt="Char"></div></a>
+            <a href="#profile4"><div class="member" id="member4"><img src="https://3society.neocities.org/COMFYCAFE.IMAGES/chimesrat.jpeg" alt="Chimes"></div></a>
+            <a href="#profile5"><div class="member" id="member5"><img src="https://3society.neocities.org/GUILD/JOINUS.jpeg" alt="Member 5"></div></a>
+            <a href="#profile6"><div class="member" id="member6"><img src="https://3society.neocities.org/GUILD/JOINUS.jpeg" alt="Member 6"></div></a>
+            <a href="#profile7"><div class="member" id="member7"><img src="https://3society.neocities.org/GUILD/JOINUS.jpeg" alt="Member 7"></div></a>
+            <a href="#profile8"><div class="member" id="member8"><img src="https://3society.neocities.org/GUILD/JOINUS.jpeg" alt="Member 8"></div></a>
+        </div>
+        <div class="wall" id="wall">
+            <!-- Excerpts will be appended here -->
+        </div>
+        <div class="login">
+            <input type="text" id="name" placeholder="Enter your name">
+            <select id="shakespeareanNames">
+                <option value="">Select a name</option>
+                <option value="Hamlet">Hamlet</option>
+                <option value="Othello">Othello</option>
+                <option value="Romeo">Romeo</option>
+                <option value="Juliet">Juliet</option>
+                <option value="Macbeth">Macbeth</option>
+                <option value="Lady Macbeth">Lady Macbeth</option>
+                <option value="Prospero">Prospero</option>
+                <option value="Miranda">Miranda</option>
+            </select>
+            <button onclick="login()">Login</button>
+        </div>
+        <div class="avatar-upload">
+            <input type="file" id="avatar" accept="image/*">
+            <label for="avatar">Upload Avatar</label>
+        </div>
+        <div class="submit-excerpt">
+            <input type="text" id="excerpt" placeholder="Share an excerpt">
+            <button onclick="submitExcerpt()">Submit Excerpt</button>
+        </div>
+        <div class="notifications" id="notifications">
+            <button onclick="toggleNotifications()">Notifications</button>
+            <div id="notificationList"></div>
+        </div>
+    </div>
+
+    <div class="profiles-section">
+        <div class="profile-card" id="profile1">
+            <img src="https://3society.neocities.org/COMFYCAFE.IMAGES/MILO.comic.jpeg" alt="Milo">
+            <h2><a href="#member1">Milo</a></h2>
+            <p>Herbalist who loves to read Shakespeare.</p>
+            <div class="social-buttons">
+                <button class="https://x3nb.github.io/starcup/Milo/flippablebiocard.html">Milo's Card</button>
+                <button class="social-button">Instagram</button>
+            </div>
+        </div>
+        <div class="profile-card" id="profile2">
+            <img src="https://3society.neocities.org/COMFYCAFE.IMAGES/stellar.star.jpeg" alt="Stell">
+            <h2><a href="#member2">Stell</a></h2>
+            <p>Coffee Shop Owner who loves to play games and knows a lot of puns.</p>
+            <div class="social-buttons">
+                <button class="social-button">YouTube</button>
+                <button class="https://3society.neocities.org/ANIMATIONS/AnimatedGuide/SIMULTANEOUSCHAT">Chat</button>
+            </div>
+        </div>
+        <div class="profile-card" id="profile3">
+            <img src="https://3society.neocities.org/COMFYCAFE.IMAGES/CharCat.jpeg" alt="Char">
+            <h2><a href="#member3">Char</a></h2>
+            <p>Stell's pet; a black and white Tuxedo cat who loves to play games.</p>
+            <div class="social-buttons">
+                <button class="social-button">YouTube</button>
+                <button class="social-button">Instagram</button>
+            </div>
+        </div>
+        <div class="profile-card" id="profile4">
+            <img src="https://3society.neocities.org/COMFYCAFE.IMAGES/chimesrat.jpeg" alt="Chimes">
+            <h2><a href="#member4">Chimes</a></h2>
+            <p>The youngest who is shy and learning how to run the guild.</p>
+            <div class="social-buttons">
+                <button class="social-button">YouTube</button>
+                <button class="social-button">Instagram</button>
+            </div>
+        </div>
+        <div class="profile-card" id="profile5">
+            <img src="https://3society.neocities.org/GUILD/JOINUS.jpeg" alt="Member 5">
+            <h2><a href="#member5">Member 5</a></h2>
+            <p>Excerpt by Member 5: The course of true love never did run smooth.</p>
+            <div class="social-buttons">
+                <button class="social-button">YouTube</button>
+                <button class="social-button">Instagram</button>
+            </div>
+        </div>
+        <div class="profile-card" id="profile6">
+            <img src="https://3society.neocities.org/GUILD/JOINUS.jpeg" alt="Member 6">
+            <h2><a href="#member6">Member 6</a></h2>
+            <p>Excerpt by Member 6: A horse! A horse! My kingdom for a horse!</p>
+            <div class="social-buttons">
+                <button class="social-button">YouTube</button>
+                <button class="social-button">Instagram</button>
+            </div>
+        </div>
+        <div class="profile-card" id="profile7">
+            <img src="https://3society.neocities.org/GUILD/JOINUS.jpeg" alt="Member 7">
+            <h2><a href="#member7">Member 7</a></h2>
+            <p>Excerpt by Member 7: To thine own self be true.</p>
+            <div class="social-buttons">
+                <button class="social-button">YouTube</button>
+                <button class="social-button">Instagram</button>
+            </div>
+        </div>
+        <div class="profile-card" id="profile8">
+            <img src="https://3society.neocities.org/GUILD/JOINUS.jpeg" alt="Member 8">
+            <h2><a href="#member8">Member 8</a></h2>
+            <p>Excerpt by Member 8: All the world's a stage.</p>
+            <div class="social-buttons">
+                <button class="social-button">YouTube</button>
+                <button class="social-button">Instagram</button>
+            </div>
+        </div>
+    </div>
+
+     <script>
+        const shakespeareanNames = ["Hamlet", "Othello", "Romeo", "Juliet", "Macbeth", "Lady Macbeth", "Prospero", "Miranda"];
+        let excerpts = [];
+
+        function login() {
+            const nameInput = document.getElementById('name').value;
+            const selectedName = document.getElementById('shakespeareanNames').value;
+            const name = nameInput || selectedName;
+            if (name && shakespeareanNames.includes(name)) {
+                alert(`Welcome, ${name}!`);
+                localStorage.setItem('characterName', name);
+                // Here you would handle the actual login logic
+            } else {
+                alert('Name not recognized. Please try again.');
+            }
+        }
+
+        function addExcerpt(excerpt, avatar) {
+            const wall = document.getElementById('wall');
+            const excerptDiv = document.createElement('div');
+            excerptDiv.className = 'excerpt';
+            const avatarImg = document.createElement('img');
+            avatarImg.src = avatar;
+            avatarImg.alt = 'Avatar';
+            excerptDiv.appendChild(avatarImg);
+            const excerptText = document.createElement('span');
+            excerptText.innerText = excerpt;
+            excerptDiv.appendChild(excerptText);
+            wall.appendChild(excerptDiv);
+            excerpts.push({ excerpt, avatar });
+            localStorage.setItem('excerpts', JSON.stringify(excerpts));
+        }
+
+        function submitExcerpt() {
+            const excerptInput = document.getElementById('excerpt').value;
+            const avatar = localStorage.getItem('avatar');
+            if (excerptInput && avatar) {
+                addExcerpt(excerptInput, avatar);
+                document.getElementById('excerpt').value = '';
+            } else {
+                alert('Please upload an avatar and enter an excerpt.');
+            }
+        }
+
+        document.getElementById('avatar').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatar = document.createElement('img');
+                    avatar.src = e.target.result;
+                    avatar.alt = 'Avatar';
+                    avatar.style.width = '100px';
+                    avatar.style.height = '100px';
+                    avatar.style.borderRadius = '50%';
+                    avatar.style.border = '2px solid #ffd700';
+                    document.getElementById('members').appendChild(avatar);
+                    localStorage.setItem('avatar', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Load saved data from local storage
+        window.onload = function() {
+            const savedName = localStorage.getItem('characterName');
+            const savedAvatar = localStorage.getItem('avatar');
+            const savedExcerpts = JSON.parse(localStorage.getItem('excerpts'));
+            if (savedName) {
+                document.getElementById('name').value = savedName;
+            }
+            if (savedAvatar) {
+                const avatar = document.createElement('img');
+                avatar.src = savedAvatar;
+                avatar.alt = 'Avatar';
+                avatar.style.width = '100px';
+                avatar.style.height = '100px';
+                avatar.style.borderRadius = '50%';
+                avatar.style.border = '2px solid #ffd700';
+                document.getElementById('members').appendChild(avatar);
+            }
+            if (savedExcerpts) {
+                savedExcerpts.forEach(({ excerpt, avatar }) => addExcerpt(excerpt, avatar));
+            }
+        };
+
+        // Example excerpts
+        addExcerpt('To be, or not to be, that is the question.', 'https://3society.neocities.org/GUILD/MILO.comic.jpeg');
+        addExcerpt('All the world\'s a stage, and all the men and women merely players.', 'https://3society.neocities.org/GUILD/JOIN%20US%20elevatorbuttongreen.jpeg');
+    </script>
