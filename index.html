@@ -20,6 +20,11 @@
     transition: opacity 0.6s ease;
   }
 
+  #terminal ul { list-style: none; padding: 0; margin: 1rem 0; }
+  #terminal li { cursor: pointer; padding: 0.3rem 0; }
+
+  #terminal li:hover { color: #ffcc00; text-decoration: underline; }
+
   /* Realm containers */
   .realm {
     position: absolute;
@@ -33,7 +38,7 @@
   .show { display: flex; opacity: 1; }
   .hide { opacity: 0; }
 
-  /* Realm background gradients */
+  /* Realm backgrounds */
   #realm-star { background: linear-gradient(135deg, #2b0040, #5c00a3); }
   #realm-milo { background: linear-gradient(135deg, #c6fff0, #80e1c1); }
   #realm-miki { background: linear-gradient(135deg, #fffa65, #00d4ff); }
@@ -101,10 +106,10 @@
 <div id="terminal">
   <p>Press 1–4 to enter a realm:</p>
   <ul>
-    <li>1 – STAR</li>
-    <li>2 – MILO</li>
-    <li>3 – MIKI</li>
-    <li>4 – CHARI</li>
+    <li data-key="1" class="terminal-link">1 – STAR</li>
+    <li data-key="2" class="terminal-link">2 – MILO</li>
+    <li data-key="3" class="terminal-link">3 – MIKI</li>
+    <li data-key="4" class="terminal-link">4 – CHARI</li>
   </ul>
 </div>
 
@@ -144,7 +149,7 @@
       shard.style.height = (10+Math.random()*20)+'px';
       shard.style.animationDelay = (Math.random()*0.8)+'s';
       container.appendChild(shard);
-      setTimeout(()=>shard.remove(), 1000); // remove after animation
+      setTimeout(()=>shard.remove(), 1000);
     }
   }
 
@@ -172,34 +177,6 @@
     }
   }
 
-  document.addEventListener('keydown', (e)=>{
-    const key = e.key;
-    if (realms[key]) {
-      terminal.style.opacity = 0;
-      setTimeout(()=>{
-        terminal.style.display = 'none';
-        const realm = realms[key];
-        realm.classList.add('show');
-
-        // Trigger realm-specific intro animation
-        switch(key){
-          case '1': spawnShards(realm); break;
-          case '2': spawnParticles(realm, 'rgba(255,255,255,0.6)'); break;
-          case '4': spawnMist(realm); break;
-          // MIKI's pulse is already animating
-        }
-
-      }, 600);
-    }
-  });
-
-  // Pre-spawn particles/mist for MILO and CHARI for ambiance
-  spawnParticles(document.getElementById('realm-milo'), 'rgba(255,255,255,0.2)');
-  spawnMist(document.getElementById('realm-chari'));
-
-
-  const terminalLinks = document.querySelectorAll('.terminal-link');
-
   function enterRealm(key) {
     const realm = realms[key];
     if (!realm) return;
@@ -209,12 +186,11 @@
       terminal.style.display = 'none';
       realm.classList.add('show');
 
-      // Trigger realm-specific intro animation
       switch(key){
         case '1': spawnShards(realm); break;
         case '2': spawnParticles(realm, 'rgba(255,255,255,0.6)'); break;
         case '4': spawnMist(realm); break;
-        // MIKI pulse already animating
+        // MIKI pulse is already animating
       }
     }, 600);
   }
@@ -225,15 +201,19 @@
   });
 
   // Click support
-  terminalLinks.forEach(link => {
+  document.querySelectorAll('.terminal-link').forEach(link => {
     link.addEventListener('click', ()=>{
       const key = link.getAttribute('data-key');
       enterRealm(key);
     });
   });
-</script>
 
+  // Ambient particles/mist pre-spawn
+  spawnParticles(document.getElementById('realm-milo'), 'rgba(255,255,255,0.2)');
+  spawnMist(document.getElementById('realm-chari'));
+</script>
 </body>
 </html>
+
 
 
