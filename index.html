@@ -1,383 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Chez Spiders Lore</title>
-
-<!-- Google Fonts for Edwardian Style -->
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-
-<!-- Additional Styles -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adventure Quest Café | Terminal to Realms</title>
 <style>
-  /* Reset & Base Styles */
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    font-family: 'Great Vibes', cursive;
-    position: relative;
-    min-height: 100vh;
-    background: radial-gradient(circle at center, #4a6fa5, #1b2b3a, #000);
-    overflow-x: hidden;
-    color: #eee;
-  }
-
-  /* Bubbles Canvas */
-  #bubbles-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
-
-  /* Title Styles */
-  h1 {
-    position: relative;
-    text-align: center;
-    font-size: 3em;
-    margin-top: 40px;
-    background: linear-gradient(45deg, #7fa9e0, #a9b0b9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    z-index: 1;
-  }
-
-  /* Web Illustration */
-  #web-container {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-  }
-
-  /* Web SVG */
-  #web {
-    width: 300px;
-    height: 300px;
-  }
-
-  /* Gallery Styles */
-  #gallery {
-    margin: 40px auto;
-    width: 90%;
-    max-width: 1000px;
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: #111; color: #fff;
+    font-family: 'Courier New', monospace;
     overflow: hidden;
-    position: relative;
   }
 
-  .slide-track {
-    display: flex;
-    transition: transform 0.5s ease;
+  /* Terminal */
+  #terminal {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    width: 100%; height: 100%;
+    background: #111;
+    transition: opacity 0.6s ease;
   }
 
-  .slide {
-    min-width: 200px;
-    margin: 0 10px;
-    flex-shrink: 0;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    transition: transform 0.3s;
-  }
-
-  .slide:hover {
-    transform: scale(1.05);
-  }
-
-  .slide img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  /* Comment Section */
-  #comments-section {
-    margin: 50px auto;
-    width: 90%;
-    max-width: 800px;
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  }
-
-  #comments-section h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #eee;
-  }
-
-  #comment-form {
-    display: flex;
+  /* Realm containers */
+  .realm {
+    position: absolute;
+    top:0; left:0; width:100%; height:100%;
+    display: flex; justify-content:center; align-items:center;
+    font-size: 2rem; color:#fff;
+    opacity: 0; transition: opacity 0.6s ease;
     flex-direction: column;
-    gap: 10px;
   }
 
-  #comment-form textarea {
-    resize: vertical;
-    min-height: 60px;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    font-family: 'Great Vibes', cursive;
-    font-size: 1em;
+  .show { display: flex; opacity: 1; }
+  .hide { opacity: 0; }
+
+  /* Realm placeholder backgrounds & animations */
+  #realm-star { background: linear-gradient(135deg, #2b0040, #5c00a3); }
+  #realm-milo { background: linear-gradient(135deg, #c6fff0, #80e1c1); }
+  #realm-miki { background: linear-gradient(135deg, #fffa65, #00d4ff); }
+  #realm-chari { background: linear-gradient(135deg, #d6b3ff, #f4d7ff); }
+
+  /* Particle effect placeholders */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: float 4s infinite ease-in-out;
   }
 
-  #comment-form button {
-    align-self: flex-end;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #7fa9e0, #a9b0b9);
-    color: #fff;
-    cursor: pointer;
-    font-family: 'Great Vibes', cursive;
-    font-size: 1em;
-    transition: background 0.3s;
+  @keyframes float {
+    0% { transform: translateY(0px) scale(0.5); }
+    50% { transform: translateY(-50px) scale(1); }
+    100% { transform: translateY(0px) scale(0.5); }
   }
 
-  #comment-form button:hover {
-    background: linear-gradient(135deg, #5a8edb, #8ba0c2);
+  /* Glitch flicker placeholder for STAR */
+  @keyframes glitch {
+    0%, 100% { opacity: 1; transform: translateX(0); }
+    20% { opacity: 0.6; transform: translateX(-5px); }
+    40% { opacity: 0.8; transform: translateX(5px); }
+    60% { opacity: 0.5; transform: translateX(-3px); }
+    80% { opacity: 0.7; transform: translateX(3px); }
   }
 
-  #comments {
-    margin-top: 20px;
+  #realm-star .glitch-text { animation: glitch 0.5s infinite; font-size: 3rem; color: #fff; }
+  #realm-miki .pulse { animation: pulse 1.2s infinite; }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
   }
 
-  .comment {
-    background: rgba(255,255,255,0.1);
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-  }
-
-  /* Responsive */
-  @media(max-width: 768px){
-    h1 {
-      font-size: 2em;
-    }
-    #web {
-      width: 200px;
-      height: 200px;
-    }
-    .slide {
-      min-width: 150px;
-    }
-  }
 </style>
 </head>
 <body>
 
-<!-- Bubbles Canvas -->
-<canvas id="bubbles-canvas"></canvas>
-
-<!-- Site Title -->
-<h1>Chez Spiders Lore</h1>
-
-<!-- Web Illustration -->
-<div id="web-container">
-  <!-- SVG Web Illustration -->
-  <svg id="web" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-    <!-- Central Web Web and Strands -->
-    <circle cx="150" cy="150" r="10" fill="#ccc" />
-    <!-- Radial Lines -->
-    <line x1="150" y1="150" x2="150" y2="50" stroke="#888" stroke-width="1" />
-    <line x1="150" y1="150" x2="250" y2="150" stroke="#888" stroke-width="1" />
-    <line x1="150" y1="150" x2="150" y2="250" stroke="#888" stroke-width="1" />
-    <line x1="150" y1="150" x2="50" y2="150" stroke="#888" stroke-width="1" />
-    <line x1="150" y1="150" x2="200" y2="100" stroke="#888" stroke-width="1" />
-    <line x1="150" y1="150" x2="100" y2="200" stroke="#888" stroke-width="1" />
-    <line x1="150" y1="150" x2="200" y2="200" stroke="#888" stroke-width="1" />
-    <line x1="150" y1="150" x2="100" y2="100" stroke="#888" stroke-width="1" />
-
-    <!-- Web Circles for Web Layers -->
-    <circle cx="150" cy="150" r="50" stroke="#666" stroke-width="0.5" fill="none" />
-    <circle cx="150" cy="150" r="100" stroke="#666" stroke-width="0.5" fill="none" />
-    <circle cx="150" cy="150" r="150" stroke="#666" stroke-width="0.5" fill="none" />
-  </svg>
+<div id="terminal">
+  <p>Press 1–4 to enter a realm:</p>
+  <ul>
+    <li>1 – STAR</li>
+    <li>2 – MILO</li>
+    <li>3 – MIKI</li>
+    <li>4 – CHARI</li>
+  </ul>
 </div>
 
-<!-- Gallery Slider -->
-<div id="gallery">
-  <div class="slide-track" id="slide-track">
-    <div class="slide"><img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 1"></div>
-    <div class="slide"><img src="https://images.unsplash.com/photo-1612832026528-4a3b411d2f6f?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 2"></div>
-    <div class="slide"><img src="https://images.unsplash.com/photo-1612832026528-4a3b411d2f6f?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 3"></div>
-    <div class="slide"><img src="https://images.unsplash.com/photo-1612832026528-4a3b411d2f6f?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 4"></div>
-    <div class="slide"><img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.4&auto=format&fit=crop&w=600&q=60" alt="Fashion 5"></div>
-    <!-- Add more images as needed -->
-  </div>
+<!-- Realm Containers -->
+<div id="realm-star" class="realm">
+  <div class="glitch-text">🌑 STAR Realm</div>
 </div>
 
-<!-- Comment Section -->
-<div id="comments-section">
-  <h2>Chez Spiders Lore - Comments</h2>
-  <form id="comment-form">
-    <textarea id="comment-input" placeholder="Share your thoughts..."></textarea>
-    <button type="submit">Post Comment</button>
-  </form>
-  <div id="comments"></div>
+<div id="realm-milo" class="realm">
+  <div>🌿 MILO Realm</div>
 </div>
 
-<!-- Scripts -->
-  <script>
-      console.log('=== Spider Web Loading Starting ==='); // Debug
+<div id="realm-miki" class="realm">
+  <div class="pulse">⚡ MIKI Realm</div>
+</div>
 
-      // Ensure DOM Ready (Bulletproof Spider Intro + Reel + Narration)
-      document.addEventListener('DOMContentLoaded', () => {
-          console.log('DOM ready – Web armed.'); // Debug
+<div id="realm-chari" class="realm">
+  <div>🌸 CHARI Realm</div>
+</div>
 
-          const spiderIntro = document.getElementById('spiderIntro');
-          const loadingContainer = document.getElementById('loadingContainer');
-          const spiderAnchor = document.getElementById('spiderAnchor');
-          const reelBar = document.getElementById('reelBar');
-          const reelFill = document.getElementById('reelFill');
-          const reelText = document.getElementById('reelText');
-          const narrationContainer = document.getElementById('narrationContainer');
-          const charlotteNarration = document.getElementById('charlotteNarration');
-          const dynamicWindow = document.getElementById('dynamicWindow');
+<script>
+  const terminal = document.getElementById('terminal');
+  const realms = {
+    '1': document.getElementById('realm-star'),
+    '2': document.getElementById('realm-milo'),
+    '3': document.getElementById('realm-miki'),
+    '4': document.getElementById('realm-chari'),
+  };
 
-          let reelProgress = 0;
-          const reelTexts = [
-              'Web briefing... 0%',
-              'Shadows gathering... 33%',
-              'Characters awakening... 66%',
-              'Premiere imminent... 100%'
-          ];
+  document.addEventListener('keydown', (e) => {
+    const key = e.key;
+    if (realms[key]) {
+      // Fade out terminal
+      terminal.style.opacity = 0;
 
-          // JS Typewriter Function (Full Char-by-Char for No Cutoff)
-          function typeNarration() {
-              const fullText = charlotteNarration.innerHTML; // Get full content (greeting + tale)
-              charlotteNarration.innerHTML = ''; // Clear for typing
-              let i = 0;
-              const cursor = document.createElement('span');
-              cursor.innerHTML = '|';
-              cursor.style.borderRight = '2px solid #6495ED';
-              cursor.style.animation = 'blink-caret 0.75s step-end infinite'; // Reuse CSS blink
-              charlotteNarration.appendChild(cursor);
+      setTimeout(() => {
+        terminal.style.display = 'none';
+        const realm = realms[key];
+        realm.classList.add('show');
+      }, 600);
+    }
+  });
 
-              function typeChar() {
-                  if (i < fullText.length) {
-                      charlotteNarration.innerHTML = fullText.substring(0, i + 1) + cursor.outerHTML;
-                      i++;
-                      // Progress log every 100 chars (e.g., "Typing 'cuppa' – Charlotte continues!")
-                      if (i % 100 === 0) {
-                          console.log(`Typing progress: ${i} chars – Charlotte continues!`); // Debug
-                      }
-                      setTimeout(typeChar, 100); // 100ms per char (~7.5s total for 750 chars)
-                  } else {
-                      charlotteNarration.innerHTML = fullText; // Final full text
-                      cursor.remove(); // End cursor
-                      console.log('Narration complete – Full tale spun!'); // Debug
-                      // Reveal window after typing
-                      setTimeout(() => {
-                          dynamicWindow.style.opacity = '1';
-                          dynamicWindow.style.transform = 'scale(1)';
-                          dynamicWindow.classList.add('visible');
-                      }, 500); // 0.5s pause for read
-                  }
-              }
-              typeChar();
-          }
+  // Optional: add floating particles for MILO & CHARI
+  function spawnParticles(container, color) {
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      p.style.width = p.style.height = Math.random()*8+4+'px';
+      p.style.background = color;
+      p.style.left = Math.random()*100+'%';
+      p.style.top = Math.random()*100+'%';
+      p.style.animationDelay = (Math.random()*4)+'s';
+      container.appendChild(p);
+    }
+  }
 
-          // Spider Intro Sequence (6s Dramatic Total)
-          setTimeout(() => {
-              console.log('Spider web armed – Drop!'); // Debug
-          }, 100);
+  spawnParticles(document.getElementById('realm-milo'), 'rgba(255,255,255,0.6)');
+  spawnParticles(document.getElementById('realm-chari'), 'rgba(255, 200, 255,0.5)');
 
-          // Hide Intro & Reveal Reel (After 6s)
-          setTimeout(() => {
-              spiderIntro.classList.add('hidden');
-              spiderAnchor.classList.add('visible'); // Perch spider on wall
-              console.log('Spider intro complete – Reel briefing.'); // Debug
-              setTimeout(() => {
-                  reelBar.classList.add('visible');
-                  reelText.classList.add('visible');
-                  console.log('Reel threaded.'); // Debug
-              }, 500);
-          }, 6000);
-
-          // Reel Progression (3s – With Disintegrate at 100%)
-          setTimeout(() => {
-              const interval = setInterval(() => {
-                  console.log('Reel step:', reelProgress + 1); // Debug
-                  reelProgress += 33;
-                  reelFill.style.width = reelProgress + '%';
-                  reelText.textContent = reelTexts[Math.floor(reelProgress / 33)] || 'Premiere... 100%';
-                  if (reelProgress >= 100) {
-                      clearInterval(interval);
-                      console.log('Reel complete – Disintegrate 100%!'); // Debug
-                      reelText.classList.add('disintegrate'); // Trigger shatter
-                      setTimeout(() => {
-                          reelText.style.display = 'none';
-                          reelBar.style.display = 'none'; // Hide reel post-shatter
-                          console.log('Reel shattered – Narration spins immediately!'); // Debug
-                          // Bulletproof reveal: Force styles + class
-                          narrationContainer.style.display = 'block';
-                          narrationContainer.style.opacity = '1';
-                          narrationContainer.style.transform = 'scale(1)';
-                          narrationContainer.classList.add('visible');
-                          charlotteNarration.style.opacity = '1';
-                          // Start JS typewriter (no CSS class needed)
-                          typeNarration(); // Calls the full char-by-char function
-                          console.log('Greeting typing – Charlotte speaks!'); // Debug start
-                      }, 1000); // 1s for disintegrate
-                  }
-              }, 1000); // 1s steps for 3s
-          }, 6500); // Start after intro fade
-
-          // Fallback: Force Sequence After 10s (Bulletproof, with Immediate Narration)
-          setTimeout(() => {
-              if (spiderIntro && !spiderIntro.classList.contains('hidden')) {
-                  spiderIntro.classList.add('hidden');
-                  spiderAnchor.classList.add('visible');
-                  reelBar.classList.add('visible');
-                  reelText.classList.add('visible');
-                  reelFill.style.width = '100%';
-                  reelText.textContent = 'Premiere... 100%';
-                  reelText.classList.add('disintegrate');
-              }
-              setTimeout(() => {
-                  reelText.style.display = 'none';
-                  reelBar.style.display = 'none';
-                  // Force narration reveal
-                  narrationContainer.style.display = 'block';
-                  narrationContainer.style.opacity = '1';
-                  narrationContainer.style.transform = 'scale(1)';
-                  narrationContainer.classList.add('visible');
-                  charlotteNarration.style.opacity = '1';
-                  typeNarration(); // JS typewriter in fallback
-                  console.log('Fallback: Greeting typing – Charlotte speaks!'); // Debug
-              }, 1000);
-              console.log('Fallback Spider – Sequence fully spun with dialogue!'); // Debug
-          }, 10000);
-
-          // Button Click: Follow Thread to Main Page
-          function followThread() {
-              console.log('Thread followed – To the Cafe!'); // Debug
-              localStorage.setItem('spiderTicket', 'cafe-access'); // Pass to main.html for continuity
-              window.location.href = 'main.html'; // Redirect to dynamic nav page
-          }
-
-          // Expose followThread globally (for onclick)
-          window.followThread = followThread;
-      });
-
-      console.log('Spider Web Loading Online – Spun with whimsy... Lights, camera, quest!'); // Final Debug
-  </script>
-  
+</script>
 
 </body>
 </html>
+
