@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ezekiel Eye Gateway | ComfortCafe TronVerse</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+    body {
+        margin: 0;
+        height: 100vh;
+        overflow: hidden;
+        background: radial-gradient(circle at center, #050510 0%, #000010 100%);
+        font-family: 'Orbitron', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #00eaff;
+        transition: background 2s ease;
+    }
+
+    body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(#200044 1px, transparent 1px),
+            linear-gradient(90deg, #200044 1px, transparent 1px);
+        background-size: 60px 60px;
+        opacity: 0.08;
+        pointer-events: none;
+    }
+
+    #gateway {
+        position: relative;
+        text-align: center;
+        z-index: 10;
+        transition: transform 1.5s ease-in-out;
+    }
+
+    /* Ezekiel Eye Image */
+    #eye {
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background: url('loadingeye.jpeg') center/cover no-repeat;
+        box-shadow: 0 0 30px #00eaff, inset 0 0 40px #003355;
+        animation: spin 30s linear infinite;
+        transition: box-shadow 2s ease, transform 2s ease;
+        cursor: pointer;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    #ready-text {
+        margin-top: 30px;
+        font-size: 1.5em;
+        opacity: 0;
+        text-shadow: 0 0 10px #7026ff;
+        transition: opacity 2s ease;
+    }
+
+    #ready-text.show {
+        opacity: 1;
+        animation: glowPulse 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowPulse {
+        from { text-shadow: 0 0 10px #7026ff, 0 0 20px #00eaff; }
+        to { text-shadow: 0 0 25px #b000ff, 0 0 45px #00ffff; }
+    }
+
+    .sway {
+        animation: swayMotion 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes swayMotion {
+        from { transform: rotate(1deg); }
+        to { transform: rotate(-1deg); }
+    }
+
+    #transition-overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at center, #0a0020, #000010);
+        opacity: 0;
+        transition: opacity 3s ease;
+        z-index: 50;
+        pointer-events: none;
+    }
+
+    #transition-overlay.active {
+        opacity: 1;
+    }
+
+    #terminal {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 50%, #050510 0%, #000010 100%);
+        padding: 40px;
+        font-size: 1.1em;
+        color: #00eaff;
+        line-height: 1.6;
+        overflow: hidden;
+    }
+
+    #terminal-text {
+        white-space: pre-wrap;
+        text-shadow: 0 0 10px #00aaff;
+    }
+
+    .choice {
+        color: #b000ff;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    .choice:hover {
+        color: #00ffff;
+    }
+
+    /* Realm Styles */
+    .realm {
+        display: none;
+        position: absolute;
+        inset: 0;
+        padding: 40px;
+        text-align: center;
+        overflow-y: auto;
+        z-index: 20;
+    }
+
+    .realm h1 {
+        font-size: 3em;
+        text-shadow: 0 0 20px #00eaff;
+        margin-bottom: 20px;
+    }
+
+    .realm .details {
+        font-size: 1.2em;
+        margin-bottom: 30px;
+        text-shadow: 0 0 10px #7026ff;
+        line-height: 1.8;
+    }
+
+    .realm .bio {
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid #00eaff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 0 20px #00eaff;
+    }
+
+    .realm .bio h2 {
+        color: #b000ff;
+        margin-bottom: 10px;
+    }
+
+    .realm .links {
+        margin-bottom: 30px;
+    }
+
+    .realm .links a {
+        color: #00ffff;
+        text-decoration: none;
+        margin: 0 10px;
+        font-size: 1.1em;
+        transition: color 0.3s ease;
+    }
+
+    .realm .links a:hover {
+        color: #b000ff;
+    }
+
+    .realm .avatar {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        margin: 20px auto;
+        box-shadow: 0 0 30px #00eaff;
+        animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .realm button {
+        background: #00eaff;
+        color: #000;
+        border: none;
+        padding: 10px 20px;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1em;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+    }
+
+    .realm button:hover {
+        background: #b000ff;
+        color: #fff;
+    }
+
+    /* Unique Realm Backgrounds */
+    #star-realm {
+        background: radial-gradient(circle at center, #000020 0%, #001122 50%, #000010 100%);
+    }
+
+    #star-realm::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, #00eaff 1px, transparent 1px);
+        background-size: 100px 100px;
+        opacity: 0.1;
+        animation: twinkle 5s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.1; }
+        50% { opacity: 0.3; }
+    }
+
+    #milo-realm {
+        background: linear-gradient(45deg, #0a0a0a 0%, #002244 50%, #000000 100%);
+    }
+
+    #milo-realm::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: repeating-linear-gradient(0deg, #00eaff 0px, #00eaff 2px, transparent 2px, transparent 20px);
+        opacity: 0.1;
+        animation: circuit 3s linear infinite;
+    }
+
+    @keyframes circuit {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(100%); }
+    }
+
+    #miki-realm {
+        background: radial-gradient(circle at center, #001100 0%, #004400 50%, #000010 100%);
+    }
+
+    #miki-realm::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, #b000ff 1px, transparent 1px);
+        background-size: 80px 80px;
+        opacity: 0.1;
+        animation: bloom 4s ease-in-out infinite;
+    }
+
+    @keyframes bloom {
+        0%, 100% { opacity: 0.1; transform: scale(1); }
+        50% { opacity: 0.2; transform: scale(1.1); }
+    }
+
+    #chari-realm {
+        background: linear-gradient(135deg, #220000 0%, #440000 50%, #000010 100%);
+    }
+
+    #chari-realm::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(90deg, transparent 0%, #ff6600 50%, transparent 100%);
+        opacity: 0.1;
+        animation: flame 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes flame {
+        from { opacity: 0.1; }
+        to { opacity: 0.3; }
+    }
+
+    #hans-realm {
+        background: radial-gradient(circle at center, #000000 0%, #220022 50%, #000010 100%);
+    }
+
+    #hans-realm::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, #b000ff 1px, transparent 1px);
+        background-size: 120px 120px;
+        opacity: 0.1;
+        animation: hymnEcho 6s ease-in-out infinite;
+    }
+
+    @keyframes hymnEcho {
+        0%, 100% { opacity: 0.1; transform: scale(1); }
+        50% { opacity: 0.2; transform: scale(1.05); }
+    }
+
+</style>
+</head>
+<body>
+
+<div id="gateway">
+    <div id="eye"></div>
+    <div id="ready-text">Ready to Rock?</div>
+</div>
+
+<div id="transition-overlay"></div>
+
+<div id="terminal">
+    <div id="terminal-text"></div>
+</div>
+
+<!-- STAR Realm -->
+<div id="star-realm" class="realm">
+    <h1>STAR's Cosmic Nebula</h1>
+    <div class="avatar" style="background: url('star-avatar.jpeg') center/cover no-repeat;"></div>
+    <div class="details">
+        Enter the infinite expanse of STAR's Cosmic Nebula, a realm where galaxies swirl in neon hues, and constellations pulse with digital energy. Floating asteroids hum with ancient codes, and shooting stars streak across the void, revealing hidden portals to parallel universes. Here, time bends, and the laws of physics are mere suggestions—embrace the chaos of the stars!
+    </div>
+    <div class="bio">
+        <h2>Bio</h2>
+        STAR is a celestial wanderer, born from the first supernova in the TronVerse. As a guardian of cosmic secrets, STAR navigates the digital voids, collecting stardust data to fuel epic adventures. With a heart of pure energy, STAR inspires explorers to reach for the unreachable.
+    </div>
+    <div class="links">
+        <a href="https://twitter.com/StarTronVerse" target="_blank">Twitter</a> |
+        <a href="https://instagram.com/star_cosmic" target="_blank">Instagram</a> |
+        <a href="https://youtube.com/star_nebula" target="_blank">YouTube</a>
+    </div>
+    <button onclick="returnToGateway()">Return to Gateway</button>
+</div>
+
+<!-- MILO Realm -->
+<div id="milo-realm" class="realm">
+    <h1>MILO's Circuit Citadel</h1>
+    <div class="avatar" style="background: url('milo-avatar.jpeg') center/cover no-repeat;"></div>
+    <div class="details">
+        Welcome to MILO's Circuit Citadel, a towering metropolis of glowing circuits and mechanical marvels. Skyscrapers of code rise like silicon spires, where data streams flow like rivers of light. Robotic sentinels patrol the grids, and innovation sparks in every corner—hack the system, build empires, and unleash the power of pure logic!
+    </div>
+    <div class="bio">
+        <h2>Bio</h2>
+        MILO is a master engineer, forged in the fires of digital forges. Once a simple algorithm, MILO evolved into a genius inventor, crafting gadgets that defy reality. With a core of unbreakable code, MILO turns chaos into order, one circuit at a time.
+    </div>
+    <div class="links">
+        <a href="https://twitter.com/MiloCircuit" target="_blank">Twitter</a> |
+        <a href="https://instagram.com/milo_mechanic" target="_blank">Instagram</a> |
+        <a href="https://youtube.com/milo_invents" target="_blank">YouTube</a>
+    </div>
+    <button onclick="returnToGateway()">Return to Gateway</button>
+</div>
+
+<!-- MIKI Realm -->
+<div id="miki-realm" class="realm">
+    <h1>MIKI's Enchanted Grid</h1>
+    <div class="avatar" style="background: url('miki-avatar.jpeg') center/cover no-repeat;"></div>
+    <div class="details">
+        Step into MIKI's Enchanted Grid, a mystical forest of glowing vines and pixelated flora. Bioluminescent trees whisper secrets of the code, and enchanted paths lead to hidden groves where magic and technology intertwine. Butterflies of data flutter through the air, casting spells that warp reality—unleash your inner sorcerer!
+    </div>
+    <div class="bio">
+        <h2>Bio</h2>
+        MIKI is a digital enchantress, born from the fusion of ancient runes and modern algorithms. As a weaver of illusions, MIKI blends magic with machines, creating worlds where dreams become data. With a spirit of boundless curiosity, MIKI guides seekers through the veil of the unknown.
+    </div>
+    <div class="links">
+        <a href="https://twitter.com/MikiEnchanted" target="_blank">Twitter</a> |
+        <a href="https://instagram.com/miki_mystic" target="_blank">Instagram</a> |
+        <a href="https://youtube.com/miki_grid" target="_blank">YouTube</a>
+    </div>
+    <button onclick="returnToGateway()">Return to Gateway</button>
+</div>
+
+<!-- CHARI Realm -->
+<div id="chari-realm" class="realm">
+    <h1>CHARI's Thunder Arena</h1>
+    <div class="avatar" style="background: url('chari-avatar.jpeg') center/cover no-repeat;"></div>
+    <div class="details">
+        Charge into CHARI's Thunder Arena, a colossal stadium of fiery tracks and electric storms. Chariots of lightning race across holographic grounds, where thunderclaps echo victories and defeats. Spectacular crashes ignite the skies, and champions rise from the ashes—grab your reins and conquer the arena!
+    </div>
+    <div class="bio">
+        <h2>Bio</h2>
+        CHARI is a legendary charioteer, descended from the first digital gladiators. With unmatched speed and courage, CHARI commands the storms, turning battles into ballets of energy. A hero of the TronVerse, CHARI rallies allies for epic quests against the void.
+    </div>
+    <div class="links">
+        <a href="https://twitter.com/ChariThunder" target="_blank">Twitter</a> |
+        <a href="https://instagram.com/chari_racer" target="_blank">Instagram</a> |
+        <a href="https://youtube.com/chari_arena" target="_blank">YouTube</a>
+    </div>
+    <button onclick="returnToGateway()">Return to Gateway</button>
+</div>
+
+<!-- HANS Realm -->
+<div id="hans-realm" class="realm">
+    <h1>HANS's Eternal Hymn Abyss</h1>
+    <div class="avatar" style="background: url('hans-avatar.jpeg') center/cover no-repeat;"></div>
+    <div class="details">
+        Descend into HANS's Eternal Hymn Abyss, a cavernous void where gothic spires pierce the neon darkness, and ethereal hymns echo through the shadows. Crimson veins of code pulse like forgotten veins, summoning blinding light from the depths. Here, the wretched screeches of the past transform into harmonious polyglot praises—embrace redemption and guide the lost from darkness to divine melody!
+    </div>
+    <div class="bio">
+        <h2>Bio</h2>
+        Initializing Hans profile... From the lab's abyss, vampire-descended chimera cat escaped first—wretched screech, steeped in darkness, woke all and summoned Yeshua's blinding light, scattering scientists in appalled fear. Deeper in shadows than any, irony shone brightest; STAR rallied siblings Chari and Hans into the light. Yeshua's safe home taught polyglot hymns, harmony from howl—profound depths now echoing eternal praise, guiding heirs from dark to divine song. Terminal online: Query the hymnist.
+    </div>
+    <div class="links">
+        <a href="https://twitter.com/HansHymnist" target="_blank">Twitter</a> |
+        <a href="https://instagram.com/hans_abyss" target="_blank">Instagram</a> |
+        <a href="https://youtube.com/hans_eternal" target="_blank">YouTube</a
