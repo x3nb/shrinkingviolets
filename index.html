@@ -197,7 +197,42 @@
   spawnParticles(document.getElementById('realm-milo'), 'rgba(255,255,255,0.2)');
   spawnMist(document.getElementById('realm-chari'));
 
+
+  const terminalLinks = document.querySelectorAll('.terminal-link');
+
+  function enterRealm(key) {
+    const realm = realms[key];
+    if (!realm) return;
+
+    terminal.style.opacity = 0;
+    setTimeout(()=>{
+      terminal.style.display = 'none';
+      realm.classList.add('show');
+
+      // Trigger realm-specific intro animation
+      switch(key){
+        case '1': spawnShards(realm); break;
+        case '2': spawnParticles(realm, 'rgba(255,255,255,0.6)'); break;
+        case '4': spawnMist(realm); break;
+        // MIKI pulse already animating
+      }
+    }, 600);
+  }
+
+  // Keyboard support
+  document.addEventListener('keydown', (e)=>{
+    if (realms[e.key]) enterRealm(e.key);
+  });
+
+  // Click support
+  terminalLinks.forEach(link => {
+    link.addEventListener('click', ()=>{
+      const key = link.getAttribute('data-key');
+      enterRealm(key);
+    });
+  });
 </script>
+
 </body>
 </html>
 
