@@ -430,4 +430,65 @@ eye.addEventListener('click', () => {
     }
 });
 function typeText(text, delay = 30) {
-    return new Promise
+    return new Promise ((resolve) => {
+        let i = 0;
+        const interval = setInterval(() => {
+            terminalText.textContent += text[i];
+            i++;
+            if (i >= text.length) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, delay);
+    });
+}
+
+async function startTerminalSequence() {
+    const messages = [
+        "> System booting...",
+        "> Connection established to ComfyCafe ChimeraVerse.",
+        "> Five signals detected within the neon code...",
+        "> STAR. MILO. MIKI. CHARI. HANS.",
+        "",
+        "> Who will you seek first?",
+        "[1] STAR  [2] MILO  [3] MIKI  [4] CHARI  [5] HANS"
+    ];
+
+    for (const line of messages) {
+        await typeText(line + "\n");
+        await new Promise(r => setTimeout(r, 600));
+    }
+
+    const choices = document.createElement('div');
+    choices.innerHTML = `
+        <br>
+        <span class="choice" onclick="choose('STAR')">1: STAR</span> |
+        <span class="choice" onclick="choose('MILO')">2: MILO</span> |
+        <span class="choice" onclick="choose('MIKI')">3: MIKI</span> |
+        <span class="choice" onclick="choose('CHARI')">4: CHARI</span> |
+        <span class="choice" onclick="choose('HANS')">5: HANS</span>
+    `;
+    terminalText.appendChild(choices);
+}
+
+function choose(name) {
+    terminalText.innerHTML += `\n> You chose ${name}. Initializing portal... ⚡`;
+    setTimeout(() => {
+        terminal.style.display = 'none';
+        document.getElementById(`${name.toLowerCase()}-realm`).style.display = 'block';
+    }, 2000);
+}
+
+function returnToGateway() {
+    // Hide all realms
+    document.querySelectorAll('.realm').forEach(realm => realm.style.display = 'none');
+    // Reset gateway and terminal
+    gateway.style.display = 'block';
+    terminal.style.display = 'none';
+    terminalText.textContent = '';
+    clickCount = 0; // Reset click count to allow restarting
+    eye.style.animationPlayState = 'running';
+    eye.style.boxShadow = '0 0 30px #00eaff, inset 0 0 40px #003355';
+    readyText.classList.remove('show');
+}
+
