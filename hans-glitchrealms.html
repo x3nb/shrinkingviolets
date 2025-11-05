@@ -408,4 +408,26 @@
         <a href="https://twitter.com/HansHymnist" target="_blank">Twitter</a> |
         <a href="https://instagram.com/hans_abyss" target="_blank">Instagram</a> |
         <a href="https://youtube.com/hans_eternal" target="_blank">YouTube</a>
-       
+       const terminal = document.getElementById('terminal');
+const terminalText = document.getElementById('terminal-text');
+let clickCount = 0;
+eye.addEventListener('click', () => {
+    clickCount++;
+    if (clickCount === 1) {
+        eye.style.animationPlayState = 'paused';
+        eye.style.boxShadow = '0 0 60px #00ffff, inset 0 0 50px #7026ff';
+        readyText.classList.add('show');
+    } else if (clickCount === 2) {
+        document.body.classList.add('sway');
+        overlay.classList.add('active');
+        setTimeout(() => {
+            overlay.classList.remove('active');
+            gateway.style.display = 'none';
+            terminal.style.display = 'block';
+            document.body.classList.remove('sway');
+            startTerminalSequence();
+        }, 4000);
+    }
+});
+function typeText(text, delay = 30) {
+    return new Promise
