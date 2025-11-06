@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Rain Drop to Vertical Menu</title>
+<style>
+body {
+  background: #000;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Times New Roman', serif;
+}
+
+/* Container for the menu */
+#menuContainer {
+  position: relative;
+  width: 100px;
+  height: 300px; /* enough height for stacked menu */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* Optional: add border or background for clarity */
+}
+
+/* Each topic circle */
+li {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8A2BE2, #BA55D3);
+  cursor: pointer;
+  opacity: 0;
+  top: -50px; /* start above */
+  left: 50%;
+  transform: translateX(-50%) scale(0.5) skewX(20deg);
+  /* Animate to fall and stop */
+  animation: fallAndStop 2s forwards;
+  /* Delay for rain effect */
+  animation-delay: var(--delay);
+  box-shadow: 0 0 20px #9b59b6, inset 0 0 20px #8A2BE2;
+  transition: box-shadow 0.2s, filter 0.2s;
+}
+
+/* Keyframes for falling and stopping in center */
+@keyframes fallAndStop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50px) scale(0.5) skewX(20deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(150px) scale(1.2) skewX(0deg);
+  }
+  100% {
+    /* final position: stacked vertically in container center */
+    top: calc(50% - 105px + (var(--index) * 35px));
+    transform: translateX(-50%) scale(1) skewX(0deg);
+  }
+}
+
+/* Hover glow */
+li:hover {
+  box-shadow: 0 0 40px #00ffff, inset 0 0 50px #00ffff;
+  filter: hue-rotate(180deg);
+}
+
+/* Info panel styling */
+#infoPanel {
+  position: absolute;
+  top: calc(50% + 120px);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 300px;
+  background: rgba(0,255,255,0.1);
+  border: 2px solid #0ff;
+  padding: 10px;
+  display: none;
+  color: #0ff;
+  font-family: 'Times New Roman', serif;
+  font-size: 14px;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+  z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<div id="menuContainer">
+  <ul id="topics">
+    <li style="--delay:0s; --index:0" data-topic="Contact" data-info="Contact us for more info.">?</li>
+    <li style="--delay:0.1s; --index:1" data-topic="Coffee" data-info="All about coffee.">?</li>
+    <li style="--delay:0.2s; --index:2" data-topic="Tea" data-info="Tea varieties and info.">?</li>
+    <li style="--delay:0.3s; --index:3" data-topic="Poetry" data-info="Poetry and literature.">?</li>
+    <li style="--delay:0.4s; --index:4" data-topic="Communicate" data-info="How to communicate.">?</li>
+    <li style="--delay:0.5s; --index:5" data-topic="Quests" data-info="Your quests info.">?</li>
+    <li style="--delay:0.6s; --index:6" data-topic="Search" data-info="Search topics.">?</li>
+  </ul>
+</div>
+
+<script>
+const items = document.querySelectorAll('#topics li');
+const container = document.getElementById('menuContainer');
+
+setTimeout(() => {
+  // Trigger the animation for each item
+  items.forEach(item => {
+    // Re-trigger animation
+    void item.offsetWidth; // force reflow
+  });
+  // Notify when all animations end to fix final position
+  setTimeout(() => {
+    // After all fall, set final position explicitly to prevent flickering
+    items.forEach((item, index) => {
+      item.style.top = `calc(50% - 105px + (${index} * 35px))`;
+      item.style.transform = 'translateX(-50%) scale(1) skewX(0deg)';
+      item.style.opacity = '1';
+    });
+  }, 2500); // match animation duration
+}, 1000);
+
+// Info toggle
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    const topic = item.dataset.topic;
+    const info = item.dataset.info;
+    document.getElementById('infoPanel').innerHTML = `<h3 style="margin:0;">${topic}</h3><p>${info}</p>`;
+    document.getElementById('infoPanel').style.display = 'block';
+  });
+});
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#infoPanel') && !e.target.closest('#topics')) {
+    document.getElementById('infoPanel').style.display='none';
+  }
+});
+</script>
+
+</body>
+</html>
