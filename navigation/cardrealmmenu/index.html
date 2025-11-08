@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Adventure Quest - The Shrinking Violet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: linear-gradient(135deg, #1a0639, #2a084f, #0a0015);
+    color: #e0d6ff;
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 1200px;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Spider Emoji Button */
+  #violet-btn {
+    width: 120px;
+    height: 120px;
+    cursor: pointer;
+    margin: 0 auto 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    border-radius: 50%;
+    font-size: 5rem;
+    animation: spiderPulse 3s infinite ease-in-out;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: transparent;
+    outline: none;
+  }
+
+  #violet-btn:hover,
+  #violet-btn:focus {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #8b5cf6, 0 0 40px #7c3aed;
+  }
+
+  @keyframes spiderPulse {
+    0%, 100% {
+      transform: scale(1);
+      filter: drop-shadow(0 0 5px rgba(124, 58, 237, 0.7));
+    }
+    50% {
+      transform: scale(1.05);
+      filter: drop-shadow(0 0 15px rgba(124, 58, 237, 1));
+    }
+  }
+
+  /* Tickertape */
+  #tickertape-container {
+    width: 100%;
+    max-width: 1000px;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 50px 0;
+    border-top: 3px solid #9370db;
+    border-bottom: 3px solid #9370db;
+    padding: 15px 0;
+    display: none;
+  }
+
+  #tickertape {
+    display: inline-block;
+    font-family: 'Bebas Neue', cursive, sans-serif;
+    font-size: 4.5rem;
+    background: linear-gradient(90deg, #d8b4fe, #c084fc, #a855f7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 3px;
+    padding-left: 100%;
+    animation: scroll-left 3.5s linear forwards;
+  }
+
+  @keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* Blueprint layout */
+  #blueprint {
+    display: none;
+    max-width: 900px;
+    width: 100%;
+    background: rgba(30, 15, 60, 0.8);
+    border: 3px solid #6b46c1;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 40px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    backdrop-filter: blur(10px);
+  }
+
+  .room-portal {
+    background: linear-gradient(145deg, #4c1d95, #5b21b6);
+    border: 2px solid #7c3aed;
+    border-radius: 12px;
+    padding: 25px 20px;
+    text-decoration: none;
+    color: #e9d5ff;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .room-portal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .room-portal:hover::before {
+    left: 100%;
+  }
+
+  .room-portal:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+    background: linear-gradient(145deg, #5b21b6, #6d28d9);
+  }
+
+  .room-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+  }
+
+  .room-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .room-desc {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  /* Simplified Elevator */
+  #elevator {
+    width: 280px;
+    height: 320px;
+    background: #2d1b4e;
+    border: 4px solid #7c3aed;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 35px rgba(76, 29, 149, 0.6);
+    margin: 30px auto 0;
+    cursor: pointer;
+    display: none;
+  }
+  #doors {
+    display: flex;
+    height: 100%;
+    transition: transform 1s ease;
+  }
+  .door {
+    flex: 1;
+    background: linear-gradient(145deg, #3a1c71, #4a2380);
+    border: 2px solid #8b5cf6;
+  }
+  #doors.closed .left {
+    transform: translateX(0);
+  }
+  #doors.closed .right {
+    transform: translateX(0);
+  }
+  #doors.open .left {
+    transform: translateX(-100%);
+  }
+  #doors.open .right {
+    transform: translateX(100%);
+  }
+  #interior {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(145deg, #4c1d95, #5b21b6);
+    color: #e9d5ff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+  #interior.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #interior p {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  button {
+    margin: 10px;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    background: #7c3aed;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background 0.3s ease;
+  }
+  button:hover:not(:disabled) {
+    background: #8b5cf6;
+  }
+  button:disabled {
+    background: #4b2a8a;
+    cursor: not-allowed;
+  }
+  #status {
+    margin-top: 15px;
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    opacity: 0.8;
+    min-height: 1.2em;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #violet-btn {
+      width: 100px;
+      height: 100px;
+    }
+    #tickertape {
+      font-size: 3rem;
+    }
+    #blueprint {
+      grid-template-columns: 1fr;
+      padding: 20px;
+    }
+    .room-portal {
+      padding: 20px 15px;
+    }
+    #elevator {
+      width: 250px;
+      height: 280px;
+    }
+    #interior p {
+      font-size: 1.2rem;
+    }
+    button {
+      padding: 10px 25px;
+      font-size: 1rem;
+    }
+  }
+  @media (max-width: 480px) {
+    #tickertape {
+      font-size: 2.2rem;
+    }
+    .room-title {
+      font-size: 1.2rem;
+    }
+    #elevator {
+      width: 220px;
+      height: 250px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Spider Emoji Button -->
+  <div id="violet-btn" title="Begin your adventure..." aria-label="Enter the Realm as a Spider" role="button" tabindex="0">
+    🕷️
+  </div>
+
+  <!-- Tickertape Title -->
+  <div id="tickertape-container">
+    <div id="tickertape">THE SHRINKING VIOLET ADVENTURES BY XEN</div>
+  </div>
+
+  <!-- Blueprint Layout with Active Links -->
+  <div id="blueprint">
+    <a href="tearoom.html" class="room-portal" title="Enter the tranquil Tearoom">
+      <span class="room-icon">🍵</span>
+      <h3 class="room-title">Tearoom</h3>
+      <p class="room-desc">A sanctuary for reflection and aromatic brews</p>
+    </a>
+
+    <a href="community.html" class="room-portal" title="Join the Community hub">
+      <span class="room-icon">👥</span>
+      <h3 class="room-title">Community</h3>
+      <p class="room-desc">Connect with fellow adventurers and share tales</p>
+    </a>
+
+    <a href="quests.html" class="room-portal" title="Embark on epic Quests">
+      <span class="room-icon">⚔️</span>
+      <h3 class="room-title">Quests</h3>
+      <p class="room-desc">Discover challenges that test your courage and wit</p>
+    </a>
+
+    <a href="academy.html" class="room-portal" title="Enter the Academy">
+      <span class="room-icon">🎓</span>
+      <h3 class="room-title">Academy</h3>
+      <p class="room-desc">Learn ancient secrets and master your skills</p>
+    </a>
+  </div>
+
+  <!-- Simplified Elevator -->
+  <div id="elevator" title="Summon the elevator">
+    <div id="doors" class="closed">
+      <div class="door left"></div>
+      <div class="door right"></div>
+    </div>
+    <div id="interior">
+      <p>Where do you want to go?</p>
+      <div>
+        <button id="btn-up">Up</button>
+        <button id="btn-down">Down</button>
+      </div>
+      <div id="status"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // DOM Elements
+  const violetBtn = document.getElementById('violet-btn');
+  const tickertapeContainer = document.getElementById('tickertape-container');
+  const blueprint = document.getElementById('blueprint');
+  const elevator = document.getElementById('elevator');
+  const doors = document.getElementById('doors');
+  const interior = document.getElementById('interior');
+  const btnUp = document.getElementById('btn-up');
+  const btnDown = document.getElementById('btn-down');
+  const status = document.getElementById('status');
+
+  // Phase tracking
+  let currentPhase = 0;
+  let elevatorOpen = false;
+
+  // Violet Button Click
+  violetBtn.addEventListener('click', () => {
+    if (currentPhase === 0) {
+      currentPhase = 1;
+
+      // Hide spider button with fade out
+      violetBtn.style.opacity = '0';
+      violetBtn.style.pointerEvents = 'none';
+
+      // Show tickertape after short delay
+      setTimeout(() => {
+        violetBtn.style.display = 'none';
+        tickertapeContainer.style.display = 'block';
+
+        // After tickertape animation completes, show blueprint and elevator
+        setTimeout(() => {
+          tickertapeContainer.style.display = 'none';
+          blueprint.style.display = 'grid';
+          elevator.style.display = 'block';
+          currentPhase = 2;
+        }, 3500);
+      }, 500);
+    }
+  });
+
+  // Elevator click toggles open/close except on buttons
+  elevator.addEventListener('click', (e) => {
+    if (currentPhase === 2 && !e.target.classList.contains('elevator-btn') && e.target.tagName !== 'BUTTON') {
+      if (!elevatorOpen) openElevator();
+      else closeElevator();
+    }
+  });
+
+  function openElevator() {
+    doors.classList.remove('closed');
+    doors.classList.add('open');
+    setTimeout(() => {
+      interior.classList.add('visible');
+      elevatorOpen = true;
+    }, 800);
+  }
+
+  function closeElevator() {
+    interior.classList.remove('visible');
+    doors.classList.remove('open');
+    doors.classList.add('closed');
+    elevatorOpen = false;
+    status.textContent = '';
+    btnUp.disabled = false;
+    btnDown.disabled = false;
+  }
+
+  btnUp.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btnUp.disabled = true;
+    btnDown.disabled = true;
+    status.textContent = 'Ascending...';
+    setTimeout(() => {
+      closeElevator();
+      setTimeout(() => {
+        window.location.href = 'wonderland.html';
+      }, 800);
+    }, 2500);
+  });
+
+  btnDown.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btnUp.disabled = true;
+    btnDown.disabled = true;
+    status.textContent = 'Descending...';
+    setTimeout(() => {
+      closeElevator();
+      status.textContent = 'You have arrived downstairs!';
+      btnUp.disabled = false;
+      btnDown.disabled = false;
+    }, 2500);
+  });
+</script>
+
+</body>
+</html>
