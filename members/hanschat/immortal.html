@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TeaSnob Chatbot – Admin Connected</title>
+  <style>
+    body {
+      background-color: #1c1b2a;
+      color: #e0d6f6;
+      font-family: 'Garamond', serif;
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #c3afff;
+      margin-bottom: 20px;
+    }
+
+    #chatbox {
+      max-width: 700px;
+      margin: auto;
+      background-color: #2b223a;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(176,137,240,0.3);
+    }
+
+    #messages {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px;
+      border: 1px solid #444;
+      margin-bottom: 15px;
+      background-color: #1e1c2d;
+    }
+
+    .message {
+      margin-bottom: 12px;
+    }
+
+    .user {
+      color: #9c84d3;
+    }
+
+    .bot {
+      color: #f5c7ff;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #666;
+      background-color: #2e2944;
+      color: #f0eaff;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      background-color: #b089f0;
+      color: #1c1b2a;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-left: 10px;
+    }
+
+    button:hover {
+      background-color: #d3bfff;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🦇 Hans le TeaSnob: The Immortal Brewmaster</h1>
+  <div id="chatbox">
+    <div id="messages"></div>
+    <input type="text" id="userInput" placeholder="Ask about herbs, teas, or life..." />
+    <button onclick="getBotResponse()">Send</button>
+  </div>
+
+  <script>
+    let responseMap = {};
+    let triggers = {};
+    let defaultResponses = [];
+    let draculaQuotes = [
+      "“I have crossed oceans of time to steep this tea for you.”",
+      "“The blood is the life... but a fine oolong is a close second.”",
+      "“Sleep all day. Drink tea all night. Quite the existence.”",
+      "“I never drink... wine. But hibiscus? Divine.”",
+      "“Enter freely, and leave with a blend recommendation.”"
+    ];
+    let draculaChance = 40;
+    let defaultIndex = 0;
+
+    // Load from localStorage or fall back to defaults
+    function loadData() {
+      const saved = localStorage.getItem('teasnobData');
+      if (saved) {
+        const data = JSON.parse(saved);
+        responseMap = data.responseMap || {};
+        triggers = data.triggers || {};
+        defaultResponses = data.defaultResponses || [];
+        draculaChance = data.draculaChance || 40;
+      } else {
+        // Basic fallback defaults
+        responseMap = {
+          hello: ["Greetings, mortal.", "Have you brought me a proper brew?", "Tea? Or just questions?"],
+          tea: ["Tea is life. Drink it well.", "Ask me about black tea, herbal teas, or Earl Grey.", "Steep questions receive steep answers."]
+        };
+        triggers = {
+          hello: ["hi", "hello", "hey", "greetings"],
+          tea: ["tea", "types of tea", "drink", "brew"]
+        };
+        defaultResponses = [
+          "I do not understand, and yet I judge you anyway.",
+          "Try asking me about tea, mortal.",
+          "The leaves are silent on that question.",
+          "Your inquiry is as foggy as a poorly brewed chai.",
+          "Perhaps a scone would help clarify your thoughts.",
+          "More tea, less nonsense, I beg you.",
+          "The void echoes back confusion."
+        ];
+        draculaChance = 40;
+      }
+    }
+
+    loadData();
+
+    function getBotResponse() {
+      const input = document.getElementById("userInput").value.toLowerCase().trim();
+      const messages = document.getElementById("messages");
+
+      if (input === "") return;
+
+      let userMsg = document.createElement("div");
+      userMsg.className = "message user";
+      userMsg.textContent = "You: " + input;
+      messages.appendChild(userMsg);
+
+      let botMsg = document.createElement("div");
+      botMsg.className = "message bot";
+
+      let response = null;
+
+      outerLoop:
+      for (let key in triggers) {
+        for (let phrase of triggers[key]) {
+          if (input.includes(phrase)) {
+            const options = responseMap[key];
+            if (options && options.length) {
+              response = options[Math.floor(Math.random() * options.length)];
+              break outerLoop;
+            }
+          }
+        }
+      }
+
+      if (!response) {
+        response = defaultResponses[defaultIndex];
+        defaultIndex = (defaultIndex + 1) % defaultResponses.length;
+      }
+
+      // Add Dracula quote (based on chance)
+      if (Math.random() < (draculaChance / 100)) {
+        response += " " + draculaQuotes[Math.floor(Math.random() * draculaQuotes.length)];
+      }
+
+      botMsg.textContent = "TeaSnob: " + response;
+      messages.appendChild(botMsg);
+
+      document.getElementById("userInput").value = "";
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // Enable Enter key
+    document.getElementById("userInput").addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        getBotResponse();
+      }
+    });
+  </script>
+
+</body>
+</html>
