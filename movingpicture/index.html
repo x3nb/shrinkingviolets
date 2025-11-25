@@ -101,4 +101,22 @@
 
       index++;
 
-      if (index < frames.l
+      if (index < frames.length) {
+        setTimeout(showFrame, 250); // next frame every 250ms
+      } else {
+        // last frame reached
+        setTimeout(() => {
+          finalSceneAudio.play();
+          btn.disabled = false; // allow replay
+        }, 400);
+      }
+    }
+
+    showFrame();
+  }
+
+  btn.addEventListener("click", playFlipbook);
+</script>
+
+</body>
+</html>
