@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mystical Portal Activation</title>
+<style>
+    body {
+        margin: 0;
+        background: radial-gradient(circle at center, #0a1a2a, #000814 70%);
+        font-family: "Cinzel", serif;
+        color: #e8f6ff;
+        overflow: hidden;
+    }
+
+    /* ─────────────── Monitor Frame ─────────────── */
+    .monitor {
+        width: 720px;
+        height: 500px;
+        margin: 40px auto;
+        background: linear-gradient(to bottom, #88c6ff, #0e3d68);
+        border: 8px solid #1b1f24;
+        border-radius: 10px;
+        padding: 12px;
+        position: relative;
+        box-shadow: 0 0 25px #2b6ca3;
+    }
+
+    /* inner screen */
+    .screen {
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.3);
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* ─────────────── Loading Bar ─────────────── */
+    #loadingBarContainer {
+        position: absolute;
+        width: 80%;
+        height: 22px;
+        border: 2px solid #9fd4ff;
+        border-radius: 10px;
+        left: 10%;
+        top: 45%;
+        overflow: hidden;
+    }
+
+    #loadingBar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(to right, #4db8ff, #c4e9ff);
+        transition: width 0.25s linear;
+    }
+
+    /* ─────────────── Lore Text ─────────────── */
+    .lore {
+        opacity: 0;
+        font-size: 18px;
+        padding: 40px;
+        text-align: center;
+        line-height: 1.6;
+        animation: fadeInOut 21s ease forwards;
+        display: none;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    /* ─────────────── Character Image Sequence ─────────────── */
+    .character {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 55%;
+        opacity: 0;
+        transition: opacity 2s ease;
+    }
+
+    /* ─────────────── Typed Haiku Subtitle ─────────────── */
+    #subtitle {
+        position: absolute;
+        bottom: 40px;
+        width: 100%;
+        text-align: center;
+        font-size: 20px;
+        opacity: 0;
+        transition: opacity 1s ease;
+        font-family: "Cormorant Garamond", serif;
+        letter-spacing: 1px;
+    }
+</style>
+</head>
+<body>
+
+<div class="monitor">
+    <div class="screen">
+        
+        <!-- Loading -->
+        <div id="loadingBarContainer">
+            <div id="loadingBar"></div>
+        </div>
+
+        <!-- Lore paragraphs -->
+        <div id="lore1" class="lore">
+            Before the first spark of creation,
+            a quiet breath drifted through the void,
+            carrying the names of those who would awaken the light.
+        </div>
+
+        <div id="lore2" class="lore">
+            When the veil grew thin, starlit souls gathered—
+            each shaped by memory, myth, and an ancient promise
+            whispered between realms.
+        </div>
+
+        <div id="lore3" class="lore">
+            Now the portal stirs once more,
+            awaiting the touch of the six destined figures
+            whose presence rekindles the cosmic pathways.
+        </div>
+
+        <!-- Character image -->
+        <img id="charImage" class="character" src="" />
+
+        <!-- Subtitle -->
+        <div id="subtitle"></div>
+
+    </div>
+</div>
+
+<audio id="bgm" src="startheme.mp3" loop></audio>
+
+<script>
+/* ─────────────── Loading Bar Logic ─────────────── */
+let loadBar = document.getElementById("loadingBar");
+let progress = 0;
+
+let loadingInterval = setInterval(() => {
+    progress += 2;
+    loadBar.style.width = progress + "%";
+
+    if (progress >= 100) {
+        clearInterval(loadingInterval);
+        setTimeout(() => {
+            document.getElementById("bgm").play();
+            startLoreSequence();
+        }, 2000); 
+    }
+}, 150);  // slower frame progression
+
+/* ─────────────── Lore Sequence ─────────────── */
+function startLoreSequence() {
+    const loreIds = ["lore1", "lore2", "lore3"];
+
+    let index = 0;
+
+    function showNextLore() {
+        if (index > 0) document.getElementById(loreIds[index - 1]).style.display = "none";
+        if (index >= loreIds.length) {
+            startCharacterSequence();
+            return;
+        }
+
+        let lore = document.getElementById(loreIds[index]);
+        lore.style.display = "block";
+
+        setTimeout(() => {
+            index++;
+            showNextLore();
+        }, 21000); // 21s per paragraph
+    }
+
+    showNextLore();
+}
+
+/* ─────────────── Character Sequence ─────────────── */
+const characters = [
+    { img: "star.png", haiku: "Starlight in her bones / Quiet cosmos in her gaze / Dawn follows her steps." },
+    { img: "Miki.png", haiku: "A spark wrapped in frost / Laughing where moonlight gathers / Winter blooms in her." },
+    { img: "Chari.png", haiku: "Footsteps soft as rain / She carries forgotten songs / Healing lives in her." },
+    { img: "Milo.png", haiku: "Gentle wandering / Shadows cling but do not harm / His heart lights the way." },
+    { img: "Hans.png", haiku: "Steel wrapped in kindness / A sentinel shaped by storms / Silent, loyal flame." },
+    { img: "Yeshua.png", haiku: "Stillness made of fire / Echo of ancient comfort / Light reborn again." }
+];
+
+function typeSubtitle(text) {
+    const sub = document.getElementById("subtitle");
+    sub.style.opacity = 1;
+    sub.textContent = "";
+    let i = 0;
+
+    let typing = setInterval(() => {
+        sub.textContent += text[i];
+        i++;
+        if (i >= text.length) clearInterval(typing);
+    }, 60);
+}
+
+function startCharacterSequence() {
+    let index = 0;
+    const img = document.getElementById("charImage");
+    const sub = document.getElementById("subtitle");
+
+    function showNext() {
+        if (index >= characters.length) return;
+
+        img.src = characters[index].img;
+        img.style.opacity = 1;
+
+        typeSubtitle(characters[index].haiku);
+
+        setTimeout(() => {
+            img.style.opacity = 0;
+            sub.style.opacity = 0;
+            setTimeout(() => {
+                index++;
+                showNext();
+            }, 1500);
+        }, 9000);
+    }
+
+    showNext();
+}
+</script>
+
+</body>
+</html>
