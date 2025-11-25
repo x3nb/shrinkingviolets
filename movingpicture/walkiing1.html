@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Flipbook Cinema</title>
+<style>
+  body {
+    background: black;
+    color: #d8d8d8;
+    font-family: Consolas, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #a887ff;
+    text-shadow: 0 0 10px #a887ff;
+  }
+
+  /* monitor frame */
+  .monitor {
+    width: 700px;
+    height: 450px;
+    background: #050505;
+    border: 6px solid #444;
+    border-radius: 20px;
+    box-shadow: 0 0 25px #6b6b6b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #frameImg {
+    max-width: 100%;
+    max-height: 100%;
+    opacity: 0;
+    transition: opacity 0.35s ease; /* smoother and slower */
+  }
+
+  #bootText {
+    white-space: pre-line;
+    padding: 20px;
+    font-size: 16px;
+    line-height: 1.3em;
+    color: #33ff33;
+    text-shadow: 0 0 5px #33ff33;
+  }
+
+  .btn {
+    margin-top: 30px;
+    padding: 12px 26px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: #7a4cff;
+    color: white;
+    box-shadow: 0 0 10px #7a4cff;
+    display: none; /* hidden until boot is done */
+  }
+
+  .btn:disabled {
+    background: #4a4a4a;
+    box-shadow: none;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Epic Flipbook Cinema</h1>
+
+<div class="monitor">
+  <div id="bootText"></div>
+  <img id="frameImg" src="" alt="frame" style="display:none;" />
+</div>
+
+<button class="btn" id="playBtn">Play Scene</button>
+
+<script>
+  /* Boot-Up Sequence Lines */
+  const bootLines = [
+    "Initializing AQC Visual Core 3.7...",
+    "Loading temporal rendering engine...",
+    "Scanning memory sectors 0x00A2 — 0xFF19...",
+    "Booting flipbook playback kernel...",
+    "Mounting lavender throne assets...",
+    "Calibrating pointy boot physics...",
+    "Compiling kimono fabric shaders...",
+    "Preparing tea-steam particle systems...",
+    "",
+    ">> SYSTEM READY <<"
+  ];
+
+  const bootText = document.getElementById("bootText");
+  const frameImg = document.getElementById("frameImg");
+  const playBtn = document.getElementById("playBtn");
+
+  let bootIndex = 0;
+
+  function runBootSequence() {
+    let interval = setInterval(() => {
+      bootText.innerText += bootLines[bootIndex] + "\n";
+      bootIndex++;
+
+      if (bootIndex >= bootLines.length) {
+        clearInterval(interval);
+
+        // Wait a moment, then reveal play button
+        setTimeout(() => {
+          playBtn.style.display = "inline-block";
+        }, 700);
+      }
+    }, 550); // slower per line to feel more cinematic
+  }
+
+  runBootSequence();
+
+
+  /* Frame Sequence */
+  const frames = [
+    "001.jpeg",
+    "002.jpeg",
+    "003.jpeg",
+    "01.jpeg",
+    "walking4.jpeg",
+    "walking4.jpeg"
+  ];
+
+  const finalSceneAudio = new Audio("audio/finalScene.mp3");
+
+  function playFlipbook() {
+    playBtn.disabled = true;
+    bootText.style.display = "none";   // hide boot text
+    frameImg.style.display = "block";  // show images
+
+    let index = 0;
+
+    function displayFrame() {
+      frameImg.style.opacity = 0;
+
+      setTimeout(() => {
+        frameImg.src = frames[index];
+        frameImg.style.opacity = 1;
+      }, 300); // slower fade
+
+      index++;
+
+      if (index < frames.length) {
+        setTimeout(displayFrame, 350); // slower flipbook speed
+      } else {
+        setTimeout(() => {
+          finalSceneAudio.play();
+          playBtn.disabled = false;
+        }, 500);
+      }
+    }
+
+    displayFrame();
+  }
+
+  playBtn.addEventListener("click", playFlipbook);
+</script>
+
+</body>
+</html>
