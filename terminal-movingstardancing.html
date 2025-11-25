@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Boot-Up Monitor</title>
+
+<style>
+    body {
+        background: #0a0a0a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: monospace;
+        color: #9ee7ff;
+    }
+
+    .monitor {
+        width: 450px;
+        height: 340px;
+        background: radial-gradient(circle at center, 
+            rgba(0, 150, 200, 0.35), 
+            rgba(0, 60, 90, 0.65),
+            rgba(0, 20, 30, 0.85)
+        );
+        border: 4px solid #88d7ff;
+        border-radius: 12px;
+        box-shadow: 0 0 25px rgba(0,170,255,0.4),
+                    inset 0 0 20px rgba(0,140,200,0.6);
+        padding: 20px;
+        position: relative;
+    }
+
+    .image-container {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .image-container img {
+        max-height: 100%;
+        max-width: 100%;
+        filter: drop-shadow(0 0 6px #4fc3ff);
+    }
+
+    .loading-bar-shell {
+        width: 100%;
+        height: 22px;
+        border: 2px solid #9ee7ff;
+        border-radius: 5px;
+        padding: 2px;
+    }
+
+    .loading-bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(to right, 
+            #b8f0ff, 
+            #53d4ff, 
+            #2ab0e6
+        );
+        border-radius: 3px;
+        transition: width 0.25s linear;
+        box-shadow: 0 0 10px rgba(100,200,255,0.6);
+    }
+
+    .loading-text {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 15px;
+        letter-spacing: 1px;
+    }
+</style>
+</head>
+
+<body>
+
+<audio id="ambientSound" src="ambient.mp3" loop></audio>
+
+<div class="monitor">
+    <div class="image-container">
+        <img src="star.png" alt="Boot Image">
+    </div>
+
+    <div class="loading-bar-shell">
+        <div class="loading-bar" id="loader"></div>
+    </div>
+
+    <div class="loading-text" id="loadingText">BOOTING SYSTEM...</div>
+</div>
+
+<script>
+    const loader = document.getElementById("loader");
+    const text = document.getElementById("loadingText");
+    const sound = document.getElementById("ambientSound");
+
+    let progress = 0;
+
+    sound.volume = 0.5;  // Not loud
+    sound.play().catch(()=>{}); // Auto-play may wait for interaction
+
+    function updateLoader() {
+        if (progress < 100) {
+            progress += 1;                     // Fills slower
+            loader.style.width = progress + "%";
+
+            text.innerText = "LOADING... " + progress + "%";
+            setTimeout(updateLoader, 110);     // Slow the frames
+        } else {
+            text.innerText = "SYSTEM READY ✓";
+        }
+    }
+
+    updateLoader();
+</script>
+
+</body>
+</html>
