@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Boot-Up Portal</title>
+
+<style>
+    body {
+        background: #000;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: monospace;
+        overflow: hidden;
+    }
+
+    /* ---------- MONITOR FRAME ---------- */
+    #monitor {
+        width: 480px;
+        height: 360px;
+        border: 4px solid #8fe0ff;
+        border-radius: 14px;
+        box-shadow: 0 0 25px rgba(0,170,255,0.4),
+                    inset 0 0 25px rgba(0,150,200,0.5);
+        background: radial-gradient(circle at center,
+            rgba(0,180,255,0.35),
+            rgba(0,90,140,0.55),
+            rgba(0,40,60,0.85)
+        );
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* --------------- BOOT IMAGE --------------- */
+    #bootImage {
+        width: 100%;
+        height: 210px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #bootImage img {
+        max-width: 100%;
+        max-height: 100%;
+        filter: drop-shadow(0 0 8px #5fd7ff);
+    }
+
+    /* --------------- LOADING BAR --------------- */
+    .loading-shell {
+        width: 100%;
+        height: 22px;
+        border: 2px solid #9ee7ff;
+        border-radius: 4px;
+        padding: 2px;
+        margin-top: 10px;
+    }
+
+    .loading-bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(to right, #b8f0ff, #53d4ff, #2ab0e6);
+        border-radius: 3px;
+        transition: width 0.25s linear;
+        box-shadow: 0 0 12px rgba(100,200,255,0.7);
+    }
+
+    .loading-text {
+        text-align: center;
+        margin-top: 12px;
+        color: #c6f7ff;
+        letter-spacing: 1px;
+    }
+
+    /* --------------- PORTAL EFFECT --------------- */
+    #portal {
+        position: absolute;
+        inset: 0;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background: radial-gradient(circle at center,
+            rgba(0, 200, 255, 0.4),
+            rgba(0, 40, 70, 0.9)
+        );
+        animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Rotating portal ring */
+    #portalRing {
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        border: 4px solid rgba(140,240,255,0.7);
+        border-radius: 50%;
+        box-shadow: 0 0 25px rgba(120,230,255,0.75);
+        animation: spin 8s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Dancing images */
+    #danceImage {
+        max-width: 200px;
+        filter: drop-shadow(0 0 10px #a2f0ff);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+<audio id="music" src="startheme.mp3" loop></audio>
+
+<div id="monitor">
+
+    <!-- Boot Image -->
+    <div id="bootImage">
+        <img src="star.png">
+    </div>
+
+    <!-- Loading Bar -->
+    <div class="loading-shell">
+        <div class="loading-bar" id="loader"></div>
+    </div>
+    <div class="loading-text" id="loadingText">INITIALIZING...</div>
+
+    <!-- Portal -->
+    <div id="portal">
+        <div id="portalRing"></div>
+        <img id="danceImage" src="">
+    </div>
+
+</div>
+
+<script>
+    const loader = document.getElementById("loader");
+    const loadingText = document.getElementById("loadingText");
+    const music = document.getElementById("music");
+    const portal = document.getElementById("portal");
+    const portalRing = document.getElementById("portalRing");
+    const danceImage = document.getElementById("danceImage");
+
+    let progress = 0;
+
+    // Dancing images list
+    const images = [
+        "dance1.gif",
+        "dance2.gif",
+        "dance3.gif"
+    ];
+    let imgIndex = 0;
+
+    music.volume = 0.6;
+    music.play().catch(()=>{});
+
+    function updateLoader() {
+        if (progress < 100) {
+            progress += 1;
+            loader.style.width = progress + "%";
+            loadingText.innerText = "LOADING " + progress + "%";
+            setTimeout(updateLoader, 120);
+        } else {
+            loadingText.innerText = "COMPLETE ✓";
+            openPortal();
+        }
+    }
+
+    function openPortal() {
+        setTimeout(() => {
+            portal.style.display = "flex";
+            cycleImages();
+        }, 1000);
+    }
+
+    function cycleImages() {
+        danceImage.src = images[imgIndex];
+        imgIndex = (imgIndex + 1) % images.length;
+        setTimeout(cycleImages, 2800);
+    }
+
+    updateLoader();
+</script>
+
+</body>
+</html>
