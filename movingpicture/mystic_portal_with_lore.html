@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Star Throne — Lore & Portal</title>
+<style>
+  :root{
+    --cerulean-1: rgba(60,150,255,0.35);
+    --bg: #030310;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, monospace;color:#dff7ff}
+  /* center stage */
+  .stage{height:100%;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box;position:relative;overflow:hidden}
+
+  /* LORE overlay */
+  .loreOverlay{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:60;
+    background: radial-gradient(circle at 50% 40%, rgba(0,0,10,0.35), rgba(0,0,0,0.85));
+    pointer-events:auto;
+  }
+  .loreBox{
+    max-width:880px; padding:40px; border-radius:12px; text-align:left;
+    color:rgba(220,245,255,0.95); font-size:18px; line-height:1.6; letter-spacing:0.2px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+  }
+  .loreLine{ opacity:0; transform:translateY(12px); transition:opacity .9s ease, transform .9s ease; margin-bottom:16px }
+  .loreLine.show{ opacity:1; transform:translateY(0) }
+
+  /* monitor */
+  .monitor{ width:820px; max-width:calc(100% - 40px); height:520px; border-radius:16px; border:6px solid rgba(120,220,255,0.12); box-shadow: 0 30px 80px rgba(0,0,0,0.7), inset 0 0 40px rgba(0,60,90,0.08); overflow:hidden; position:relative; z-index:10 }
+  .viewport{ position:absolute; inset:18px; border-radius:10px; padding:18px; box-sizing:border-box; display:flex; flex-direction:column; background: radial-gradient(circle at 48% 30%, rgba(0,160,240,0.10), rgba(0,40,80,0.55) 60%, rgba(0,8,16,0.92) 95%);}
+
+  /* top: boot image + title */
+  .top{ display:flex; gap:18px; align-items:center }
+  .bootThumb{ width:180px; height:140px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12)); box-shadow: inset 0 2px 10px rgba(0,0,0,0.35) }
+  .bootThumb img{ max-width:100%; max-height:100%; filter: drop-shadow(0 10px 25px rgba(60,170,255,0.08)); }
+
+  .title h1{ margin:0; font-size:20px; color:#cfeeff; letter-spacing:0.6px }
+  .title p{ margin:6px 0 0 0; font-size:13px; color:rgba(210,245,255,0.86) }
+
+  /* log + progress */
+  .logArea{ margin-top:14px; display:flex; gap:18px; align-items:flex-start; }
+  .log{ width:58%; min-height:170px; background: rgba(0,0,0,0.16); border-radius:8px; padding:12px; color:#bfffdc; font-family:monospace; font-size:13px; line-height:1.45; box-shadow: inset 0 6px 28px rgba(0,30,60,0.08); overflow:auto }
+  .progressWrap{ width:42%; display:flex; flex-direction:column; gap:12px; }
+  .progressShell{ background: rgba(255,255,255,0.03); border-radius:10px; padding:8px; }
+  .progressBar{ height:18px; width:0%; border-radius:6px; background: linear-gradient(90deg,#b8f0ff,#5cd4ff 40%,#2ab0e6); box-shadow:0 0 14px rgba(60,180,255,0.12); transition: width .28s linear }
+  .status{ font-size:13px; color:rgba(200,255,255,0.9); font-family:monospace; text-align:center }
+
+  /* portal area */
+  .portalArea{ flex:1; margin-top:14px; position:relative; display:flex; align-items:center; justify-content:center }
+  .starfield{ position:absolute; inset:0; pointer-events:none; z-index:1; overflow:hidden }
+  .star{ position:absolute; border-radius:50%; opacity:0; transform:translateZ(0); box-shadow:0 0 8px rgba(180,230,255,0.12); }
+  /* portal */
+  .portal{ position:relative; z-index:4; width:360px; height:360px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 10px 40px rgba(80,200,255,0.06); transform-origin:center; transition: transform .6s ease, opacity .6s ease; opacity:0; transform:scale(0.86) }
+  .portal.visible{ opacity:1; transform:scale(1) }
+  .ring{ position:absolute; width:420px; height:420px; border-radius:50%; border:3px solid rgba(140,240,255,0.18); box-shadow:0 0 36px rgba(90,200,255,0.12); z-index:2; animation: ringSpin 10s linear infinite; }
+  @keyframes ringSpin{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .core{ width:300px; height:300px; border-radius:50%; background: radial-gradient(circle at 40% 35%, rgba(180,240,255,0.22), rgba(50,120,200,0.12) 45%, rgba(0,10,20,0.6) 85%); box-shadow:0 0 80px rgba(30,160,255,0.12), inset 0 6px 40px rgba(50,160,230,0.08); display:flex; align-items:center; justify-content:center; z-index:3; }
+  .arrival{ max-width:220px; max-height:220px; border-radius:8px; filter: drop-shadow(0 28px 60px rgba(0,80,120,0.22)); transition: opacity .45s ease; opacity:0 }
+  /* pulse + flash */
+  .pulse{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(0.9); z-index:2; width:420px; height:420px; border-radius:50%; opacity:0; pointer-events:none; background: radial-gradient(circle, rgba(80,200,255,0.06), transparent 40%); transition:opacity .28s ease, transform .28s ease; }
+  .pulse.on{ opacity:1; transform:translate(-50%,-50%) scale(1.06) }
+  .flash{ position:absolute; inset:0; z-index:5; pointer-events:none; opacity:0; mix-blend-mode:screen; background: radial-gradient(circle at 50% 40%, rgba(200,248,255,0.18), transparent 20%); transition: opacity .45s ease }
+  .caption{ position:absolute; left:18px; bottom:18px; font-size:12px; color:rgba(210,250,255,0.7); font-family:monospace }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- LORE INTRO -->
+  <div class="loreOverlay" id="lore">
+    <div class="loreBox" id="loreBox" role="dialog" aria-label="Lore Intro">
+      <div class="loreLine" id="l1">Long before maps were drawn and names were shaped, the quiet sky held a single, patient throne.</div>
+      <div class="loreLine" id="l2">A watcher threaded between dreams — hair of evening, footsteps of moonlight — guarding the pathways no map could hold.</div>
+      <div class="loreLine" id="l3">When the night remembers, the lavender mist will call her back. Tonight, the threshold listens.</div>
+    </div>
+  </div>
+
+  <!-- MONITOR -->
+  <div class="monitor" id="monitor" aria-hidden="true" style="opacity:0; transform:scale(.98)">
+    <div class="viewport">
+
+      <div class="top">
+        <div class="bootThumb"><img id="bootImg" src="star.png" alt="Star Emblem"></div>
+        <div class="title">
+          <h1>STAR THRONE — ACTIVATION</h1>
+          <p class="muted">Soft mystical activation — Cerulean interface</p>
+        </div>
+      </div>
+
+      <div class="logArea">
+        <div class="log" id="logPane" aria-live="polite"></div>
+
+        <div class="progressWrap">
+          <div class="progressShell"><div class="progressBar" id="progressBar"></div></div>
+          <div class="status" id="statusText">STANDBY</div>
+        </div>
+      </div>
+
+      <div class="portalArea">
+        <div class="starfield" id="starfield"></div>
+
+        <div class="pulse" id="pulse"></div>
+        <div class="portal" id="portal">
+          <div class="ring"></div>
+          <div class="core">
+            <img id="arrivalImg" class="arrival" src="" alt="arrival vision" />
+          </div>
+        </div>
+
+        <div class="flash" id="flash"></div>
+      </div>
+
+      <div class="caption">Portal ID: <strong>XEN-GATE-01</strong></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- AUDIO -->
+<audio id="chimes" src="gentlechimes.mp3" loop preload="auto"></audio>
+<audio id="music" src="startheme.mp3" preload="auto"></audio>
+
+<script>
+/* =========================
+   CONFIG — add your arrival images here
+   ========================= */
+const arrivalImages = [
+  "dance1.gif",
+  "dance2.gif",
+  "dance3.gif",
+  "dance4.gif"
+  // add more filenames as needed
+];
+
+/* SETTINGS (timing tuned for a calm cinematic feel) */
+const SETTINGS = {
+  loreFadeInMs: 900,
+  loreHoldMs: 1300,
+  loreFadeOutMs: 900,
+  loreBetweenMs: 300,
+  bootDelay: 600,           // interval between log lines (ms)
+  loaderStepMs: 90,         // loader increment interval (ms)
+  loaderIncrement: 1,       // percent per step
+  resonanceThreshold: 70,   // percent to trigger resonance pulse
+  musicDelayAfterLoad: 2000,// ms after 100% to start main music (user requested 2s)
+  portalOpenDelay: 2300,    // ms after 100% to open portal (slightly after music starts)
+  arrivalCycleMs: 3200,     // how long each arrival image stays (ms)
+  starCount: 140
+};
+
+/* DOM refs */
+const lore = document.getElementById('lore');
+const l1 = document.getElementById('l1');
+const l2 = document.getElementById('l2');
+const l3 = document.getElementById('l3');
+const monitor = document.getElementById('monitor');
+const logPane = document.getElementById('logPane');
+const progressBar = document.getElementById('progressBar');
+const statusText = document.getElementById('statusText');
+const starfield = document.getElementById('starfield');
+const portal = document.getElementById('portal');
+const arrivalImg = document.getElementById('arrivalImg');
+const music = document.getElementById('music');
+const chimes = document.getElementById('chimes');
+const bootImg = document.getElementById('bootImg');
+const pulse = document.getElementById('pulse');
+const flash = document.getElementById('flash');
+
+/* Preload images */
+function preload(list){
+  list.forEach(src => { const i=new Image(); i.src=src; });
+}
+preload([bootImg.src, ...arrivalImages]);
+
+/* Create subtle starfield */
+function createStars(n){
+  const rect = starfield.getBoundingClientRect();
+  const w = rect.width || 700;
+  const h = rect.height || 250;
+  const style = document.createElement('style');
+  style.innerHTML = `@keyframes tw{0%{opacity:0}50%{opacity:0.6}100%{opacity:0}}`;
+  document.head.appendChild(style);
+
+  for(let i=0;i<n;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = (Math.random()*1.8)+0.5; // tiny
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = (Math.random()*100) + '%';
+    s.style.top = (Math.random()*100) + '%';
+    const speed = Math.random()*6 + 3;
+    s.style.animation = `tw ${speed}s ease-in-out ${Math.random()*3}s infinite`;
+    starfield.appendChild(s);
+  }
+}
+createStars(SETTINGS.starCount);
+
+/* Lore sequence: fade-in lines, hold, fade-out */
+function showLoreThenBoot(){
+  // show first line
+  setTimeout(()=> l1.classList.add('show'), 200);
+  setTimeout(()=> l2.classList.add('show'), 200 + SETTINGS.loreFadeInMs + 220);
+  setTimeout(()=> l3.classList.add('show'), 200 + (SETTINGS.loreFadeInMs+220)*2);
+
+  // hold then fade them out in order
+  const totalIntro = 200 + (SETTINGS.loreFadeInMs + 220) * 2 + SETTINGS.loreHoldMs + SETTINGS.loreFadeOutMs;
+  setTimeout(()=>{
+    l1.classList.remove('show');
+    l1.style.transition = `opacity ${SETTINGS.loreFadeOutMs}ms ease, transform ${SETTINGS.loreFadeOutMs}ms ease`;
+  }, totalIntro - SETTINGS.loreFadeOutMs - 60);
+  setTimeout(()=> {
+    l2.classList.remove('show');
+    l2.style.transition = `opacity ${SETTINGS.loreFadeOutMs}ms ease, transform ${SETTINGS.loreFadeOutMs}ms ease`;
+  }, totalIntro - (SETTINGS.loreFadeOutMs/2));
+  setTimeout(()=> {
+    l3.classList.remove('show');
+    l3.style.transition = `opacity ${SETTINGS.loreFadeOutMs}ms ease, transform ${SETTINGS.loreFadeOutMs}ms ease`;
+  }, totalIntro);
+
+  // hide overlay and reveal monitor after full intro completes
+  setTimeout(()=>{
+    lore.style.display = 'none';
+    monitor.style.opacity = 1;
+    monitor.style.transform = 'scale(1)';
+    monitor.removeAttribute('aria-hidden');
+    // start chimes softly and then start boot after a small pause
+    try{ chimes.volume = 0.15; chimes.play().catch(()=>{}); }catch(e){}
+    setTimeout(()=> startBoot(), 350);
+  }, totalIntro + 220);
+}
+
+/* Boot logging + loader */
+const bootLines = [
+  "AWAKENING LUMINESCENT THREADS...",
+  "SCANNING AETHER SIGNATURES...",
+  "CALLING STAR-HEART NODES...",
+  "SHEPHERDING LAVENDER-STEAM MATRICES...",
+  "ALIGNING KIMONO-FIBER RESONANCE...",
+  "SYNCHRONIZING SOFT-STEP KINETICS...",
+  "CALL/RESPOND: ANCIENT THRONE ID: XEN",
+  "STABILIZING GATEWAY COORDINATES...",
+  "CHARGING AURIC RIM...",
+  "CALIBRATION COMPLETE"
+];
+
+function log(msg){
+  logPane.textContent += msg + "\n";
+  logPane.scrollTop = logPane.scrollHeight;
+}
+
+let progress = 0;
+let bootIdx = 0;
+let resonance = false;
+let cycleTimer = null;
+
+function startBoot(){
+  statusText.textContent = "WAKING...";
+  runBootLines();
+  runLoader();
+}
+function runBootLines(){
+  const i = setInterval(()=>{
+    if(bootIdx < bootLines.length){
+      log(bootLines[bootIdx]);
+      bootIdx++;
+    } else {
+      clearInterval(i);
+      log("SYSTEM: READY");
+    }
+  }, SETTINGS.bootDelay);
+}
+
+function runLoader(){
+  const interval = setInterval(()=>{
+    progress = Math.min(100, progress + SETTINGS.loaderIncrement);
+    progressBar.style.width = progress + '%';
+    statusText.textContent = `LOADING ${progress}%`;
+
+    if(!resonance && progress >= SETTINGS.resonanceThreshold){
+      resonance = true;
+      log("RES: STARHEART SYNC INITIATED...");
+      pulse.classList.add('on');
+      fadeAudio(chimes, 0.25, 600); // slightly softer chimes as resonance starts
+    }
+
+    if(progress % 8 === 0){
+      tinyPulse();
+    }
+
+    if(progress >= 100){
+      clearInterval(interval);
+      statusText.textContent = "COMPLETE ✓";
+      log("GATEWAY CHARGE STABLE");
+      // play main music 2 seconds after load completes
+      setTimeout(()=> {
+        try { music.volume = 0.45; music.play().catch(()=>createAudioHint()); } catch(e) { createAudioHint(); }
+        fadeAudio(chimes, 0.02, 900); // chimes fade down gently
+      }, SETTINGS.musicDelayAfterLoad);
+
+      // open portal slightly after music begins (per design)
+      setTimeout(()=> openPortal(), SETTINGS.portalOpenDelay);
+    }
+  }, SETTINGS.loaderStepMs);
+}
+
+/* tiny flash pulse */
+function tinyPulse(){
+  flash.style.opacity = 0.22;
+  setTimeout(()=> flash.style.opacity = 0, 260);
+}
+
+/* fade audio helper */
+function fadeAudio(audioEl, target, ms){
+  try {
+    const start = audioEl.volume || 0;
+    const steps = 20;
+    const stepTime = ms / steps;
+    let s=0;
+    const delta = (target - start)/steps;
+    const t = setInterval(()=>{
+      s++;
+      audioEl.volume = Math.max(0, Math.min(1, start + delta * s));
+      if(s>=steps) clearInterval(t);
+    }, stepTime);
+  } catch(e){}
+}
+
+/* audio unblock hint */
+function createAudioHint(){
+  const hint = document.createElement('div');
+  hint.style.position='fixed'; hint.style.left='50%'; hint.style.top='18px'; hint.style.transform='translateX(-50%)';
+  hint.style.padding='8px 14px'; hint.style.borderRadius='8px'; hint.style.background='linear-gradient(180deg, rgba(120,220,255,0.09), rgba(0,0,0,0.18))';
+  hint.style.color='#dffaff'; hint.style.fontFamily='monospace'; hint.style.fontSize='13px'; hint.style.boxShadow='0 6px 20px rgba(0,0,0,0.6)'; hint.style.cursor='pointer';
+  hint.textContent = 'Tap to awaken sound';
+  document.body.appendChild(hint);
+  function enable(){ music.play().catch(()=>{}); chimes.play().catch(()=>{}); fadeAudio(music, 0.45, 800); hint.remove(); document.removeEventListener('click', enable); }
+  hint.addEventListener('click', enable);
+  document.addEventListener('click', enable, { once:true });
+}
+
+/* open portal & start cycling images within core */
+function openPortal(){
+  log("ACTIVATING PORTAL...");
+  pulse.classList.remove('on');
+  portal.classList.add('visible');
+  // portal flourish
+  flash.style.opacity = 0.35;
+  setTimeout(()=> flash.style.opacity = 0, 600);
+
+  // raise main music slowly for arrival
+  fadeAudio(music, 0.75, 1200);
+
+  // after portal stabilizes, begin arrival images inside core
+  setTimeout(()=> {
+    if(arrivalImages.length > 0){
+      let idx=0;
+      arrivalImg.src = arrivalImages[idx];
+      arrivalImg.style.opacity = 1;
+      idx = (idx+1) % arrivalImages.length;
+
+      cycleTimer = setInterval(()=>{
+        arrivalImg.style.opacity = 0;
+        setTimeout(()=>{
+          arrivalImg.src = arrivalImages[idx];
+          arrivalImg.style.opacity = 1;
+          idx = (idx+1) % arrivalImages.length;
+        }, 420);
+      }, SETTINGS.arrivalCycleMs);
+    } else {
+      arrivalImg.src = bootImg.src;
+      arrivalImg.style.opacity = 1;
+    }
+
+    setTimeout(()=> log("PORTAL OPEN — WELCOME, XEN."), 800);
+    setTimeout(()=> log("THE STAR THRONE AWAITS — STEP FORTH."), 2400);
+  }, 1400);
+}
+
+/* cleanup on leave */
+window.addEventListener('beforeunload', ()=>{ if(cycleTimer) clearInterval(cycleTimer); });
+
+/* begin: show lore then boot */
+showLoreThenBoot();
+
+</script>
+</body>
+</html>
