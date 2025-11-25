@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Flipbook Cinema</title>
+<style>
+  body {
+    background: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    font-size: 32px;
+  }
+
+  /* monitor frame */
+  .monitor {
+    width: 700px;
+    height: 450px;
+    background: #111;
+    border: 6px solid #555;
+    border-radius: 20px;
+    box-shadow: 0 0 25px #4a4a4a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #frameImg {
+    max-width: 100%;
+    max-height: 100%;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .btn {
+    margin-top: 30px;
+    padding: 12px 26px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: #7a4cff;
+    color: white;
+    box-shadow: 0 0 10px #7a4cff;
+  }
+
+  .btn:disabled {
+    background: #4a4a4a;
+    box-shadow: none;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Epic Flipbook Cinema</h1>
+
+<div class="monitor">
+  <img id="frameImg" src="" alt="frame" />
+</div>
+
+<button class="btn" id="playBtn">Play Scene</button>
+
+<script>
+  // Replace these with your actual frame images
+  const frames = [
+    "frames/frame1.png",
+    "frames/frame2.png",
+    "frames/frame3.png",
+    "frames/frame4.png",
+    "frames/frame5.png",
+    "frames/frame6.png"
+  ];
+
+  const finalSceneAudio = new Audio("audio/finalScene.mp3");
+
+  const img = document.getElementById("frameImg");
+  const btn = document.getElementById("playBtn");
+
+  function playFlipbook() {
+    btn.disabled = true;
+    let index = 0;
+    
+    function showFrame() {
+      img.style.opacity = 0; // fade out
+
+      setTimeout(() => {
+        img.src = frames[index];
+        img.style.opacity = 1; // fade in
+      }, 200);
+
+      index++;
+
+      if (index < frames.l
