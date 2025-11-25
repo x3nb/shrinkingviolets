@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1980s Arcade Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: black;
+            color: white;
+        }
+        .question {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            background-color: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #777;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>1980s Arcade Game Quiz</h1>
+    <p>Test your knowledge of classic 1980s arcade games!</p>
+    <div id="quiz">
+        <div class="question" id="q1">
+            <p>1. What is the name of the yellow character that eats dots in a maze?</p>
+            <button onclick="answer(1, 'Pac-Man')">Pac-Man</button>
+            <button onclick="answer(1, 'Mario')">Mario</button>
+            <button onclick="answer(1, 'Sonic')">Sonic</button>
+        </div>
+        <div class="question" id="q2" style="display: none;">
+            <p>2. In Donkey Kong, what is the goal of the player?</p>
+            <button onclick="answer(2, 'Rescue the princess')">Rescue the princess</button>
+            <button onclick="answer(2, 'Collect coins')">Collect coins</button>
+            <button onclick="answer(2, 'Fight aliens')">Fight aliens</button>
+        </div>
+        <div class="question" id="q3" style="display: none;">
+            <p>3. What game features invaders descending from the top of the screen?</p>
+            <button onclick="answer(3, 'Space Invaders')">Space Invaders</button>
+            <button onclick="answer(3, 'Galaga')">Galaga</button>
+            <button onclick="answer(3, 'Asteroids')">Asteroids</button>
+        </div>
+        <div class="question" id="q4" style="display: none;">
+            <p>4. Who created Pac-Man?</p>
+            <button onclick="answer(4, 'Namco')">Namco</button>
+            <button onclick="answer(4, 'Nintendo')">Nintendo</button>
+            <button onclick="answer(4, 'Atari')">Atari</button>
+        </div>
+        <div class="question" id="q5" style="display: none;">
+            <p>5. In Frogger, what does the player control?</p>
+            <button onclick="answer(5, 'A frog')">A frog</button>
+            <button onclick="answer(5, 'A car')">A car</button>
+            <button onclick="answer(5, 'A spaceship')">A spaceship</button>
+        </div>
+    </div>
+    <p id="result"></p>
+
+    <script>
+        let score = 0;
+        let currentQuestion = 1;
+        const answers = {
+            1: 'Pac-Man',
+            2: 'Rescue the princess',
+            3: 'Space Invaders',
+            4: 'Namco',
+            5: 'A frog'
+        };
+
+        function answer(question, choice) {
+            if (choice === answers[question]) {
+                score++;
+            }
+            document.getElementById('q' + question).style.display = 'none';
+            currentQuestion++;
+            if (currentQuestion <= 5) {
+                document.getElementById('q' + currentQuestion).style.display = 'block';
+            } else {
+                document.getElementById('result').textContent = `Quiz complete! Your score: ${score}/5`;
+            }
+        }
+    </script>
+</body>
+</html>
