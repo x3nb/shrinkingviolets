@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Star Throne — Portal Activation</title>
+<style>
+  :root{
+    --cerulean-1: rgba(60,150,255,0.35);
+    --cerulean-2: rgba(20,60,120,0.65);
+    --glow: rgba(100,220,255,0.12);
+  }
+
+  /* Page layout */
+  html,body{height:100%;margin:0;background:#03030a;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, monospace;color:#d8f6ff}
+  .wrap{height:100%;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box}
+
+  /* Monitor */
+  .monitor {
+    width: 820px;
+    max-width: calc(100% - 40px);
+    height: 520px;
+    border-radius: 16px;
+    border: 6px solid rgba(120,220,255,0.18);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 0 40px rgba(0,60,90,0.12);
+    overflow: hidden;
+    position: relative;
+    background:
+      radial-gradient(circle at 40% 30%, rgba(100,200,255,0.14) 0%, transparent 30%),
+      radial-gradient(circle at 70% 70%, rgba(50,140,220,0.08) 0%, transparent 25%),
+      linear-gradient(180deg, rgba(0,20,40,0.18), rgba(0,0,0,0.35));
+  }
+
+  /* inner viewport that holds everything */
+  .viewport{
+    position:absolute;inset:18px;border-radius:10px;overflow:hidden;padding:18px;box-sizing:border-box;
+    display:flex;flex-direction:column;align-items:stretch;
+    background: radial-gradient(circle at center, rgba(0,160,240,0.12), rgba(0,40,80,0.55) 60%, rgba(0,10,20,0.88) 95%);
+  }
+
+  /* top area: boot image & title */
+  .top {
+    display:flex;gap:18px;align-items:center;
+  }
+
+  .boot-thumb {
+    width:180px;height:140px;border-radius:10px;flex:0 0 180px;
+    display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .boot-thumb img{max-width:100%;max-height:100%;filter: drop-shadow(0 8px 18px rgba(60,170,255,0.12));transform:translateZ(0);}
+
+  .title {
+    flex:1; color: #dff9ff; font-size:18px; line-height:1.05;
+  }
+  .title h1{margin:0;font-size:20px;color:#cfeeff;letter-spacing:0.6px}
+  .title p{margin:8px 0 0 0;color:rgba(210,245,255,0.82);font-size:13px}
+
+  /* log + loading area */
+  .log-area { margin-top:14px; display:flex; gap:18px; align-items:flex-start;}
+  .log {
+    width: 58%;
+    min-height:170px;
+    background: rgba(0,0,0,0.16);
+    border-radius: 8px;
+    padding:12px; color:#bfffdc; font-family:monospace; font-size:13px; line-height:1.45;
+    box-shadow: inset 0 6px 28px rgba(0,30,60,0.08);
+  }
+
+  .progress-wrap { width:42%; display:flex;flex-direction:column;align-items:stretch;gap:12px; }
+  .progress-shell { background: rgba(255,255,255,0.03); border-radius:10px; padding:8px; box-shadow: inset 0 4px 18px rgba(0,0,0,0.4);}
+  .progress-bar { height:18px; width:0%; border-radius:6px; background: linear-gradient(90deg, #b8f0ff, #5cd4ff 40%, #2ab0e6); box-shadow:0 0 14px rgba(60,180,255,0.12); transition:width 0.28s linear;}
+
+  .status { font-size:13px;color:rgba(200,255,255,0.9); font-family:monospace; text-align:center; }
+
+  /* viewport lower area: portal container */
+  .portal-area { flex:1; margin-top:14px; position:relative; display:flex;align-items:center;justify-content:center; }
+
+  /* starfield: behind everything in portal area */
+  .starfield {
+    position:absolute; inset:0; pointer-events:none; z-index:1; overflow:hidden;
+  }
+  .star { position:absolute; border-radius:50%; opacity:0; transform: translateZ(0); box-shadow: 0 0 8px rgba(180,230,255,0.12); }
+
+  /* portal overlay */
+  .portal {
+    position:relative; z-index:3;
+    width:360px; height:360px; border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 0 60px rgba(120,220,255,0.06);
+    transform-origin:center;
+    transition: transform .6s ease, opacity .6s ease;
+    opacity:0; transform: scale(0.85);
+    backdrop-filter: blur(0px) saturate(1.02);
+  }
+
+  .portal.visible{ opacity:1; transform:scale(1); }
+
+  /* portal ring */
+  .ring {
+    position:absolute; width:420px; height:420px; border-radius:50%;
+    border:3px solid rgba(140,240,255,0.18); box-shadow:0 0 36px rgba(90,200,255,0.12); z-index:2;
+    animation: ringSpin 10s linear infinite;
+    filter: drop-shadow(0 12px 30px rgba(0,190,255,0.06));
+    transform: translateZ(0);
+  }
+  @keyframes ringSpin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  /* portal core glow */
+  .core {
+    width:300px;height:300px;border-radius:50%;
+    background: radial-gradient(circle at 40% 35%, rgba(180,240,255,0.22), rgba(50,120,200,0.12) 45%, rgba(0,10,20,0.6) 85%);
+    box-shadow: 0 0 80px rgba(30,160,255,0.12), inset 0 6px 40px rgba(50,160,230,0.08);
+    display:flex;align-items:center;justify-content:center;position:relative; z-index:3;
+  }
+
+  /* dancing image */
+  .arrival {
+    max-width:220px; max-height:220px; border-radius:8px; z-index:4; filter: drop-shadow(0 28px 60px rgba(0,80,120,0.22));
+    animation: floaty 3.6s ease-in-out infinite;
+    transform-origin:center;
+  }
+  @keyframes floaty { 0%{transform:translateY(0)} 50%{transform:translateY(-16px)} 100%{transform:translateY(0)} }
+
+  /* heartbeat pulse effect at resonance */
+  .pulse {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(0.9); z-index:2;
+    width:420px;height:420px;border-radius:50%;opacity:0; pointer-events:none;
+    background: radial-gradient(circle, rgba(80,200,255,0.06), transparent 40%);
+    transition:opacity .28s ease, transform .28s ease;
+  }
+  .pulse.on { opacity:1; transform:translate(-50%,-50%) scale(1.06); }
+
+  /* distortion flash */
+  .flash {
+    position:absolute; inset:0; z-index:5; pointer-events:none; opacity:0; mix-blend-mode:screen;
+    background: radial-gradient(circle at 50% 40%, rgba(200,248,255,0.25), transparent 20%);
+    transition: opacity .45s ease;
+  }
+
+  /* small UI captions */
+  .caption { position:absolute; left:18px; bottom:18px; font-size:12px; color:rgba(210,250,255,0.7); font-family:monospace; }
+
+  /* misc */
+  .muted { opacity:0.7; font-size:12px }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="monitor" role="region" aria-label="Star Throne Activation Monitor">
+    <div class="viewport">
+
+      <div class="top">
+        <div class="boot-thumb"><img id="bootImg" src="star.png" alt="star emblem"/></div>
+        <div class="title">
+          <h1>STAR THRONE — PORTAL FRAME</h1>
+          <p class="muted">Soft Mystical Activation — Cerulean interface</p>
+        </div>
+      </div>
+
+      <div class="log-area">
+        <div class="log" id="logPane"></div>
+
+        <div class="progress-wrap">
+          <div class="progress-shell">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <div class="status" id="statusText">STANDBY</div>
+          <div style="height:10px"></div>
+          <div class="muted" style="font-size:12px;text-align:center">Audio: <span id="audioLabel">startheme.mp3</span></div>
+        </div>
+      </div>
+
+      <div class="portal-area">
+        <div class="starfield" id="starfield"></div>
+
+        <div class="pulse" id="pulse"></div>
+        <div class="portal" id="portal">
+          <div class="ring"></div>
+          <div class="core">
+            <img id="arrivalImg" class="arrival" src="" alt="arrival" />
+          </div>
+        </div>
+
+        <div class="flash" id="flash"></div>
+      </div>
+
+      <div class="caption">Portal ID: <strong>XEN-GATE-01</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- Audio (looping) -->
+<audio id="music" src="startheme.mp3" loop preload="auto"></audio>
+
+<script>
+/* ==========================
+   CONFIG: add your images here
+   - Put files in same folder as this HTML
+   - Use png/jpg/gif/webp as desired
+   ========================== */
+const arrivalImages = [
+  "dance1.gif",
+  "dance2.gif",
+  "dance3.gif",
+  // add more filenames here, e.g.:
+  // "dance4.gif", "dance5.png", "extraA.webp"
+];
+
+/* IMPORTANT: star.png used already as bootImg earlier */
+
+/* ==========================
+   SETTINGS
+   ========================== */
+const SETTINGS = {
+  bootDelay: 600,         // interval between boot log lines (ms)
+  loaderStepMs: 90,       // loader increment interval (ms)
+  loaderIncrement: 1,     // percentage per step
+  resonanceThreshold: 70, // % to start heartbeat resonance
+  portalOpenDelay: 900,   // after 100% reach, wait (ms) before opening portal
+  imageCycleMs: 3200,     // how long each arrival image stays (ms)
+  starCount: 150,         // number of tiny stars
+  starTwinkleSpeedRange: [3000, 9000], // ms
+};
+
+/* ==========================
+   DOM refs
+   ========================== */
+const logPane = document.getElementById('logPane');
+const progressBar = document.getElementById('progressBar');
+const statusText = document.getElementById('statusText');
+const portal = document.getElementById('portal');
+const flash = document.getElementById('flash');
+const pulse = document.getElementById('pulse');
+const starfield = document.getElementById('starfield');
+const arrivalImg = document.getElementById('arrivalImg');
+const music = document.getElementById('music');
+const bootImg = document.getElementById('bootImg');
+const audioLabel = document.getElementById('audioLabel');
+
+/* Show audio filename */
+audioLabel.textContent = (music.src ? music.src.split('/').pop() : 'startheme.mp3');
+
+/* ==========================
+   Boot sequence strings (soft mystical phrasing)
+   ========================== */
+const bootLines = [
+  "AWAKENING LUMINESCENT THREADS...",
+  "SCANNING AETHER SIGNATURES...",
+  "CALLING STAR-HEART NODES...",
+  "SHEPHERDING LAVENDER-STEAM MATRICES...",
+  "ALIGNING KIMONO-FIBER RESONANCE...",
+  "SYNCHRONIZING SOFT-STEP KINETICS...",
+  "CALL/RESPOND: ANCIENT THRONE ID: XEN",
+  "STABILIZING GATEWAY COORDINATES...",
+  "CHARGING AURIC RIM...",
+  "CALIBRATION COMPLETE"
+];
+
+/* Pretty-print to log pane */
+function log(msg){
+  logPane.textContent += msg + "\n";
+  logPane.scrollTop = logPane.scrollHeight;
+}
+
+/* ==========================
+   Preload images (arrival images + boot image)
+   ========================== */
+function preloadImages(list){
+  list.forEach(src=>{
+    const i = new Image();
+    i.src = src;
+  });
+}
+/* preload boot and arrival */
+preloadImages([bootImg.src, ...arrivalImages]);
+
+/* ==========================
+   Generate starfield
+   ========================== */
+function createStarfield(container, count){
+  const box = container.getBoundingClientRect();
+  const w = box.width || 800;
+  const h = box.height || 300;
+
+  for(let i=0;i<count;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = (Math.random()*1.7)+0.6; // tiny stars
+    const left = Math.random()*100;
+    const top = Math.random()*100;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = left + '%';
+    s.style.top = top + '%';
+    // color variation toward cool-white/cerulean
+    const r = 180 + Math.floor(Math.random()*60);
+    const g = 200 + Math.floor(Math.random()*40);
+    const b = 255;
+    s.style.background = `rgba(${r},${g},${b},${(Math.random()*0.9).toFixed(2)})`;
+    // twinkle: keyframes via inline animation
+    const speed = Math.random()*(SETTINGS.starTwinkleSpeedRange[1]-SETTINGS.starTwinkleSpeedRange[0]) + SETTINGS.starTwinkleSpeedRange[0];
+    s.style.animation = `twinkle ${speed}ms ease-in-out ${Math.random()*1000}ms infinite alternate`;
+    container.appendChild(s);
+  }
+
+  // create keyframes in runtime for twinkle to vary opacity
+  const style = document.createElement('style');
+  style.innerHTML = `@keyframes twinkle { from {opacity:0.06; transform: scale(1);} 50% {opacity:0.9; transform: scale(1.4);} to {opacity:0.08; transform: scale(1);} }`;
+  document.head.appendChild(style);
+}
+
+/* Make starfield responsive: create now */
+createStarfield(starfield, SETTINGS.starCount);
+
+/* ==========================
+   Loader logic with story-driven phases
+   ========================== */
+let progress = 0;
+let bootIndex = 0;
+let resonanceOn = false;
+
+function startBoot(){
+  statusText.textContent = "WAKING...";
+  runBootLines();
+  runLoader();
+  tryPlayMusic();
+}
+
+/* print boot lines gradually */
+function runBootLines(){
+  const interval = setInterval(()=>{
+    if(bootIndex < bootLines.length){
+      log(bootLines[bootIndex]);
+      bootIndex++;
+    } else {
+      clearInterval(interval);
+      log("SYSTEM: READY");
+    }
+  }, SETTINGS.bootDelay);
+}
+
+/* loader increments slowly; triggers resonance and portal events */
+function runLoader(){
+  const loaderInterval = setInterval(()=>{
+    progress = Math.min(100, progress + SETTINGS.loaderIncrement);
+    progressBar.style.width = progress + '%';
+    statusText.textContent = `LOADING ${progress}%`;
+
+    // at resonance threshold, start pulse & gentle glow
+    if(!resonanceOn && progress >= SETTINGS.resonanceThreshold){
+      resonanceOn = true;
+      log("RES: STARHEART SYNC INITIATED...");
+      pulse.classList.add('on');
+      // gentle audio nudge
+      fadeMusic(0.6, 600);
+    }
+
+    // small, soft heartbeat flash near multiples, to feel alive
+    if(progress % 7 === 0){
+      tinyPulse();
+    }
+
+    if(progress >= 100){
+      clearInterval(loaderInterval);
+      statusText.textContent = "COMPLETE ✓";
+      log("GATEWAY: CHARGE STABLE");
+      // brief flourish then open portal
+      setTimeout(()=>{ openPortal(); }, SETTINGS.portalOpenDelay);
+    }
+  }, SETTINGS.loaderStepMs);
+}
+
+/* tiny heartbeat: brief flash */
+function tinyPulse(){
+  flash.style.opacity = 0.22;
+  setTimeout(()=>{ flash.style.opacity = 0; }, 260);
+}
+
+/* open portal: summon ring and start cycling arrival images */
+let arrivalIdx = 0;
+let cycleTimer = null;
+function openPortal(){
+  log("ACTIVATING PORTAL...");
+  pulse.classList.remove('on');
+  portal.classList.add('visible');
+
+  // mild distortion (scale + flash)
+  flash.style.opacity = 0.35;
+  setTimeout(()=>flash.style.opacity = 0, 600);
+
+  // fade music up slightly for arrival
+  fadeMusic(0.8, 800);
+
+  // show first image immediately
+  if(arrivalImages.length > 0){
+    arrivalImg.src = arrivalImages[arrivalIdx];
+    arrivalIdx = (arrivalIdx + 1) % arrivalImages.length;
+
+    // start cycling images
+    cycleTimer = setInterval(()=>{
+      arrivalImg.style.opacity = 0;
+      setTimeout(()=>{
+        arrivalImg.src = arrivalImages[arrivalIdx];
+        arrivalIdx = (arrivalIdx + 1) % arrivalImages.length;
+        arrivalImg.style.opacity = 1;
+      }, 420);
+    }, SETTINGS.imageCycleMs);
+
+  } else {
+    // fallback: place the star.png into core if no arrivals provided
+    arrivalImg.src = bootImg.src;
+  }
+
+  // subtle long-lived log lines to set the soft story tone
+  setTimeout(()=>log("PORTAL OPEN — WELCOME, XEN."), 800);
+  setTimeout(()=>log("THE STAR THRONE AWAITS — STEP FORTH."), 2400);
+}
+
+/* fade music volume convenience */
+function fadeMusic(targetVol = 0.6, ms = 600){
+  try {
+    const start = music.volume;
+    const steps = 20;
+    const stepTime = ms / steps;
+    let step = 0;
+    const delta = (targetVol - start)/steps;
+    const t = setInterval(()=>{
+      step++;
+      music.volume = Math.max(0, Math.min(1, start + delta * step));
+      if(step >= steps){ clearInterval(t); }
+    }, stepTime);
+  }catch(e){}
+}
+
+/* attempt to start music; browsers may block until user interaction */
+function tryPlayMusic(){
+  if(!music) return;
+  music.volume = 0.45;
+  music.play().catch(()=> {
+    // If autoplay blocked, create a soft clickable hint to allow audio
+    createAudioUnblockHint();
+  });
+}
+
+/* create small hint overlay asking user to "tap to awaken sound" if autoplay blocked */
+function createAudioUnblockHint(){
+  const hint = document.createElement('div');
+  hint.style.position = 'fixed';
+  hint.style.left = '50%';
+  hint.style.top = '18px';
+  hint.style.transform = 'translateX(-50%)';
+  hint.style.padding = '8px 14px';
+  hint.style.borderRadius = '8px';
+  hint.style.background = 'linear-gradient(180deg, rgba(120,220,255,0.09), rgba(0,0,0,0.18))';
+  hint.style.color = '#dffaff';
+  hint.style.fontFamily = 'monospace';
+  hint.style.fontSize = '13px';
+  hint.style.boxShadow = '0 6px 20px rgba(0,0,0,0.6)';
+  hint.style.cursor = 'pointer';
+  hint.textContent = 'Tap to awaken sound';
+  document.body.appendChild(hint);
+
+  function enable(){
+    music.play().catch(()=>{});
+    fadeMusic(0.6, 400);
+    hint.remove();
+    document.removeEventListener('click', enable);
+  }
+  hint.addEventListener('click', enable);
+  // remove if user interacts with page anywhere
+  document.addEventListener('click', enable, { once:true });
+}
+
+/* clean up on unload */
+window.addEventListener('beforeunload', ()=>{ if(cycleTimer) clearInterval(cycleTimer); });
+
+/* Kick off the boot */
+startBoot();
+
+</script>
+</body>
+</html>
