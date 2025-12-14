@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPG Café Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+body {
+  margin: 0; padding: 0;
+  font-family: 'Special Elite', monospace;
+  background: linear-gradient(to bottom, #2b004d, #1a002a);
+  color: #f8f4ff;
+  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+}
+header {
+  text-align: center; font-size: 2rem; padding: 1rem;
+  background: linear-gradient(to right, #a64ca6, #4b0082);
+  -webkit-background-clip: text; color: transparent;
+}
+#characterContainer {
+  display: flex; justify-content: space-around; padding: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.characterCard {
+  width: 180px; height: 280px;
+  background: linear-gradient(to bottom, #4b0082, #2b004d);
+  border-radius: 16px; text-align: center;
+  cursor: pointer; transition: 0.3s;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding-bottom: 0.5rem;
+}
+.characterCard img {
+  width: 100%; height: 70%; border-radius: 16px 16px 0 0;
+  object-fit: cover;
+}
+.characterCard.dark {
+  filter: brightness(0.3);
+}
+.characterName {
+  font-size: 1.2rem; margin-top: 0.5rem;
+}
+#chatContainer {
+  flex: 1;
+  display: flex; flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+  background: rgba(0,0,0,0.5);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+.bubble { max-width: 60%; padding: 0.6rem 1rem; border-radius: 12px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.user-bubble { background: #d1b3ff; color: #1a001a; align-self: flex-end; justify-content: flex-end; }
+.character-bubble { background: linear-gradient(to right,#b366ff,#8a2be2); color:white; align-self: flex-start; }
+.bubble img { width: 40px; border-radius: 50%; }
+#inputArea { display:flex; padding:0.5rem; background: rgba(0,0,0,0.6); }
+#userInput { flex:1; padding:0.8rem; font-size:1rem; border-radius:8px; border:none; outline:none; }
+#sendBtn { margin-left:0.5rem; padding:0.8rem 1.2rem; font-size:1rem; background: linear-gradient(to right,#98ff98,#7b3f00); color:white; border:none; border-radius:8px; cursor:pointer; }
+#sendBtn:hover { filter: brightness(1.2); }
+</style>
+</head>
+<body>
+
+<header>RPG Café</header>
+
+<div id="characterContainer">
+  <div class="characterCard" data-character="star">
+    <img src="star.png" alt="Star">
+    <div class="characterName">Star</div>
+  </div>
+  <div class="characterCard" data-character="miki">
+    <img src="miki.png" alt="Miki">
+    <div class="characterName">Miki</div>
+  </div>
+  <div class="characterCard" data-character="milo">
+    <img src="milo.png" alt="Milo">
+    <div class="characterName">Milo</div>
+  </div>
+  <div class="characterCard" data-character="chari">
+    <img src="chari.png" alt="Chari">
+    <div class="characterName">Chari</div>
+  </div>
+</div>
+
+<div id="chatContainer"></div>
+<div id="inputArea">
+  <input type="text" id="userInput" placeholder="Say something...">
+  <button id="sendBtn">Send</button>
+</div>
+
+<script>
+const characters = {
+  star: { img: 'star.png', greetings: { hi: "Hi! Watch for my puns.", hello: "Hello! Fancy some tea?", bye: "Bye! Don't spill the tea." }, default: ["Hmm… curious…", "Pun intended!"] },
+  miki: { img: 'miki.png', greetings: { hi: "Hey! Ready for chaos?", hello: "Hi! Neon tea?", bye: "Later! Keep it wild." }, default: ["Confused? Try tea!"] },
+  milo: { img: 'milo.png', greetings: { hi: "Greetings, friend.", hello: "Hello. Let's sip.", bye: "Goodbye. Stay calm." }, default: ["Hmm… meditation might help."] },
+  chari: { img: 'chari.png', greetings: { hi: "Hi… quietly.", hello: "Hello. Calm tea chat.", bye: "Bye… take care." }, default: ["I see… perhaps a riddle?"] },
+};
+
+let activeCharacter = null;
+
+const chatContainer = document.getElementById("chatContainer");
+const userInput = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+
+document.querySelectorAll('.characterCard').forEach(card => {
+  card.addEventListener('click', () => {
+    activeCharacter = card.dataset.character;
+    document.querySelectorAll('.characterCard').forEach(c => {
+      if(c.dataset.character !== activeCharacter) c.classList.add('dark');
+      else c.classList.remove('dark');
+    });
+    addBubble(`You are now chatting with ${activeCharacter}`, 'character');
+  });
+});
+
+function addBubble(text, type) {
+  const bubble = document.createElement("div");
+  bubble.className = `bubble ${type}-bubble`;
+  const img = document.createElement("img");
+  img.src = type === "user" ? "teacup.png" : characters[activeCharacter].img;
+  bubble.appendChild(img);
+  bubble.appendChild(document.createElement("span"));
+  chatContainer.appendChild(bubble);
+
+  const span = bubble.querySelector("span");
+  let i = 0;
+  const interval = setInterval(() => {
+    span.textContent += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(interval);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }, 30);
+}
+
+async function respond(msg) {
+  if(!activeCharacter) return alert("Please select a character first!");
+  addBubble(msg, "user");
+  await new Promise(r => setTimeout(r, 600));
+  const charData = characters[activeCharacter];
+  const responseText = charData.greetings[msg.toLowerCase()] || charData.default[Math.floor(Math.random() * charData.default.length)];
+  addBubble(responseText, "character");
+}
+
+sendBtn.addEventListener("click", () => {
+  const msg = userInput.value.trim();
+  if(msg) { respond(msg); userInput.value = ""; }
+});
+userInput.addEventListener("keypress", e => { if(e.key==="Enter") sendBtn.click(); });
+</script>
+
+</body>
+</html>
